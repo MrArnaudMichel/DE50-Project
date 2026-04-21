@@ -8,6 +8,18 @@ public class Main {
         final IRPApplication app =
                 RhapsodyAppServer.getActiveRhapsodyApplication();
         IRPProject prj = app.activeProject();
-        IRPPackage pkg = prj.addPackage("Test8");
+        // If the project has Test in packages - remove it
+        IRPCollection packages = prj.getPackages();
+        if (packages != null) {
+            for (int i = 1; i <= packages.getCount(); i++) {
+                IRPPackage pkg = (IRPPackage) packages.getItem(i);
+                if (pkg.getName().equals("Test")) {
+                    pkg.deletePackage();
+                    break;
+                }
+            }
+        }
+
+        IRPPackage pkg = prj.addPackage("Test");
     }
 }

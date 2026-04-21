@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="fr.utbm.RhapsodySVN.Main" />
     <module name="RhapsodySVN" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;C:\Program Files (x86)\IBM\Rhapsody\9.0\Share\JavaAPI\64Bit&quot;" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;$MODULE_DIR$/lib/64Bit&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="fr.utbm.RhapsodySVN.*" />

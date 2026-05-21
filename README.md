@@ -90,8 +90,19 @@ mvn clean
 ```bash
 # Configurer le profil SVN dans le modèle Rhapsody ouvert
 java "-Djava.library.path=lib\64Bit" -cp "target\RhapsodySVN-1.0-SNAPSHOT.jar;lib\rhapsody.jar" fr.utbm.RhapsodySVN.Main -clean
-
 ```
+
+### Sur Rhapsody
+
+1. Vous pouvez créer un SVN Diagram avec un clique droit sur le projet    
+
+![](C:\Users\hchacrot\AppData\Roaming\marktext\images\2026-05-21-19-59-41-image.png)
+
+2. Vous pouvez vérifier le profile SVN depuis l'explorateur de projet à gauche
+   
+   ![](C:\Users\hchacrot\AppData\Roaming\marktext\images\2026-05-21-20-02-42-image.png)
+   
+   **Note** : Pour l'instant, l'intégration graphique n'est pas visible.
 
 ---
 

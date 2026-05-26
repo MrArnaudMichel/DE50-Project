@@ -1,7 +1,6 @@
 package fr.utbm.RhapsodySVN.service;
 
 import com.telelogic.rhapsody.core.*;
-import fr.utbm.RhapsodySVN.constants.SVNConstants;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 
 import static fr.utbm.RhapsodySVN.constants.SVNConstants.*;
@@ -43,22 +42,49 @@ public class ProfileService {
         }
 
         // 2. Stéréotypes (New Terms)
+
+        // Stakeholder
+        // Sur le stéréotype stakeholder — icône et nom pluriel dans le navigateur
         IRPStereotype stakeholder = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_STAKEHOLDER, METACLASS_CLASS, true);
         if (stakeholder != null) {
+            stakeholder.setPropertyValue("Model.Stereotype.BrowserIcon",       "stakeholder.ico");
+            stakeholder.setPropertyValue("Model.Stereotype.BrowserGroupIcon",  "stakeholder_group.ico");
+            stakeholder.setPropertyValue("Model.Stereotype.DrawingToolIcon",   "stakeholder.ico");
+            stakeholder.setPropertyValue("Model.Stereotype.PluralName",        "Stakeholders");
             RhapsodyWrapper.getOrCreateTag(stakeholder, TAG_IMPORTANCE_SCORE, null);
         }
 
-        RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_SYSTEM, METACLASS_CLASS, true);
+        // SVNSystem
+        IRPStereotype svnSystem = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_SYSTEM, METACLASS_CLASS, true);
+        if (svnSystem != null) {
+            svnSystem.setPropertyValue("Model.Stereotype.BrowserIcon", "SVNSystem.ico");
+            svnSystem.setPropertyValue("Model.Stereotype.BrowserGroupIcon", "SVNSystem_group.ico");
+            svnSystem.setPropertyValue("Model.Stereotype.DrawingToolIcon", "SVNSystem.ico");
+            svnSystem.setPropertyValue("Model.Stereotype.PluralName", "SVNSystems");
+        }
 
+        // ValueArc
         IRPStereotype valueArc = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_VALUE_ARC, METACLASS_ASSOCIATION, true);
         if (valueArc != null) {
+            valueArc.setPropertyValue("Model.Stereotype.BrowserIcon", "valueArc.ico");
+            valueArc.setPropertyValue("Model.Stereotype.BrowserGroupIcon", "valueArc_group.ico");
+            valueArc.setPropertyValue("Model.Stereotype.DrawingToolIcon", "valueArc.ico");
+            valueArc.setPropertyValue("Model.Stereotype.PluralName", "ValueArcs");
             RhapsodyWrapper.getOrCreateTag(valueArc, TAG_BENEFIT_RANKING, benefitType);
             RhapsodyWrapper.getOrCreateTag(valueArc, TAG_SUPPLY_IMPORTANCE, supplyType);
         }
 
         // 3. Diagramme SVN
         // Utilisation de ObjectModelDiagram pour qu'il apparaisse sous "Diagrammes" dans Rhapsody SysML
-        RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_DIAGRAM, METACLASS_OBJECT_MODEL_DIAGRAM, true);
+        IRPStereotype svnDiagram = RhapsodyWrapper.getOrCreateStereotype(
+                profile, STEREOTYPE_DIAGRAM, METACLASS_OBJECT_MODEL_DIAGRAM, true);
+        if (svnDiagram != null) {
+            // Toolbar du diagramme : uniquement stakeholder, svnSystem, valueArc
+            svnDiagram.setPropertyValue(
+                    "Model.Stereotype.DrawingToolbar",
+                    "stakeholder,svnSystem,valueArc"
+            );
+        }
 
         project.save();
         System.out.println("[SVN] Profil '" + PROFILE_NAME + "' mis à jour avec succès.");

@@ -26,12 +26,9 @@ public class ProfileService {
             return;
         }
 
-        // 1. Types énumérés
-        // On tente d'ajouter les types dans un package interne si l'ajout direct au profil échoue
         IRPType benefitType = RhapsodyWrapper.getOrCreateEnumType(profile, TYPE_BENEFIT_RANKING, LITERALS_BENEFIT);
         IRPType supplyType = RhapsodyWrapper.getOrCreateEnumType(profile, TYPE_SUPPLY_IMPORTANCE, LITERALS_SUPPLY);
         
-        // Si null, on tente dans un sous-package
         if (benefitType == null || supplyType == null) {
             System.out.println("[SVN] Tentative de création des types dans un package interne 'SVNData'...");
             IRPPackage dataPkg = (IRPPackage) RhapsodyWrapper.findInCollection(profile.getPackages(), "SVNData");
@@ -41,10 +38,6 @@ public class ProfileService {
             supplyType = RhapsodyWrapper.getOrCreateEnumType(dataPkg, TYPE_SUPPLY_IMPORTANCE, LITERALS_SUPPLY);
         }
 
-        // 2. Stéréotypes (New Terms)
-
-        // Stakeholder
-        // Sur le stéréotype stakeholder — icône et nom pluriel dans le navigateur
         IRPStereotype stakeholder = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_STAKEHOLDER, METACLASS_CLASS, true);
         if (stakeholder != null) {
             stakeholder.setPropertyValue("Model.Stereotype.BrowserIcon",       "stakeholder.ico");
@@ -54,7 +47,6 @@ public class ProfileService {
             RhapsodyWrapper.getOrCreateTag(stakeholder, TAG_IMPORTANCE_SCORE, null);
         }
 
-        // SVNSystem
         IRPStereotype svnSystem = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_SYSTEM, METACLASS_CLASS, true);
         if (svnSystem != null) {
             svnSystem.setPropertyValue("Model.Stereotype.BrowserIcon", "SVNSystem.ico");
@@ -63,7 +55,6 @@ public class ProfileService {
             svnSystem.setPropertyValue("Model.Stereotype.PluralName", "SVNSystems");
         }
 
-        // ValueArc
         IRPStereotype valueArc = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_VALUE_ARC, METACLASS_ASSOCIATION, true);
         if (valueArc != null) {
             valueArc.setPropertyValue("Model.Stereotype.BrowserIcon", "valueArc.ico");
@@ -74,12 +65,9 @@ public class ProfileService {
             RhapsodyWrapper.getOrCreateTag(valueArc, TAG_SUPPLY_IMPORTANCE, supplyType);
         }
 
-        // 3. Diagramme SVN
-        // Utilisation de ObjectModelDiagram pour qu'il apparaisse sous "Diagrammes" dans Rhapsody SysML
         IRPStereotype svnDiagram = RhapsodyWrapper.getOrCreateStereotype(
                 profile, STEREOTYPE_DIAGRAM, METACLASS_OBJECT_MODEL_DIAGRAM, true);
         if (svnDiagram != null) {
-            // Toolbar du diagramme : uniquement stakeholder, svnSystem, valueArc
             svnDiagram.setPropertyValue(
                     "Model.Stereotype.DrawingToolbar",
                     "stakeholder,svnSystem,valueArc"

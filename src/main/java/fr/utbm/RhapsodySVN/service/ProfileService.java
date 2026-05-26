@@ -38,28 +38,28 @@ public class ProfileService {
             supplyType = RhapsodyWrapper.getOrCreateEnumType(dataPkg, TYPE_SUPPLY_IMPORTANCE, LITERALS_SUPPLY);
         }
 
-        IRPStereotype stakeholder = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_STAKEHOLDER, METACLASS_CLASS, true);
+        IRPStereotype stakeholder = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_STAKEHOLDER, METACLASS_ACTOR, true);
         if (stakeholder != null) {
-            stakeholder.setPropertyValue("Model.Stereotype.BrowserIcon",       "stakeholder.ico");
-            stakeholder.setPropertyValue("Model.Stereotype.BrowserGroupIcon",  "stakeholder_group.ico");
-            stakeholder.setPropertyValue("Model.Stereotype.DrawingToolIcon",   "stakeholder.ico");
+            stakeholder.setPropertyValue("Model.Stereotype.BrowserIcon",       STEREOTYPE_STAKEHOLDER + ".ico");
+            stakeholder.setPropertyValue("Model.Stereotype.BrowserGroupIcon",  STEREOTYPE_STAKEHOLDER + "_group.ico");
+            stakeholder.setPropertyValue("Model.Stereotype.DrawingToolIcon",   STEREOTYPE_STAKEHOLDER + ".ico");
             stakeholder.setPropertyValue("Model.Stereotype.PluralName",        "Stakeholders");
             RhapsodyWrapper.getOrCreateTag(stakeholder, TAG_IMPORTANCE_SCORE, null);
         }
 
         IRPStereotype svnSystem = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_SYSTEM, METACLASS_CLASS, true);
         if (svnSystem != null) {
-            svnSystem.setPropertyValue("Model.Stereotype.BrowserIcon", "SVNSystem.ico");
-            svnSystem.setPropertyValue("Model.Stereotype.BrowserGroupIcon", "SVNSystem_group.ico");
-            svnSystem.setPropertyValue("Model.Stereotype.DrawingToolIcon", "SVNSystem.ico");
+            svnSystem.setPropertyValue("Model.Stereotype.BrowserIcon", STEREOTYPE_SYSTEM + ".ico");
+            svnSystem.setPropertyValue("Model.Stereotype.BrowserGroupIcon", STEREOTYPE_SYSTEM + "_group.ico");
+            svnSystem.setPropertyValue("Model.Stereotype.DrawingToolIcon", STEREOTYPE_SYSTEM + ".ico");
             svnSystem.setPropertyValue("Model.Stereotype.PluralName", "SVNSystems");
         }
 
         IRPStereotype valueArc = RhapsodyWrapper.getOrCreateStereotype(profile, STEREOTYPE_VALUE_ARC, METACLASS_ASSOCIATION, true);
         if (valueArc != null) {
-            valueArc.setPropertyValue("Model.Stereotype.BrowserIcon", "valueArc.ico");
-            valueArc.setPropertyValue("Model.Stereotype.BrowserGroupIcon", "valueArc_group.ico");
-            valueArc.setPropertyValue("Model.Stereotype.DrawingToolIcon", "valueArc.ico");
+            valueArc.setPropertyValue("Model.Stereotype.BrowserIcon", STEREOTYPE_VALUE_ARC + ".ico");
+            valueArc.setPropertyValue("Model.Stereotype.BrowserGroupIcon", STEREOTYPE_VALUE_ARC + "_group.ico");
+            valueArc.setPropertyValue("Model.Stereotype.DrawingToolIcon", STEREOTYPE_VALUE_ARC + ".ico");
             valueArc.setPropertyValue("Model.Stereotype.PluralName", "ValueArcs");
             RhapsodyWrapper.getOrCreateTag(valueArc, TAG_BENEFIT_RANKING, benefitType);
             RhapsodyWrapper.getOrCreateTag(valueArc, TAG_SUPPLY_IMPORTANCE, supplyType);
@@ -70,7 +70,7 @@ public class ProfileService {
         if (svnDiagram != null) {
             svnDiagram.setPropertyValue(
                     "Model.Stereotype.DrawingToolbar",
-                    "stakeholder,svnSystem,valueArc"
+                    STEREOTYPE_STAKEHOLDER + "," + STEREOTYPE_SYSTEM + "," + STEREOTYPE_VALUE_ARC
             );
         }
 

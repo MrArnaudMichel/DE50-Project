@@ -6,7 +6,7 @@ public class SVNConstants {
     // Stereotypes
     public static final String STEREOTYPE_STAKEHOLDER = "stakeholder";
     public static final String STEREOTYPE_SYSTEM = "svnSystem";
-    public static final String STEREOTYPE_VALUE_ARC = "valueArc";
+    public static final String STEREOTYPE_VALUE_ARC = "valuearc";
     public static final String STEREOTYPE_DIAGRAM = "SVNDiagram";
     
     // Metaclasses
@@ -14,6 +14,7 @@ public class SVNConstants {
     public static final String METACLASS_ASSOCIATION = "Association";
     public static final String METACLASS_STRUCTURE_DIAGRAM = "StructureDiagram";
     public static final String METACLASS_OBJECT_MODEL_DIAGRAM = "ObjectModelDiagram";
+    public static final String METACLASS_ACTOR = "Actor";
     
     // Tags
     public static final String TAG_IMPORTANCE_SCORE = "importanceScore";

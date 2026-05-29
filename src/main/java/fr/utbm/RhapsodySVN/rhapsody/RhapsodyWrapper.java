@@ -34,7 +34,6 @@ public class RhapsodyWrapper {
         IRPStereotype st = (IRPStereotype) findInCollection(pkg.getStereotypes(), name);
         if (st == null) {
             try {
-                // Pour éviter l'ambiguïté, on crée d'abord le stéréotype sans métaclasse via addNewAggr
                 st = (IRPStereotype) pkg.addNewAggr("Stereotype", name);
                 System.out.println("[SVN] Stéréotype créé : " + name);
             } catch (Exception e) {

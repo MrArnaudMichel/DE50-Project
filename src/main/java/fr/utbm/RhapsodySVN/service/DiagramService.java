@@ -7,59 +7,61 @@ import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Service utilitaire pour les opérations graphiques sur les diagrammes SVN.
- */
 public class DiagramService {
 
     // -------------------------------------------------------------------------
     // 1. Labels sur les arcs
     // -------------------------------------------------------------------------
 
-    /**
-     * Pour chaque «valuearc» trouvé sous root, met à jour le label graphique
-     * "B:<benefitRanking> | S:<supplyImportance>" sur toutes ses représentations
-     * dans tous les diagrammes du projet.
-     */
     public void updateArcLabels(IRPModelElement root) {
         System.out.println("[SVN] Mise à jour des labels d'arcs pour : " + root.getName());
 
-        List<IRPRelation> arcs = findValueArcs(root);
+        List<IRPFlow> arcs = findValueArcs(root);
         if (arcs.isEmpty()) {
             System.out.println("[SVN] Aucun valuearc trouvé.");
             return;
         }
 
-        // Collecte tous les diagrammes du projet
-        List<IRPObjectModelDiagram> diagrams = findSVNDiagrams(root);
-
         int updated = 0;
-        for (IRPRelation arc : arcs) {
+        for (IRPFlow arc : arcs) {
             String label = buildArcLabel(arc);
-            for (IRPObjectModelDiagram diagram : diagrams) {
-                IRPCollection graphElements = diagram.getGraphicalElements();
-                for (int i = 1; i <= graphElements.getCount(); i++) {
-                    Object item = graphElements.getItem(i);
-                    if (item instanceof IRPGraphElement) {
-                        IRPGraphElement ge = (IRPGraphElement) item;
-                        IRPModelElement model = ge.getModelObject();
-                        if (arc.equals(model)) {
-                            try {
-                                // "Label" : textName valide pour les lignes (cf. Javadoc IRPGraphElement)
-                                ge.setGraphicalPropertyOfText("Label", "Text", label);
-                                updated++;
-                            } catch (Exception e) {
-                                System.err.println("[SVN] Label arc '" + arc.getName() + "' : " + e.getMessage());
+            System.out.println("[SVN] Arc '" + arc.getName() + "' label=[" + label + "]");
+
+            // Approche 1 : setDisplayName sur le modèle — visible directement dans le diagramme
+            try {
+                arc.setDisplayName(label);
+                arc.setIsShowDisplayName(1);
+                updated++;
+                System.out.println("[SVN]   → setDisplayName OK");
+            } catch (Exception e) {
+                System.err.println("[SVN]   → setDisplayName échoué : " + e.getMessage());
+
+                // Approche 2 : setGraphicalPropertyOfText avec "Keyword" (textName valide pour Flow)
+                List<IRPObjectModelDiagram> diagrams = findSVNDiagrams(root);
+                for (IRPObjectModelDiagram diagram : diagrams) {
+                    IRPCollection graphElements = diagram.getGraphicalElements();
+                    for (int i = 1; i <= graphElements.getCount(); i++) {
+                        Object item = graphElements.getItem(i);
+                        if (item instanceof IRPGraphElement) {
+                            IRPGraphElement ge = (IRPGraphElement) item;
+                            if (arc.equals(ge.getModelObject())) {
+                                try {
+                                    ge.setGraphicalPropertyOfText("Keyword", "Text", label);
+                                    updated++;
+                                    System.out.println("[SVN]   → Keyword OK");
+                                } catch (Exception e2) {
+                                    System.err.println("[SVN]   → Keyword échoué : " + e2.getMessage());
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        System.out.println("[SVN] Labels mis à jour sur " + updated + " représentation(s).");
+        System.out.println("[SVN] Labels mis à jour sur " + updated + " arc(s).");
     }
 
-    private String buildArcLabel(IRPRelation arc) {
+    private String buildArcLabel(IRPFlow arc) {
         String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "?");
         String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
         return "B:" + benefit + " | S:" + supply;
@@ -69,21 +71,14 @@ public class DiagramService {
     // 2. Couleur d'un arc sélectionné
     // -------------------------------------------------------------------------
 
-    /**
-     * Change la couleur de ligne (LineColor) de toutes les représentations graphiques
-     * du «valuearc» donné dans tous les diagrammes SVN.
-     *
-     * @param modelElement  IRPRelation «valuearc» sélectionné
-     * @param hexColor      couleur RGB hex sans '#', ex. "FF0000"
-     */
     public void setArcColor(IRPModelElement modelElement, String hexColor) {
-        if (!(modelElement instanceof IRPRelation)) {
-            System.err.println("[SVN] setArcColor : l'élément sélectionné n'est pas une relation.");
+        if (!(modelElement instanceof IRPFlow)) {
+            System.err.println("[SVN] setArcColor : l'élément sélectionné n'est pas un Flow.");
             return;
         }
-        IRPRelation arc = (IRPRelation) modelElement;
+        IRPFlow arc = (IRPFlow) modelElement;
         if (!RhapsodyWrapper.hasStereotype(arc, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-            System.err.println("[SVN] setArcColor : la relation n'est pas un «valuearc».");
+            System.err.println("[SVN] setArcColor : le Flow n'est pas un «valuearc».");
             return;
         }
 
@@ -115,12 +110,6 @@ public class DiagramService {
     // 3. Code couleur automatique des stakeholders
     // -------------------------------------------------------------------------
 
-    /**
-     * Colore les nœuds «stakeholder» par tertile selon leur importanceScore :
-     *   1er tertile → rouge  "FF4444"
-     *   2e  tertile → orange "FFA500"
-     *   3e  tertile → jaune  "FFFF00"
-     */
     public void colorizeStakeholdersByRank(IRPModelElement root) {
         System.out.println("[SVN] Colorisation des stakeholders pour : " + root.getName());
 
@@ -128,9 +117,10 @@ public class DiagramService {
         IRPCollection descendants = root.getNestedElementsRecursive();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPClass && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
-                double score = readImportanceScore((IRPClass) el);
-                scored.add(new ScoredStakeholder((IRPClass) el, score));
+            if (el instanceof IRPActor
+                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
+                double score = readImportanceScore(el);
+                scored.add(new ScoredStakeholder(el, score));
             }
         }
 
@@ -141,20 +131,33 @@ public class DiagramService {
 
         scored.sort((a, b) -> Double.compare(b.score, a.score));
 
-        int total   = scored.size();
-        int cut1    = (int) Math.ceil(total / 3.0);
-        int cut2    = (int) Math.ceil(2.0 * total / 3.0);
+        int total = scored.size();
+        int cut1  = (int) Math.ceil(total / 3.0);
+        int cut2  = (int) Math.ceil(2.0 * total / 3.0);
 
         List<IRPObjectModelDiagram> diagrams = findSVNDiagrams(root);
 
         for (int i = 0; i < total; i++) {
             String color = (i < cut1) ? "FF4444" : (i < cut2) ? "FFA500" : "FFFF00";
-            applyFillColor(scored.get(i).element, color, diagrams);
+            ScoredStakeholder ss = scored.get(i);
+            applyFillColor(ss.element, color, diagrams);
+
+            // Affiche le score sous le nom de l'acteur via setDisplayName
+            try {
+                IRPTag tag = ss.element.getTag(SVNConstants.TAG_IMPORTANCE_SCORE);
+                if (tag != null && tag.getValue() != null && !tag.getValue().isEmpty()) {
+                    String score = String.format("%.4f", Double.parseDouble(tag.getValue()));
+                    ss.element.setDisplayName(ss.element.getName() + "\n(" + score + ")");
+                    ss.element.setIsShowDisplayName(1);
+                }
+            } catch (Exception e) {
+                System.err.println("[SVN] setDisplayName stakeholder : " + e.getMessage());
+            }
         }
         System.out.println("[SVN] Colorisation terminée pour " + total + " stakeholder(s).");
     }
 
-    private double readImportanceScore(IRPClass stakeholder) {
+    private double readImportanceScore(IRPModelElement stakeholder) {
         IRPTag tag = stakeholder.getTag(SVNConstants.TAG_IMPORTANCE_SCORE);
         if (tag == null) return 0.0;
         try { return Double.parseDouble(tag.getValue()); }
@@ -185,11 +188,8 @@ public class DiagramService {
     // 4. Création d'arc programmatique
     // -------------------------------------------------------------------------
 
-    /**
-     * Crée un «valuearc» entre les deux premiers nœuds SVN sélectionnés dans le
-     * diagramme actif, puis ajoute sa représentation graphique.
-     */
-    public void createArcBetweenSelected(IRPApplication app, IRPProject project) {
+    public void createArcBetweenSelected(IRPProject project) {
+        IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
         IRPCollection selected = app.getSelectedGraphElements();
         if (selected == null || selected.getCount() < 2) {
             System.err.println("[SVN] Sélectionnez 2 éléments (stakeholder ou system) dans le diagramme.");
@@ -197,19 +197,19 @@ public class DiagramService {
         }
 
         IRPGraphNode srcNode = null, trgNode = null;
-        IRPClassifier srcModel = null, trgModel = null;
+        IRPModelElement srcModel = null, trgModel = null;
 
         for (int i = 1; i <= selected.getCount() && trgNode == null; i++) {
             Object item = selected.getItem(i);
             if (!(item instanceof IRPGraphNode)) continue;
             IRPGraphNode node = (IRPGraphNode) item;
             IRPModelElement model = node.getModelObject();
-            if (!(model instanceof IRPClassifier)) continue;
+            if (model == null) continue;
             boolean isSVN = RhapsodyWrapper.hasStereotype(model, SVNConstants.STEREOTYPE_STAKEHOLDER)
                     || RhapsodyWrapper.hasStereotype(model, SVNConstants.STEREOTYPE_SYSTEM);
             if (!isSVN) continue;
-            if (srcNode == null) { srcNode = node; srcModel = (IRPClassifier) model; }
-            else                 { trgNode = node; trgModel = (IRPClassifier) model; }
+            if (srcNode == null) { srcNode = node; srcModel = model; }
+            else                 { trgNode = node; trgModel = model; }
         }
 
         if (srcNode == null || trgNode == null) {
@@ -223,29 +223,36 @@ public class DiagramService {
             return;
         }
 
-        // Crée la relation modèle — addRelationTo(IRPClassifier, role1, type1, mult1, role2, type2, mult2, linkName)
-        IRPRelation arc;
+        IRPModelElement owner = diagram.getOwner();
+
+        IRPFlow arc;
         try {
-            arc = srcModel.addRelationTo(trgModel, "", "Association", "1", "", "Association", "1", "");
+            arc = (IRPFlow) owner.addNewAggr("Flow", "valuearc_" + srcModel.getName() + "_" + trgModel.getName());
         } catch (Exception e) {
-            System.err.println("[SVN] Échec création relation : " + e.getMessage());
+            System.err.println("[SVN] Échec création Flow : " + e.getMessage());
             return;
         }
 
-        // Applique le stéréotype via addStereotype(name, metaType)
+        try {
+            arc.setEnd1(srcModel);
+            arc.setEnd2(trgModel);
+        } catch (Exception e) {
+            System.err.println("[SVN] Échec setEnd1/setEnd2 : " + e.getMessage());
+        }
+
         try {
             arc.addStereotype(SVNConstants.STEREOTYPE_VALUE_ARC, SVNConstants.METACLASS_ASSOCIATION);
         } catch (Exception e) {
             System.err.println("[SVN] Stéréotype valuearc : " + e.getMessage());
         }
 
-        // Ajoute la représentation graphique
         try {
             int xSrc = getNodeCenterX(srcNode), ySrc = getNodeCenterY(srcNode);
             int xTrg = getNodeCenterX(trgNode), yTrg = getNodeCenterY(trgNode);
             diagram.addNewEdgeForElement(arc, srcNode, xSrc, ySrc, trgNode, xTrg, yTrg);
             project.save();
-            System.out.println("[SVN] Arc créé entre '" + srcModel.getName() + "' et '" + trgModel.getName() + "'.");
+            System.out.println("[SVN] Arc Flow créé entre '"
+                    + srcModel.getName() + "' et '" + trgModel.getName() + "'.");
         } catch (Exception e) {
             System.err.println("[SVN] Ajout graphique de l'arc : " + e.getMessage());
         }
@@ -255,27 +262,21 @@ public class DiagramService {
     // Helpers privés
     // -------------------------------------------------------------------------
 
-    /** Retourne tous les IRPRelation «valuearc» sous un élément racine. */
-    private List<IRPRelation> findValueArcs(IRPModelElement root) {
-        List<IRPRelation> result = new ArrayList<>();
+    private List<IRPFlow> findValueArcs(IRPModelElement root) {
+        List<IRPFlow> result = new ArrayList<>();
         IRPCollection descendants = root.getNestedElementsRecursive();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPRelation
+            if (el instanceof IRPFlow
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add((IRPRelation) el);
+                result.add((IRPFlow) el);
             }
         }
         return result;
     }
 
-    /**
-     * Cherche tous les IRPObjectModelDiagram sous root qui portent le stéréotype SVNDiagram.
-     * Utilise getNestedElementsByMetaClass("ObjectModelDiagram", 1) — disponible sur IRPModelElement.
-     */
     private List<IRPObjectModelDiagram> findSVNDiagrams(IRPModelElement root) {
         List<IRPObjectModelDiagram> result = new ArrayList<>();
-        // Remonte à la racine du projet si possible
         IRPModelElement current = root;
         while (current.getOwner() != null && !(current instanceof IRPProject)) {
             current = current.getOwner();
@@ -294,7 +295,7 @@ public class DiagramService {
         return result;
     }
 
-    private String getTagValue(IRPRelation arc, String tagName, String defaultValue) {
+    private String getTagValue(IRPFlow arc, String tagName, String defaultValue) {
         try {
             IRPTag tag = arc.getTag(tagName);
             if (tag == null) return defaultValue;
@@ -320,8 +321,8 @@ public class DiagramService {
     }
 
     private static class ScoredStakeholder {
-        final IRPClass element;
+        final IRPModelElement element;
         final double score;
-        ScoredStakeholder(IRPClass el, double s) { this.element = el; this.score = s; }
+        ScoredStakeholder(IRPModelElement el, double s) { this.element = el; this.score = s; }
     }
 }

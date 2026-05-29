@@ -33,31 +33,15 @@ public class Main {
             }
         }
 
-        // 1. Configuration du profil (toujours exécutée)
-        ProfileService profileService = new ProfileService(project);
-        profileService.configureProfile(clean);
+     //   SVNConfigureCommand.run(app);
+        SVNCalculateCommand.run(app);
+        SVNEditArcCommand.run(app);
+        SVNLabelArcCommand.run(project);
+        SVNArcColorCommand.run(app);
+        SVNColorizeStakeholdersCommand.run(app);
+        SVNCreateArcCommand.run(app);
+     //   SVNCleanCommand.run(app);
 
-        // 2. Calcul d'importance (si demandé ou si -colorize implique un calcul préalable)
-        IRPModelElement root = app.getSelectedElement();
-        if (root == null) root = project; // fallback sur le projet entier
 
-        DiagramService diagramService = new DiagramService();
-
-        if (calculate || colorize) {
-            System.out.println("[SVN] Calcul d'importance...");
-            new CalculationService().calculateImportance(root);
-        }
-
-        // 3. Mise à jour des labels sur les arcs
-        if (labelArcs) {
-            System.out.println("[SVN] Mise à jour des labels d'arcs...");
-            diagramService.updateArcLabels(root);
-        }
-
-        // 4. Colorisation des stakeholders
-        if (colorize) {
-            System.out.println("[SVN] Colorisation des stakeholders...");
-            diagramService.colorizeStakeholdersByRank(root);
-        }
     }
 }

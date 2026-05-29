@@ -9,7 +9,7 @@ public class SVNConfigureCommand {
     public static void run(IRPApplication app) {
         IRPProject project = app.activeProject();
         if (project != null) {
-            new ProfileService(project).configureProfile(false);
+            new ProfileService(project).configureProfile(true);
         }
     }
 

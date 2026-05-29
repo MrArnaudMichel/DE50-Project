@@ -18,6 +18,25 @@ import com.telelogic.rhapsody.core.*;
 public class SVNPlugin extends RPUserPlugin {
 
     private IRPApplication app;
+    private IRPProject project;
+    public static void main(String[] args) {
+        IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
+        SVNPlugin plugin = new SVNPlugin();
+        plugin.run(app);
+    }
+    public void run(IRPApplication app) {
+        this.app = app;
+        project = app.activeProject();
+
+        SVNPlugin plugin = new SVNPlugin();
+        plugin.OnMenuItemSelect("SVN Configure");
+        plugin.OnMenuItemSelect("SVN Calculate");
+        plugin.OnMenuItemSelect("SVN Update Arc Labels");
+        plugin.OnMenuItemSelect("SVN Set Arc Color");
+        //     plugin.OnMenuItemSelect("SVN Configure");
+        //     plugin.OnMenuItemSelect("SVN Configure");
+        // plugin.OnMenuItemSelect("SVN Configure");
+    }
 
     @Override
     public void RhpPluginInit(IRPApplication rpyApplication) {
@@ -36,7 +55,7 @@ public class SVNPlugin extends RPUserPlugin {
         switch (menuItem) {
             case "SVN Configure":             SVNConfigureCommand.run(app);             break;
             case "SVN Calculate":             SVNCalculateCommand.run(app);             break;
-            case "SVN Update Arc Labels":     SVNLabelArcCommand.run(app);              break;
+            case "SVN Update Arc Labels":     SVNLabelArcCommand.run(project);              break;
             case "SVN Set Arc Color":         SVNArcColorCommand.run(app);              break;
             case "SVN Colorize Stakeholders": SVNColorizeStakeholdersCommand.run(app);  break;
             case "SVN Create Arc":            SVNCreateArcCommand.run(app);             break;

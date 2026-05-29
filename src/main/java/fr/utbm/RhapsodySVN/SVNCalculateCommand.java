@@ -5,13 +5,17 @@ import fr.utbm.RhapsodySVN.service.CalculationService;
 
 public class SVNCalculateCommand {
 
-    // Appelé par SVNPlugin.OnMenuItemSelect
     public static void run(IRPApplication app) {
-        IRPModelElement selected = app.getSelectedElement();
-        if (selected != null) {
-            new CalculationService().calculateImportance(selected);
+        IRPProject project = app.activeProject();
+        if (project == null) {
+            System.err.println("[SVN] Aucun projet actif.");
+            return;
         }
+
+        new CalculationService().calculateImportance(project);
     }
+
+
 
     // Entrée CLI existante — inchangée
     public static void main(String[] args) {

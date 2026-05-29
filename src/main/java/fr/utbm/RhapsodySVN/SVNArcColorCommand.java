@@ -18,7 +18,13 @@ import java.awt.*;
  */
 public class SVNArcColorCommand {
 
-    public static void run(IRPApplication app) {
+    public static void main(String[] args) {
+        IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
+        run(app);
+    }
+
+
+        public static void run(IRPApplication app) {
         IRPModelElement selected = app.getSelectedElement();
         if (selected == null) {
             System.err.println("[SVN] SVNArcColorCommand : aucun élément sélectionné.");

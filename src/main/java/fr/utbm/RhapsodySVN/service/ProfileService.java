@@ -70,7 +70,7 @@ public class ProfileService {
         if (svnDiagram != null) {
             svnDiagram.setPropertyValue(
                     "Model.Stereotype.DrawingToolbar",
-                     STEREOTYPE_STAKEHOLDER + "," + STEREOTYPE_SYSTEM + "," + STEREOTYPE_VALUE_ARC
+                     "rpy_default," + STEREOTYPE_STAKEHOLDER + "," + STEREOTYPE_SYSTEM + "," + STEREOTYPE_VALUE_ARC
             );
         }
 

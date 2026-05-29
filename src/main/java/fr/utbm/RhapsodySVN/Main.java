@@ -16,31 +16,12 @@ public class Main {
             return;
         }
 
-        // --- Analyse des arguments CLI ---
-        boolean clean      = false;
-        boolean calculate  = false;
-        boolean labelArcs  = false;
-        boolean colorize   = false;
 
-        for (String arg : args) {
-            switch (arg.toLowerCase()) {
-                case "-clean":     clean     = true; break;
-                case "-calculate": calculate = true; break;
-                case "-labels":    labelArcs = true; break;
-                case "-colorize":  colorize  = true; break;
-                // -debug conservé comme alias de -clean (comportement d'origine)
-                case "-debug":     clean     = true; break;
-            }
-        }
-
-     //   SVNConfigureCommand.run(app);
+        SVNConfigureCommand.run(app);
         SVNCalculateCommand.run(app);
         SVNEditArcCommand.run(app);
-        SVNLabelArcCommand.run(project);
-        SVNArcColorCommand.run(app);
-        SVNColorizeStakeholdersCommand.run(app);
-        SVNCreateArcCommand.run(app);
-     //   SVNCleanCommand.run(app);
+       // SVNLabelArcCommand.run(project);
+        SVNCleanCommand.run(app);
 
 
     }

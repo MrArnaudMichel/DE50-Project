@@ -9,10 +9,7 @@ import java.util.List;
 
 public class DiagramService {
 
-    // -------------------------------------------------------------------------
-    // 1. Labels sur les arcs
-    // -------------------------------------------------------------------------
-
+    //Not showing yet
     public void updateArcLabels(IRPModelElement root) {
         System.out.println("[SVN] Mise à jour des labels d'arcs pour : " + root.getName());
 
@@ -27,7 +24,6 @@ public class DiagramService {
             String label = buildArcLabel(arc);
             System.out.println("[SVN] Arc '" + arc.getName() + "' label=[" + label + "]");
 
-            // Approche 1 : setDisplayName sur le modèle — visible directement dans le diagramme
             try {
                 arc.setDisplayName(label);
                 arc.setIsShowDisplayName(1);
@@ -36,7 +32,6 @@ public class DiagramService {
             } catch (Exception e) {
                 System.err.println("[SVN]   → setDisplayName échoué : " + e.getMessage());
 
-                // Approche 2 : setGraphicalPropertyOfText avec "Keyword" (textName valide pour Flow)
                 List<IRPObjectModelDiagram> diagrams = findSVNDiagrams(root);
                 for (IRPObjectModelDiagram diagram : diagrams) {
                     IRPCollection graphElements = diagram.getGraphicalElements();
@@ -66,10 +61,6 @@ public class DiagramService {
         String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
         return "B:" + benefit + " | S:" + supply;
     }
-
-    // -------------------------------------------------------------------------
-    // 2. Couleur d'un arc sélectionné
-    // -------------------------------------------------------------------------
 
     public void setArcColor(IRPModelElement modelElement, String hexColor) {
         if (!(modelElement instanceof IRPFlow)) {
@@ -106,10 +97,6 @@ public class DiagramService {
         System.out.println("[SVN] Couleur #" + color + " appliquée sur " + changed + " arc(s).");
     }
 
-    // -------------------------------------------------------------------------
-    // 3. Code couleur automatique des stakeholders
-    // -------------------------------------------------------------------------
-
     public void colorizeStakeholdersByRank(IRPModelElement root) {
         System.out.println("[SVN] Colorisation des stakeholders pour : " + root.getName());
 
@@ -142,7 +129,6 @@ public class DiagramService {
             ScoredStakeholder ss = scored.get(i);
             applyFillColor(ss.element, color, diagrams);
 
-            // Affiche le score sous le nom de l'acteur via setDisplayName
             try {
                 IRPTag tag = ss.element.getTag(SVNConstants.TAG_IMPORTANCE_SCORE);
                 if (tag != null && tag.getValue() != null && !tag.getValue().isEmpty()) {
@@ -183,10 +169,6 @@ public class DiagramService {
             }
         }
     }
-
-    // -------------------------------------------------------------------------
-    // 4. Création d'arc programmatique
-    // -------------------------------------------------------------------------
 
     public void createArcBetweenSelected(IRPProject project) {
         IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();

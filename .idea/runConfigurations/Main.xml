@@ -8,7 +8,7 @@
     <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;$MODULE_DIR$/lib/64Bit&quot;" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="fr.utbm.RhapsodySVN.*" />
+        <option name="PATTERN" value="fr.utbm.RhapsodySVN.service.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

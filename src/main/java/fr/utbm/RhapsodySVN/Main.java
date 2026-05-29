@@ -21,7 +21,7 @@ public class Main {
         SVNCalculateCommand.run(app);
         SVNEditArcCommand.run(app);
        // SVNLabelArcCommand.run(project);
-        SVNCleanCommand.run(app);
+      //  SVNCleanCommand.run(app);
 
 
     }

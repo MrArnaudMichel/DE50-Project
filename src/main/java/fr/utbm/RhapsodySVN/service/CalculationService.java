@@ -77,7 +77,6 @@ public class CalculationService {
         String name = stakeholder.getName();
         for (IRPFlow arc : allArcs) {
             try {
-                // IRPFlow utilise getEnd1()/getEnd2() au lieu de getOfClass()/getOtherClass()
                 IRPModelElement end1 = arc.getEnd1();
                 IRPModelElement end2 = arc.getEnd2();
                 boolean involves = (end1 != null && name.equals(end1.getName()))

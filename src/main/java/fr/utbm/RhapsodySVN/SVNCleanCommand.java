@@ -9,7 +9,9 @@ public class SVNCleanCommand {
         IRPProject project = app.activeProject();
         if (project != null) {
             System.out.println("[SVN] Lancement du nettoyage complet...");
-            new ProfileService(project).deleteProfile();
+            ProfileService service = new ProfileService(project);
+            service.cleanDefaultPackage();
+            service.deleteProfile();
         }
     }
 

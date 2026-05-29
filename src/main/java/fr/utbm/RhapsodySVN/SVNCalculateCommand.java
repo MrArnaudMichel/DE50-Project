@@ -16,8 +16,6 @@ public class SVNCalculateCommand {
     }
 
 
-
-    // Entrée CLI existante — inchangée
     public static void main(String[] args) {
         IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
         run(app);

@@ -8,10 +8,16 @@ import javax.swing.*;
 
 public class SVNEditArcCommand {
 
+    public static void main(String[] args) {
+        IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
+        run(app);
+    }
+
+
     public static void run(IRPApplication app) {
         IRPModelElement selected = app.getSelectedElement();
 
-        if (selected == null || !(selected instanceof IRPFlow)) {
+        if (!(selected instanceof IRPFlow)) {
             JOptionPane.showMessageDialog(null,
                     "Sélectionnez un arc «valuearc» dans le diagramme.",
                     "SVN Edit Arc", JOptionPane.WARNING_MESSAGE);

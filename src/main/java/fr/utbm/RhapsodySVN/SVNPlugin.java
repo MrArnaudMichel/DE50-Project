@@ -2,19 +2,6 @@ package fr.utbm.RhapsodySVN;
 
 import com.telelogic.rhapsody.core.*;
 
-/**
- * Point d'entrée principal du plugin SVN pour IBM Rhapsody.
- *
- * Commandes disponibles via OnMenuItemSelect :
- *   "SVN Configure"             → configure le profil SVN
- *   "SVN Calculate"             → calcule l'importance des stakeholders
- *   "SVN Update Arc Labels"     → affiche B:/S: sur les arcs
- *   "SVN Set Arc Color"         → sélecteur de couleur pour l'arc sélectionné
- *   "SVN Colorize Stakeholders" → code couleur automatique après calcul
- *   "SVN Create Arc"            → crée un valuearc entre deux éléments sélectionnés
- *   "SVN Clean"                 → supprime et recrée le profil SVN
- *   "SVN Apply Toolbar"         → tente de forcer la toolbar SVN sur les diagrammes SVNDiagram
- */
 public class SVNPlugin extends RPUserPlugin {
 
     private IRPApplication app;

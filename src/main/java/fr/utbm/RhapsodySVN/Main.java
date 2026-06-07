@@ -1,9 +1,8 @@
 package fr.utbm.RhapsodySVN;
 
 import com.telelogic.rhapsody.core.*;
-import fr.utbm.RhapsodySVN.service.CalculationService;
-import fr.utbm.RhapsodySVN.service.DiagramService;
-import fr.utbm.RhapsodySVN.service.ProfileService;
+
+import java.io.IOException;
 
 public class Main {
 
@@ -16,13 +15,19 @@ public class Main {
             return;
         }
 
+        SVNPlugin plugin = new SVNPlugin();
+        plugin.RhpPluginInit(app);
+        //plugin.RhpPluginInvokeItem();
 
-        SVNConfigureCommand.run(app);
-        SVNCalculateCommand.run(app);
-        SVNEditArcCommand.run(app);
-       // SVNLabelArcCommand.run(project);
-      //  SVNCleanCommand.run(app);
-
+        // to make sure that the client keeps listening Rhapsody,
+        // without terminating, use a blocking I/O operation.
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            plugin.RhpPluginCleanup();
+            plugin.RhpPluginFinalCleanup();
+            e.printStackTrace();
+        }
 
     }
 }

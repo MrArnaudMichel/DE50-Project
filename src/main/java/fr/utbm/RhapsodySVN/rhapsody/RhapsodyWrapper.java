@@ -72,6 +72,15 @@ public class RhapsodyWrapper {
         return tag;
     }
 
+    public static String getTagValue(IRPDependency arc, String tagName, String defaultVal) {
+        try {
+            IRPTag tag = arc.getTag(tagName);
+            if (tag == null) return defaultVal;
+            String val = tag.getValue();
+            return (val == null || val.isEmpty()) ? defaultVal : val;
+        } catch (Exception e) { return defaultVal; }
+    }
+
     public static IRPType getOrCreateEnumType(IRPPackage pkg, String name, String[] literals) {
         IRPType type = (IRPType) findInCollection(pkg.getTypes(), name);
         if (type == null) {

@@ -7,20 +7,22 @@ import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
+
 public class DiagramService {
 
     //Not showing yet
     public void updateArcLabels(IRPModelElement root) {
         System.out.println("[SVN] Mise à jour des labels d'arcs pour : " + root.getName());
 
-        List<IRPFlow> arcs = findValueArcs(root);
+        List<IRPDependency> arcs = findValueArcs(root);
         if (arcs.isEmpty()) {
             System.out.println("[SVN] Aucun valuearc trouvé.");
             return;
         }
 
         int updated = 0;
-        for (IRPFlow arc : arcs) {
+        for (IRPDependency arc : arcs) {
             String label = buildArcLabel(arc);
             System.out.println("[SVN] Arc '" + arc.getName() + "' label=[" + label + "]");
 
@@ -56,18 +58,18 @@ public class DiagramService {
         System.out.println("[SVN] Labels mis à jour sur " + updated + " arc(s).");
     }
 
-    private String buildArcLabel(IRPFlow arc) {
+    private String buildArcLabel(IRPDependency arc) {
         String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "?");
         String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
         return "B:" + benefit + " | S:" + supply;
     }
 
     public void setArcColor(IRPModelElement modelElement, String hexColor) {
-        if (!(modelElement instanceof IRPFlow)) {
+        if (!(modelElement instanceof IRPDependency)) {
             System.err.println("[SVN] setArcColor : l'élément sélectionné n'est pas un Flow.");
             return;
         }
-        IRPFlow arc = (IRPFlow) modelElement;
+        IRPDependency arc = (IRPDependency) modelElement;
         if (!RhapsodyWrapper.hasStereotype(arc, SVNConstants.STEREOTYPE_VALUE_ARC)) {
             System.err.println("[SVN] setArcColor : le Flow n'est pas un «valuearc».");
             return;
@@ -207,17 +209,17 @@ public class DiagramService {
 
         IRPModelElement owner = diagram.getOwner();
 
-        IRPFlow arc;
+        IRPDependency arc;
         try {
-            arc = (IRPFlow) owner.addNewAggr("Flow", "valuearc_" + srcModel.getName() + "_" + trgModel.getName());
+            arc = (IRPDependency) owner.addNewAggr("Flow", "valuearc_" + srcModel.getName() + "_" + trgModel.getName());
         } catch (Exception e) {
             System.err.println("[SVN] Échec création Flow : " + e.getMessage());
             return;
         }
 
         try {
-            arc.setEnd1(srcModel);
-            arc.setEnd2(trgModel);
+            arc.setDependent(srcModel);
+            arc.setDependsOn(trgModel);
         } catch (Exception e) {
             System.err.println("[SVN] Échec setEnd1/setEnd2 : " + e.getMessage());
         }
@@ -244,14 +246,14 @@ public class DiagramService {
     // Helpers privés
     // -------------------------------------------------------------------------
 
-    private List<IRPFlow> findValueArcs(IRPModelElement root) {
-        List<IRPFlow> result = new ArrayList<>();
+    private List<IRPDependency> findValueArcs(IRPModelElement root) {
+        List<IRPDependency> result = new ArrayList<>();
         IRPCollection descendants = root.getNestedElementsRecursive();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPFlow
+            if (el instanceof IRPDependency
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add((IRPFlow) el);
+                result.add((IRPDependency) el);
             }
         }
         return result;
@@ -275,15 +277,6 @@ public class DiagramService {
             System.err.println("[SVN] findSVNDiagrams : " + e.getMessage());
         }
         return result;
-    }
-
-    private String getTagValue(IRPFlow arc, String tagName, String defaultValue) {
-        try {
-            IRPTag tag = arc.getTag(tagName);
-            if (tag == null) return defaultValue;
-            String val = tag.getValue();
-            return (val == null || val.isEmpty()) ? defaultValue : val;
-        } catch (Exception e) { return defaultValue; }
     }
 
     private int getNodeCenterX(IRPGraphNode node) {

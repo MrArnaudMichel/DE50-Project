@@ -6,6 +6,8 @@ import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 
 import java.util.*;
 
+import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
+
 public class CalculationService {
 
     /**
@@ -17,7 +19,7 @@ public class CalculationService {
      * Medium         0.2       0.4       0.8
      * Low            0.1       0.2       0.4
      */
-    private static double getArcScore(String benefit, String supply) {
+    public static double getArcScore(String benefit, String supply) {
         if ("MUST_BE".equals(benefit)) {
             if ("HIGH".equals(supply))   return 0.95;
             if ("MEDIUM".equals(supply)) return 0.8;
@@ -45,7 +47,7 @@ public class CalculationService {
             return;
         }
 
-        List<IRPFlow> allArcs = findValueArcs(root);
+        List<IRPDependency> allArcs = findValueArcs(root);
         System.out.println("[SVN] ValueArcs trouvés : " + allArcs.size());
         if (allArcs.isEmpty()) {
             System.out.println("[SVN] Aucun arc — calcul impossible.");
@@ -76,7 +78,7 @@ public class CalculationService {
      * Un value loop commence et finit sur le nœud «system».
      */
     private void calculateByValueLoops(List<IRPActor> stakeholders,
-                                       List<IRPFlow> allArcs,
+                                       List<IRPDependency> allArcs,
                                        IRPModelElement system) {
         // Construit le graphe orienté : nom → liste de (voisin, arc)
         Map<String, List<ArcEdge>> graph = buildGraph(allArcs);
@@ -118,6 +120,7 @@ public class CalculationService {
         for (StakeholderScore ss : scores) {
             updateImportanceTag(ss.element, ss.score);
         }
+        updateSystemTags(system, loops, totalLoopScore);
         System.out.println("[SVN] Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
     }
 
@@ -172,16 +175,16 @@ public class CalculationService {
     // Calcul simplifié par somme des arcs (fallback sans nœud système)
     // -------------------------------------------------------------------------
 
-    private void calculateByArcSum(List<IRPActor> stakeholders, List<IRPFlow> allArcs) {
+    private void calculateByArcSum(List<IRPActor> stakeholders, List<IRPDependency> allArcs) {
         List<StakeholderScore> scores = new ArrayList<>();
         double total = 0;
 
         for (IRPActor sh : stakeholders) {
             double score = 0;
-            for (IRPFlow arc : allArcs) {
+            for (IRPDependency arc : allArcs) {
                 try {
-                    IRPModelElement end1 = arc.getEnd1();
-                    IRPModelElement end2 = arc.getEnd2();
+                    IRPModelElement end1 = arc.getDependent();
+                    IRPModelElement end2 = arc.getDependsOn();
                     if ((end1 != null && sh.getName().equals(end1.getName()))
                             || (end2 != null && sh.getName().equals(end2.getName()))) {
                         score += getArcScore(arc);
@@ -204,12 +207,12 @@ public class CalculationService {
     // Construction du graphe
     // -------------------------------------------------------------------------
 
-    private Map<String, List<ArcEdge>> buildGraph(List<IRPFlow> arcs) {
+    private Map<String, List<ArcEdge>> buildGraph(List<IRPDependency> arcs) {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        for (IRPFlow arc : arcs) {
+        for (IRPDependency arc : arcs) {
             try {
-                IRPModelElement end1 = arc.getEnd1();
-                IRPModelElement end2 = arc.getEnd2();
+                IRPModelElement end1 = arc.getDependent();
+                IRPModelElement end2 = arc.getDependsOn();
                 if (end1 == null || end2 == null) continue;
 
                 double score = getArcScore(arc);
@@ -227,19 +230,10 @@ public class CalculationService {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private double getArcScore(IRPFlow arc) {
-        String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING);
-        String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE);
+    private double getArcScore(IRPDependency arc) {
+        String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "?");
+        String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
         return getArcScore(benefit, supply);
-    }
-
-    private String getTagValue(IRPFlow arc, String tagName) {
-        try {
-            IRPTag tag = arc.getTag(tagName);
-            if (tag == null) return "";
-            String val = tag.getValue();
-            return (val == null) ? "" : val.trim();
-        } catch (Exception e) { return ""; }
     }
 
     private List<IRPActor> findStakeholders(IRPModelElement root) {
@@ -256,14 +250,14 @@ public class CalculationService {
         return result;
     }
 
-    private List<IRPFlow> findValueArcs(IRPModelElement root) {
-        List<IRPFlow> result = new ArrayList<>();
+    private List<IRPDependency> findValueArcs(IRPModelElement root) {
+        List<IRPDependency> result = new ArrayList<>();
         IRPCollection descendants = root.getNestedElementsRecursive();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPFlow
+            if (el instanceof IRPDependency
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add((IRPFlow) el);
+                result.add((IRPDependency) el);
             }
         }
         return result;
@@ -286,7 +280,41 @@ public class CalculationService {
             try { tag = (IRPTag) el.addNewAggr("Tag", SVNConstants.TAG_IMPORTANCE_SCORE); }
             catch (Exception ignored) {}
         }
-        if (tag != null) tag.setValue(String.format("%.4f", score));
+        if (tag != null) {
+            tag.setValue(String.format("%.4f", score));
+            el.setDisplayName(el.getName()+" : "+String.format("%.4f", score));
+        }
+    }
+
+    private void updateSystemTags(IRPModelElement system,
+                                  List<ValueLoop> loops,
+                                  double totalLoopScore) {
+        setOrCreateTag(system, "totalLoopScore",
+                String.format("%.4f", totalLoopScore));
+        setOrCreateTag(system, "loopCount",
+                String.valueOf(loops.size()));
+
+        // Optionnel : détail des loops sous forme lisible
+        StringBuilder detail = new StringBuilder();
+        for (ValueLoop loop : loops) {
+            detail.append(loop.nodes.toString())
+                    .append("=")
+                    .append(String.format("%.4f", loop.score))
+                    .append("; ");
+        }
+        setOrCreateTag(system, "loopDetails", detail.toString());
+    }
+
+    private void setOrCreateTag(IRPModelElement el, String tagName, String value) {
+        try {
+            IRPTag tag = el.getTag(tagName);
+            if (tag == null) {
+                tag = (IRPTag) el.addNewAggr("Tag", tagName);
+            }
+            if (tag != null) tag.setValue(value);
+        } catch (Exception e) {
+            System.err.println("[SVN] setOrCreateTag " + tagName + " : " + e.getMessage());
+        }
     }
 
     // -------------------------------------------------------------------------

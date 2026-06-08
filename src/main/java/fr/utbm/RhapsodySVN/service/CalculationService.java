@@ -183,10 +183,10 @@ public class CalculationService {
             double score = 0;
             for (IRPDependency arc : allArcs) {
                 try {
-                    IRPModelElement end1 = arc.getDependent();
-                    IRPModelElement end2 = arc.getDependsOn();
-                    if ((end1 != null && sh.getName().equals(end1.getName()))
-                            || (end2 != null && sh.getName().equals(end2.getName()))) {
+                    IRPModelElement dependent = arc.getDependent();
+                    IRPModelElement dependsOn = arc.getDependsOn();
+                    if ((dependent != null && sh.getName().equals(dependent.getName()))
+                            || (dependsOn != null && sh.getName().equals(dependsOn.getName()))) {
                         score += getArcScore(arc);
                     }
                 } catch (Exception ignored) {}
@@ -211,13 +211,13 @@ public class CalculationService {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
         for (IRPDependency arc : arcs) {
             try {
-                IRPModelElement end1 = arc.getDependent();
-                IRPModelElement end2 = arc.getDependsOn();
-                if (end1 == null || end2 == null) continue;
+                IRPModelElement dependent = arc.getDependent();
+                IRPModelElement dependsOn = arc.getDependsOn();
+                if (dependent == null || dependsOn == null) continue;
 
                 double score = getArcScore(arc);
-                graph.computeIfAbsent(end1.getName(), k -> new ArrayList<>())
-                        .add(new ArcEdge(end2.getName(), score));
+                graph.computeIfAbsent(dependent.getName(), k -> new ArrayList<>())
+                        .add(new ArcEdge(dependsOn.getName(), score));
 
                 // Si non-dirigé, ajouter aussi le sens inverse
                 // (les flows Rhapsody sont dirigés via Direction)

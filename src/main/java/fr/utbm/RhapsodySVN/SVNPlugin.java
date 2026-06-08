@@ -5,8 +5,6 @@ import fr.utbm.RhapsodySVN.constants.SVNConstants;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 import fr.utbm.RhapsodySVN.service.CalculationService;
 
-import javax.swing.*;
-
 import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
 import static fr.utbm.RhapsodySVN.service.CalculationService.getArcScore;
 
@@ -16,6 +14,8 @@ public class SVNPlugin extends RPUserPlugin {
     private IRPProject project;
     private SVNModelListener listener;
     private CalculationService calculationService;
+
+    private boolean isCalculating = false;
 
     @Override
     public void RhpPluginInit(IRPApplication rpyApplication) {
@@ -72,13 +72,19 @@ public class SVNPlugin extends RPUserPlugin {
             IRPDependency arc = (IRPDependency) element;
             System.out.println("[SVN] Nouvel arc détecté : " + arc.getName());
 
-            // Initialise les tags par défaut si absents
-            initDefaultTags(arc);
+            try {
+                // Stop notifications to avoid initializations of onElementsChanged
+                project.setNotifyPluginOnElementsChanged(0);
 
-            // Calcule et affiche le label avec les valeurs par défaut
-            updateLabel(arc);
-            // Modifie l'importance si besoin
-            calculationService.calculateImportance(project);
+                initDefaultTags(arc);
+                updateArcLabel(arc);
+                calculationService.calculateImportance(project);
+
+            } catch (Exception e) {
+                System.err.println("[SVN] Erreur lors de l'afterAddElement : " + e.getMessage());
+            } finally {
+                project.setNotifyPluginOnElementsChanged(1);
+            }
 
             return false;
         }
@@ -99,33 +105,76 @@ public class SVNPlugin extends RPUserPlugin {
          */
         @Override
         public boolean onElementsChanged(String GUIDs) {
+            if (isCalculating) {
+                return false;
+            }
+
             if (GUIDs == null || GUIDs.trim().isEmpty()) return false;
 
             String[] guidArray = GUIDs.split(",");
-            for (String guid : guidArray) {
-                guid = guid.trim();
-                if (guid.isEmpty()) continue;
+            boolean elementHasBeenDeleted = false;
 
-                IRPModelElement element = project.findElementByGUID(guid);
-                if (element == null) continue;
+            try {
+                isCalculating = true;
 
-                // Cas 1 : le tag lui-même a été modifié → on remonte à l'owner
-                if (element instanceof IRPTag) {
-                    String tagName = element.getName();
-                    System.out.println("[SVN] Tag : " + tagName);
-                    if (!SVNConstants.TAG_BENEFIT_RANKING.equals(tagName)
-                            && !SVNConstants.TAG_SUPPLY_IMPORTANCE.equals(tagName)) {
+                for (String guid : guidArray) {
+                    guid = guid.trim();
+                    if (guid.isEmpty()) continue;
+
+                    IRPModelElement element = project.findElementByGUID(guid);
+
+                    if (element == null) {
+                        elementHasBeenDeleted = true;
                         continue;
                     }
-                    IRPModelElement owner = element.getOwner();
-                    if (isValueArc(owner)) {
-                        System.out.println("[SVN] Tag '" + tagName
-                                + "' modifié sur arc : " + owner.getName());
-                        updateLabel((IRPDependency) owner);
-                        calculationService.calculateImportance(project);
+
+                    // Cas 1 : le tag lui-même a été modifié → on remonte à l'owner
+                    if (element instanceof IRPTag) {
+                        String tagName = element.getName();
+                        if (!SVNConstants.TAG_BENEFIT_RANKING.equals(tagName)
+                                && !SVNConstants.TAG_SUPPLY_IMPORTANCE.equals(tagName)) {
+                            continue;
+                        }
+                        IRPModelElement owner = element.getOwner();
+                        if (isValueArc(owner)) {
+                            System.out.println("[SVN] Tag '" + tagName
+                                    + "' modifié sur arc : " + owner.getName());
+                            try {
+                                // Silence notifications from calculations modifications
+                                project.setNotifyPluginOnElementsChanged(0);
+
+                                updateArcLabel((IRPDependency) owner);
+                                calculationService.calculateImportance(project);
+
+                            } finally {
+                                project.setNotifyPluginOnElementsChanged(1);
+                            }
+
+                            // An element justify a change so it was not a deletion notification
+                            elementHasBeenDeleted = false;
+                            break;
+                        }
                     }
                 }
+
+                if (elementHasBeenDeleted) {
+                    try {
+                        System.out.println("[SVN] Notification de suppression potentielle, lancement du recalcul global.");
+                        project.setNotifyPluginOnElementsChanged(0);
+
+                        calculationService.calculateImportance(project);
+
+                    } finally {
+                        project.setNotifyPluginOnElementsChanged(1);
+                    }
+                }
+
+            } catch (Exception e) {
+                System.err.println("[SVN] Erreur lors du traitement onElementsChanged : " + e.getMessage());
+            } finally {
+                isCalculating = false;
             }
+
             return false;
         }
 
@@ -159,7 +208,7 @@ public class SVNPlugin extends RPUserPlugin {
             }
         }
 
-        private void updateLabel(IRPDependency arc) {
+        private void updateArcLabel(IRPDependency arc) {
             String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "MIGHT_BE");
             String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "LOW");
             double score   = getArcScore(benefit, supply);

@@ -8,7 +8,25 @@ public class SearchState {
     final List<String> path;
     final List<Double> scores;
     final Set<String> visited;
-    SearchState(String c, List<String> p, List<Double> s, Set<String> v) {
+    public SearchState(String c, List<String> p, List<Double> s, Set<String> v) {
         current = c; path = p; scores = s; visited = v;
     }
+
+    public List<Double> getScores() {
+        return scores;
+    }
+
+    public String getCurrent() {
+        return current;
+    }
+
+    public List<String> getPath() {
+        return path;
+    }
+
+    public Set<String> getVisited() {
+        return visited;
+    }
+
+
 }

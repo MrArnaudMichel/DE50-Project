@@ -227,7 +227,7 @@ public class SVNPlugin extends RPUserPlugin {
     }
 
     @Override
-    public void RhpPluginInvokeItem() { SVNConfigureCommand.run(app); }
+    public void RhpPluginInvokeItem() { }
 
     @Override public void OnTrigger(String trigger) {}
     @Override public boolean RhpPluginCleanup() {

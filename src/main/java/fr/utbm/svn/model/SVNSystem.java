@@ -1,108 +1,310 @@
 package fr.utbm.svn.model;
 
 import com.telelogic.rhapsody.core.*;
-import fr.utbm.RhapsodySVN.constants.SVNConstants;
-import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 
-import static fr.utbm.svn.service.impl.CalculationService.getArcScore;
-
-
-public class ValueArc implements IRPDependency {
-    final String target;
-    private double score;
-
-    public ValueArc(String t) {
-        target = t;
-        this.initDefaultTags();
-        this.updateScore();
-    }
-
-    // GETTERS
-
-    public double getScore() { return score; }
-
-    public String getTarget() {
-        return target;
-    }
-
-    // Methods
-
-     public void updateScore() {
-            String benefit = this.getTagValue(SVNConstants.TAG_BENEFIT_RANKING, "?");
-            String supply  = this.getTagValue(SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
-            this.score = getArcScore(benefit, supply);
-        }
-
-    public void initDefaultTags() {
-        initTagIfAbsent(SVNConstants.TAG_BENEFIT_RANKING,
-                SVNConstants.LITERALS_BENEFIT[0]); // MIGHT_BE
-
-        initTagIfAbsent(SVNConstants.TAG_SUPPLY_IMPORTANCE,
-                SVNConstants.LITERALS_SUPPLY[0]);  // LOW
-    }
-
-    public void initTagIfAbsent(String tagName, String defaultValue) {
-        try {
-            IRPTag tag = this.getTag(tagName);
-            if (tag == null || tag.getValue() == null || tag.getValue().isEmpty()) {
-                if (tag == null) {
-                    tag = (IRPTag) this.addNewAggr("Tag", tagName);
-                }
-                if (tag != null) tag.setValue(defaultValue);
-            }
-        } catch (Exception e) {
-            System.err.println("[SVN] initTagIfAbsent " + tagName + " : " + e.getMessage());
-        }
-    }
-
-    public static boolean isValueArc(IRPModelElement element) {
-        return element instanceof IRPDependency
-                && RhapsodyWrapper.hasStereotype(element, SVNConstants.STEREOTYPE_VALUE_ARC);
-    }
-
-    public String getTagValue(String tagName, String defaultVal) {
-        try {
-            IRPTag tag = this.getTag(tagName);
-            if (tag == null) return defaultVal;
-            String val = tag.getValue();
-            return (val == null || val.isEmpty()) ? defaultVal : val;
-        } catch (Exception e) { return defaultVal; }
-    }
-
-    // OVERRIDES
-
+public class SVNSystem implements IRPObjectModelDiagram {
     @Override
-    public IRPModelElement getDependent() {
+    public IRPGraphElement addFreeShapeByType(String s, IRPCollection irpCollection, IRPCollection irpCollection1) {
         return null;
     }
 
     @Override
-    public IRPModelElement getDependsOn() {
+    public IRPGraphElement addImage(String s, int i, int i1, int i2, int i3) {
         return null;
     }
 
     @Override
-    public int isNeedToMigrate() {
+    public IRPGraphEdge addNewEdgeByType(String s, IRPGraphElement irpGraphElement, int i, int i1, IRPGraphElement irpGraphElement1, int i2, int i3) {
+        return null;
+    }
+
+    @Override
+    public IRPGraphEdge addNewEdgeForElement(IRPModelElement irpModelElement, IRPGraphNode irpGraphNode, int i, int i1, IRPGraphNode irpGraphNode1, int i2, int i3) {
+        return null;
+    }
+
+    @Override
+    public IRPGraphNode addNewNodeByType(String s, int i, int i1, int i2, int i3) {
+        return null;
+    }
+
+    @Override
+    public IRPGraphNode addNewNodeForElement(IRPModelElement irpModelElement, int i, int i1, int i2, int i3) {
+        return null;
+    }
+
+    @Override
+    public IRPGraphElement addTextBox(String s, int i, int i1, int i2, int i3) {
+        return null;
+    }
+
+    @Override
+    public IRPDiagram createDiagramView(IRPModelElement irpModelElement, IRPCollection irpCollection) {
+        return null;
+    }
+
+    @Override
+    public IRPCollection getCustomViews() {
+        return null;
+    }
+
+    @Override
+    public IRPDiagram getDiagramViewOf() {
+        return null;
+    }
+
+    @Override
+    public IRPCollection getDiagramViews() {
+        return null;
+    }
+
+    @Override
+    public int isDiagramView() {
         return 0;
     }
 
     @Override
-    public void setDependent(IRPModelElement irpModelElement) {
+    public IRPAXViewCtrl openDiagramView() {
+        return null;
+    }
+
+    @Override
+    public void rearrangePorts(IRPCollection irpCollection) {
 
     }
 
     @Override
-    public void setDependsOn(IRPModelElement irpModelElement) {
+    public void setCustomViews(IRPCollection irpCollection) {
 
     }
 
     @Override
-    public void setLinkType(String s) {
+    public int updateViewOnServer(int i) {
+        return 0;
+    }
+
+    @Override
+    public void closeDiagram() {
 
     }
 
     @Override
-    public void setOwnerWithoutChangingDependent(IRPModelElement irpModelElement) {
+    public void completeRelations(IRPCollection irpCollection, int i) {
+
+    }
+
+    @Override
+    public IRPCollection getCorrespondingGraphicElements(IRPModelElement irpModelElement) {
+        return null;
+    }
+
+    @Override
+    public IRPCollection getElementsInDiagram() {
+        return null;
+    }
+
+    @Override
+    public IRPCollection getGraphicalElements() {
+        return null;
+    }
+
+    @Override
+    public String getLastVisualizationModifiedTime() {
+        return "";
+    }
+
+    @Override
+    public void getPicture(String s) {
+
+    }
+
+    @Override
+    public IRPCollection getPictureAs(String s, String s1, int i, IRPCollection irpCollection) {
+        return null;
+    }
+
+    @Override
+    public IRPCollection getPictureAsDividedMetafiles(String s) {
+        return null;
+    }
+
+    @Override
+    public void getPictureEx(String s, String s1, int i) {
+
+    }
+
+    @Override
+    public IRPCollection getPicturesWithImageMap(String s, IRPCollection irpCollection) {
+        return null;
+    }
+
+    @Override
+    public int isOpen() {
+        return 0;
+    }
+
+    @Override
+    public int isShowDiagramFrame() {
+        return 0;
+    }
+
+    @Override
+    public void openDiagram() {
+
+    }
+
+    @Override
+    public void populateDiagram(IRPCollection irpCollection, IRPCollection irpCollection1, String s) {
+
+    }
+
+    @Override
+    public void removeGraphElements(IRPCollection irpCollection) {
+
+    }
+
+    @Override
+    public void setShowDiagramFrame(int i) {
+
+    }
+
+    @Override
+    public IRPUnit copyToAnotherProject(IRPModelElement irpModelElement) {
+        return null;
+    }
+
+    @Override
+    public int getAddToModelMode() {
+        return 0;
+    }
+
+    @Override
+    public String getCMHeader() {
+        return "";
+    }
+
+    @Override
+    public int getCMState() {
+        return 0;
+    }
+
+    @Override
+    public String getCurrentDirectory() {
+        return "";
+    }
+
+    @Override
+    public String getFilename() {
+        return "";
+    }
+
+    @Override
+    public int getIncludeInNextLoad() {
+        return 0;
+    }
+
+    @Override
+    public int getIsStub() {
+        return 0;
+    }
+
+    @Override
+    public String getLanguage() {
+        return "";
+    }
+
+    @Override
+    public String getLastModifiedTime() {
+        return "";
+    }
+
+    @Override
+    public IRPCollection getNestedSaveUnits() {
+        return null;
+    }
+
+    @Override
+    public int getNestedSaveUnitsCount() {
+        return 0;
+    }
+
+    @Override
+    public IRPCollection getStructureDiagrams() {
+        return null;
+    }
+
+    @Override
+    public int isReadOnly() {
+        return 0;
+    }
+
+    @Override
+    public int isReferenceUnit() {
+        return 0;
+    }
+
+    @Override
+    public int isSeparateSaveUnit() {
+        return 0;
+    }
+
+    @Override
+    public IRPUnit load(int i) {
+        return null;
+    }
+
+    @Override
+    public IRPUnit moveToAnotherProjectLeaveAReference(IRPModelElement irpModelElement) {
+        return null;
+    }
+
+    @Override
+    public IRPUnit referenceToAnotherProject(IRPModelElement irpModelElement) {
+        return null;
+    }
+
+    @Override
+    public void save(int i) {
+
+    }
+
+    @Override
+    public void setCMHeader(String s) {
+
+    }
+
+    @Override
+    public void setFilename(String s) {
+
+    }
+
+    @Override
+    public void setIncludeInNextLoad(int i) {
+
+    }
+
+    @Override
+    public void setLanguage(String s, int i) {
+
+    }
+
+    @Override
+    public void setReadOnly(int i) {
+
+    }
+
+    @Override
+    public void setSeparateSaveUnit(int i) {
+
+    }
+
+    @Override
+    public void setUnitPath(String s) {
+
+    }
+
+    @Override
+    public void unload() {
 
     }
 
@@ -527,7 +729,9 @@ public class ValueArc implements IRPDependency {
     }
 
     @Override
-    public void highLightElement() { }
+    public void highLightElement() {
+
+    }
 
     @Override
     public int isATemplate() {
@@ -600,45 +804,74 @@ public class ValueArc implements IRPDependency {
     }
 
     @Override
-    public void setDescriptionHTML(String s) { }
+    public void setDescriptionHTML(String s) {
+
+    }
 
     @Override
-    public void setDescriptionRTF(String s) { }
+    public void setDescriptionRTF(String s) {
+
+    }
 
     @Override
-    public void setDisplayName(String s) { }
+    public void setDisplayName(String s) {
+
+    }
 
     @Override
-    public void setDisplayNameRTF(String s) { }
+    public void setDisplayNameRTF(String s) {
+
+    }
 
     @Override
-    public void setGUID(String s) { }
+    public void setGUID(String s) {
+
+    }
 
     @Override
-    public void setIsShowDisplayName(int i) { }
+    public void setIsShowDisplayName(int i) {
+
+    }
 
     @Override
-    public void setMainDiagram(IRPDiagram irpDiagram) { }
+    public void setMainDiagram(IRPDiagram irpDiagram) {
+
+    }
 
     @Override
-    public void setName(String s) { }
+    public void setName(String s) {
+
+    }
 
     @Override
-    public void setOfTemplate(IRPModelElement irpModelElement) { }
+    public void setOfTemplate(IRPModelElement irpModelElement) {
+
+    }
 
     @Override
-    public void setOwner(IRPModelElement irpModelElement) { }
+    public void setOwner(IRPModelElement irpModelElement) {
+
+    }
 
     @Override
-    public void setPropertyValue(String s, String s1) { }
+    public void setPropertyValue(String s, String s1) {
+
+    }
 
     @Override
-    public void setRequirementTraceabilityHandle(int i) { }
+    public void setRequirementTraceabilityHandle(int i) {
+
+    }
 
     @Override
-    public void setStereotype(IRPStereotype irpStereotype) { }
+    public void setStereotype(IRPStereotype irpStereotype) {
+
+    }
+
     @Override
-    public IRPTag setTagContextValue(IRPTag irpTag, IRPCollection irpCollection, IRPCollection irpCollection1) { return null;}
+    public IRPTag setTagContextValue(IRPTag irpTag, IRPCollection irpCollection, IRPCollection irpCollection1) {
+        return null;
+    }
 
     @Override
     public IRPTag setTagElementValue(IRPTag irpTag, IRPModelElement irpModelElement) {
@@ -651,12 +884,17 @@ public class ValueArc implements IRPDependency {
     }
 
     @Override
-    public void setTi(IRPTemplateInstantiation irpTemplateInstantiation) {}
+    public void setTi(IRPTemplateInstantiation irpTemplateInstantiation) {
+
+    }
 
     @Override
-    public void synchronizeTemplateInstantiation() {}
+    public void synchronizeTemplateInstantiation() {
+
+    }
 
     @Override
-    public void unlockOnDesignManager() {}
+    public void unlockOnDesignManager() {
 
+    }
 }

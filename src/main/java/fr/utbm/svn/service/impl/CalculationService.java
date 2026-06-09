@@ -1,19 +1,21 @@
 package fr.utbm.svn.service.impl;
 
 import com.telelogic.rhapsody.core.*;
+
 import fr.utbm.RhapsodySVN.constants.SVNConstants;
-import fr.utbm.RhapsodySVN.model.ArcEdge;
-import fr.utbm.RhapsodySVN.model.ValueLoop;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
-import fr.utbm.RhapsodySVN.service.UpdateElementService;
+import fr.utbm.svn.model.ValueArc;
+import fr.utbm.svn.service.ICalculationService;
+import fr.utbm.svn.service.IUpdateElementService;
+import fr.utbm.svn.service.ICalculationStrategy;
 
 import java.util.*;
 
 import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
 
-public class CalculationService {
-
-    private UpdateElementService updateElementService;
+public class CalculationService implements ICalculationService {
+    private ICalculationStrategy strategy;
+    private IUpdateElementService updateElementService;
 
     /**
      * Matrice de score des arcs (Figure 3, INCOSE 2018).
@@ -41,8 +43,12 @@ public class CalculationService {
         return 0.2;
     }
 
+    public void setStrategy(ICalculationStrategy strategy) {
+        this.strategy = strategy;
+    }
 
 
+    @Override
     public void calculateImportance(IRPModelElement root, IRPDiagram diagram) {
         System.out.println("[SVN] Début du calcul d'importance pour : " + root.getName());
 
@@ -200,7 +206,7 @@ public class CalculationService {
             total += score;
         }
 
-        for (StakeholderScore ss : scores) {
+        for (Stakeholder ss : scores) {
             double importance = (total > 0) ? ss.score / total : 0;
             updateImportanceTag(ss.element, importance);
             System.out.println("[SVN] Importance (simplifié) " + ss.element.getName()
@@ -212,8 +218,8 @@ public class CalculationService {
     // Construction du graphe
     // -------------------------------------------------------------------------
 
-    private Map<String, List<ArcEdge>> buildGraph(List<IRPDependency> arcs) {
-        Map<String, List<ArcEdge>> graph = new HashMap<>();
+    private Map<String, List<ValueArc>> buildGraph(List<IRPDependency> arcs) {
+        Map<String, List<ValueArc>> graph = new HashMap<>();
         for (IRPDependency arc : arcs) {
             try {
                 IRPModelElement dependent = arc.getDependent();
@@ -222,7 +228,7 @@ public class CalculationService {
 
                 double score = getArcScore(arc);
                 graph.computeIfAbsent(dependent.getName(), k -> new ArrayList<>())
-                        .add(new ArcEdge(dependsOn.getName(), score));
+                        .add(new ValueArc(dependsOn.getName(), score));
 
                 // Si non-dirigé, ajouter aussi le sens inverse
                 // (les flows Rhapsody sont dirigés via Direction)
@@ -234,12 +240,6 @@ public class CalculationService {
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
-
-    private double getArcScore(IRPDependency arc) {
-        String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "?");
-        String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "?");
-        return getArcScore(benefit, supply);
-    }
 
     private List<IRPActor> findStakeholders(IRPDiagram diagram) {
         List<IRPActor> result = new ArrayList<>();
@@ -305,25 +305,5 @@ public class CalculationService {
             // On applique le DisplayName proprement sur le nom de base
             el.setDisplayName(baseName + " : " + String.format("%.4f", score));
         }
-    }
-
-    // -------------------------------------------------------------------------
-    // Classes internes
-    // -------------------------------------------------------------------------
-
-    private static class SearchState {
-        final String current;
-        final List<String> path;
-        final List<Double> scores;
-        final Set<String> visited;
-        SearchState(String c, List<String> p, List<Double> s, Set<String> v) {
-            current = c; path = p; scores = s; visited = v;
-        }
-    }
-
-    private static class StakeholderScore {
-        final IRPActor element;
-        final double score;
-        StakeholderScore(IRPActor el, double s) { element = el; score = s; }
     }
 }

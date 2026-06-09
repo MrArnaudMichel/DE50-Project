@@ -3,12 +3,20 @@ package fr.utbm.svn.model;
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.RhapsodySVN.service.UpdateElementService;
 import fr.utbm.svn.Logger;
+import fr.utbm.svn.service.ICalculationService;
+import fr.utbm.svn.service.impl.CalculationService;
 
 public class Listener extends RPApplicationListener {
-    private IRPProject project;
+    private final IRPApplication app;
+    private final IRPProject project;
+    private final Logger logger = Logger.getInstance();
+    private final ICalculationService calculationService;
 
-    public Listener(IRPProject project){
+    public Listener(IRPApplication app, IRPProject project){
+        this.app = app;
         this.project = project;
+        this.calculationService = new CalculationService();
+        this.connect(app);
     }
 
     @Override
@@ -17,19 +25,17 @@ public class Listener extends RPApplicationListener {
             return false;
         }
         ValueArc arc = (ValueArc) irpModelElement;
-        Logger.log("New value arc detected");
+        logger.log("New value arc detected");
 
 
         try {
             // Stop notifications to avoid initializations of onElementsChanged
             project.setNotifyPluginOnElementsChanged(0);
-
-            arc.initDefaultTags();
             UpdateElementService.updateArcLabel(arc, project);
             calculationService.calculateImportance(project, app.getDiagramOfSelectedElement());
 
         } catch (Exception e) {
-            Logger.error("Erreur lors de l'afterAddElement : " + e.getMessage());
+            logger.error("Erreur lors de l'afterAddElement : " + e.getMessage());
         } finally {
             project.setNotifyPluginOnElementsChanged(1);
         }

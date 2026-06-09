@@ -4,7 +4,7 @@ import com.telelogic.rhapsody.core.*;
 import fr.utbm.RhapsodySVN.constants.SVNConstants;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 
-import static fr.utbm.svn.service.impl.CalculationService.getArcScore;
+import static fr.utbm.svn.service.strategy.ArcScoreStrategy.getArcScore;
 
 
 public class ValueArc implements IRPDependency {

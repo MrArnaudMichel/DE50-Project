@@ -2,10 +2,26 @@ package fr.utbm.svn.model;
 
 import com.telelogic.rhapsody.core.*;
 
-public class Stackholder implements IRPActor {
+public class Stakeholder implements IRPActor {
     double score;
 
-    public Stackholder() {}
+    public Stakeholder() {
+        this.score = 0.0;
+    }
+
+    // GETTERS
+
+    public double getScore() {
+        return score;
+    }
+
+    // SETTERS
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    // OVERRIDES
 
     @Override
     public IRPEventReception addEventReceptionWithEvent(String s, IRPEvent irpEvent) {

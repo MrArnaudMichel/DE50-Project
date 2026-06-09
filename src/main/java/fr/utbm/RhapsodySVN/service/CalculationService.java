@@ -2,6 +2,8 @@ package fr.utbm.RhapsodySVN.service;
 
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.RhapsodySVN.constants.SVNConstants;
+import fr.utbm.RhapsodySVN.model.ArcEdge;
+import fr.utbm.RhapsodySVN.model.ValueLoop;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 
 import java.util.*;
@@ -9,6 +11,8 @@ import java.util.*;
 import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
 
 public class CalculationService {
+
+    private UpdateElementService updateElementService;
 
     /**
      * Matrice de score des arcs (Figure 3, INCOSE 2018).
@@ -38,23 +42,23 @@ public class CalculationService {
 
 
 
-    public void calculateImportance(IRPModelElement root) {
+    public void calculateImportance(IRPModelElement root, IRPDiagram diagram) {
         System.out.println("[SVN] Début du calcul d'importance pour : " + root.getName());
 
-        List<IRPActor> stakeholders = findStakeholders(root);
+        List<IRPActor> stakeholders = findStakeholders(diagram);
         if (stakeholders.isEmpty()) {
             System.out.println("[SVN] Aucun stakeholder trouvé.");
             return;
         }
 
-        List<IRPDependency> allArcs = findValueArcs(root);
+        List<IRPDependency> allArcs = findValueArcs(diagram);
         System.out.println("[SVN] ValueArcs trouvés : " + allArcs.size());
         if (allArcs.isEmpty()) {
             System.out.println("[SVN] Aucun arc — calcul impossible.");
             return;
         }
 
-        IRPModelElement system = findSystem(root);
+        IRPModelElement system = findSystem(diagram);
         if (system == null) {
             System.out.println("[SVN] Aucun nœud «system» trouvé — "
                     + "calcul simplifié par somme des arcs.");
@@ -96,10 +100,10 @@ public class CalculationService {
         // Calcule le score de chaque loop (produit des arcs)
         double totalLoopScore = 0;
         for (ValueLoop loop : loops) {
-            loop.score = 1.0;
-            for (double s : loop.arcScores) loop.score *= s;
-            totalLoopScore += loop.score;
-            System.out.println("[SVN] Loop " + loop.nodes + " score=" + loop.score);
+            loop.setScore(1);
+            for (double s : loop.getArcScores()) loop.setScore(loop.getScore() * s);
+            totalLoopScore += loop.getScore();
+            System.out.println("[SVN] Loop " + loop.getNodes() + " score=" + loop.getScore());
         }
 
         // Calcule l'importance de chaque stakeholder (Équation 2)
@@ -107,8 +111,8 @@ public class CalculationService {
         for (IRPActor sh : stakeholders) {
             double sumLoopsContaining = 0;
             for (ValueLoop loop : loops) {
-                if (loop.nodes.contains(sh.getName())) {
-                    sumLoopsContaining += loop.score;
+                if (loop.getNodes().contains(sh.getName())) {
+                    sumLoopsContaining += loop.getScore();
                 }
             }
             double importance = (totalLoopScore > 0) ? sumLoopsContaining / totalLoopScore : 0;
@@ -120,7 +124,7 @@ public class CalculationService {
         for (StakeholderScore ss : scores) {
             updateImportanceTag(ss.element, ss.score);
         }
-        updateSystemTags(system, loops, totalLoopScore);
+        UpdateElementService.updateSystemTags(system, loops, totalLoopScore);
         System.out.println("[SVN] Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
     }
 
@@ -142,15 +146,15 @@ public class CalculationService {
 
             List<ArcEdge> neighbors = graph.getOrDefault(state.current, Collections.emptyList());
             for (ArcEdge edge : neighbors) {
-                String next = edge.target;
+                String next = edge.getTarget();
 
                 // Boucle fermée : on est revenu au système
                 if (next.equals(systemName) && !state.path.isEmpty()) {
-                    List<String> loopNodes = new ArrayList<>(state.path);
-                    loopNodes.add(systemName);
+                    List<String> loopNode = new ArrayList<>(state.path);
+                    loopNode.add(systemName);
                     List<Double> loopScores = new ArrayList<>(state.scores);
-                    loopScores.add(edge.score);
-                    ValueLoop loop = new ValueLoop(loopNodes, loopScores);
+                    loopScores.add(edge.getScore());
+                    ValueLoop loop = new ValueLoop(loopNode, loopScores);
                     result.add(loop);
                     continue;
                 }
@@ -163,7 +167,7 @@ public class CalculationService {
                 List<String> newPath = new ArrayList<>(state.path);
                 newPath.add(next);
                 List<Double> newScores = new ArrayList<>(state.scores);
-                newScores.add(edge.score);
+                newScores.add(edge.getScore());
 
                 stack.push(new SearchState(next, newPath, newScores, newVisited));
             }
@@ -236,9 +240,9 @@ public class CalculationService {
         return getArcScore(benefit, supply);
     }
 
-    private List<IRPActor> findStakeholders(IRPModelElement root) {
+    private List<IRPActor> findStakeholders(IRPDiagram diagram) {
         List<IRPActor> result = new ArrayList<>();
-        IRPCollection descendants = root.getNestedElementsRecursive();
+        IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPActor
@@ -249,10 +253,10 @@ public class CalculationService {
         }
         return result;
     }
-
-    private List<IRPDependency> findValueArcs(IRPModelElement root) {
+    
+    private List<IRPDependency> findValueArcs(IRPDiagram diagram) {
         List<IRPDependency> result = new ArrayList<>();
-        IRPCollection descendants = root.getNestedElementsRecursive();
+        IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPDependency
@@ -263,10 +267,11 @@ public class CalculationService {
         return result;
     }
 
-    private IRPModelElement findSystem(IRPModelElement root) {
-        IRPCollection descendants = root.getNestedElementsRecursive();
+    private IRPModelElement findSystem(IRPDiagram diagram) {;
+        IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
+            System.out.println("[SVN][SystemDebug] Project element : " + el.getName());
             if (RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
                 return el;
             }
@@ -280,59 +285,30 @@ public class CalculationService {
             try { tag = (IRPTag) el.addNewAggr("Tag", SVNConstants.TAG_IMPORTANCE_SCORE); }
             catch (Exception ignored) {}
         }
+
         if (tag != null) {
+            // 1. Mise à jour de la valeur du Tag (c'est le plus important)
             tag.setValue(String.format("%.4f", score));
-            el.setDisplayName(el.getName()+" : "+String.format("%.4f", score));
-        }
-    }
 
-    private void updateSystemTags(IRPModelElement system,
-                                  List<ValueLoop> loops,
-                                  double totalLoopScore) {
-        setOrCreateTag(system, "totalLoopScore",
-                String.format("%.4f", totalLoopScore));
-        setOrCreateTag(system, "loopCount",
-                String.valueOf(loops.size()));
+            // 2. Correction du nom pour éviter l'accumulation
+            String currentName = el.getName();
+            String baseName = currentName;
 
-        // Optionnel : détail des loops sous forme lisible
-        StringBuilder detail = new StringBuilder();
-        for (ValueLoop loop : loops) {
-            detail.append(loop.nodes.toString())
-                    .append("=")
-                    .append(String.format("%.4f", loop.score))
-                    .append("; ");
-        }
-        setOrCreateTag(system, "loopDetails", detail.toString());
-    }
-
-    private void setOrCreateTag(IRPModelElement el, String tagName, String value) {
-        try {
-            IRPTag tag = el.getTag(tagName);
-            if (tag == null) {
-                tag = (IRPTag) el.addNewAggr("Tag", tagName);
+            // On nettoie le nom de tout ancien score existant (avec " : " ou votre ancien " _ ")
+            if (currentName.contains(" : ")) {
+                baseName = currentName.split(" : ")[0].trim();
+            } else if (currentName.contains(" _ ")) {
+                baseName = currentName.split(" _ ")[0].trim();
             }
-            if (tag != null) tag.setValue(value);
-        } catch (Exception e) {
-            System.err.println("[SVN] setOrCreateTag " + tagName + " : " + e.getMessage());
+
+            // On applique le DisplayName proprement sur le nom de base
+            el.setDisplayName(baseName + " : " + String.format("%.4f", score));
         }
     }
 
     // -------------------------------------------------------------------------
     // Classes internes
     // -------------------------------------------------------------------------
-
-    private static class ArcEdge {
-        final String target;
-        final double score;
-        ArcEdge(String t, double s) { target = t; score = s; }
-    }
-
-    private static class ValueLoop {
-        final List<String> nodes;
-        final List<Double> arcScores;
-        double score;
-        ValueLoop(List<String> n, List<Double> s) { nodes = n; arcScores = s; }
-    }
 
     private static class SearchState {
         final String current;

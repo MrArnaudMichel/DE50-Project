@@ -12,7 +12,7 @@ public class SVNCalculateCommand {
             return;
         }
 
-        new CalculationService().calculateImportance(project);
+        new CalculationService().calculateImportance(project, app.getDiagramOfSelectedElement());
     }
 
 

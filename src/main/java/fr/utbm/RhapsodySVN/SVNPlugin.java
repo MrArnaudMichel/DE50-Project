@@ -4,6 +4,7 @@ import com.telelogic.rhapsody.core.*;
 import fr.utbm.RhapsodySVN.constants.SVNConstants;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 import fr.utbm.RhapsodySVN.service.CalculationService;
+import fr.utbm.RhapsodySVN.service.UpdateElementService;
 
 import static fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper.getTagValue;
 import static fr.utbm.RhapsodySVN.service.CalculationService.getArcScore;
@@ -68,7 +69,6 @@ public class SVNPlugin extends RPUserPlugin {
         @Override
         public boolean afterAddElement(IRPModelElement element) {
             if (!isValueArc(element)) return false;
-
             IRPDependency arc = (IRPDependency) element;
             System.out.println("[SVN] Nouvel arc détecté : " + arc.getName());
 
@@ -77,8 +77,8 @@ public class SVNPlugin extends RPUserPlugin {
                 project.setNotifyPluginOnElementsChanged(0);
 
                 initDefaultTags(arc);
-                updateArcLabel(arc);
-                calculationService.calculateImportance(project);
+                UpdateElementService.updateArcLabel(arc, project);
+                calculationService.calculateImportance(project, app.getDiagramOfSelectedElement());
 
             } catch (Exception e) {
                 System.err.println("[SVN] Erreur lors de l'afterAddElement : " + e.getMessage());
@@ -143,8 +143,8 @@ public class SVNPlugin extends RPUserPlugin {
                                 // Silence notifications from calculations modifications
                                 project.setNotifyPluginOnElementsChanged(0);
 
-                                updateArcLabel((IRPDependency) owner);
-                                calculationService.calculateImportance(project);
+                                UpdateElementService.updateArcLabel((IRPDependency) owner, project);
+                                calculationService.calculateImportance(project, app.getDiagramOfSelectedElement());
 
                             } finally {
                                 project.setNotifyPluginOnElementsChanged(1);
@@ -162,7 +162,7 @@ public class SVNPlugin extends RPUserPlugin {
                         System.out.println("[SVN] Notification de suppression potentielle, lancement du recalcul global.");
                         project.setNotifyPluginOnElementsChanged(0);
 
-                        calculationService.calculateImportance(project);
+                        calculationService.calculateImportance(project, app.getDiagramOfSelectedElement());
 
                     } finally {
                         project.setNotifyPluginOnElementsChanged(1);
@@ -208,45 +208,7 @@ public class SVNPlugin extends RPUserPlugin {
             }
         }
 
-        private void updateArcLabel(IRPDependency arc) {
-            String benefit = getTagValue(arc, SVNConstants.TAG_BENEFIT_RANKING, "MIGHT_BE");
-            String supply  = getTagValue(arc, SVNConstants.TAG_SUPPLY_IMPORTANCE, "LOW");
-            double score   = getArcScore(benefit, supply);
-            String label   = String.format("%.2f", score);
 
-            // Tentative 1 : setDisplayName sur l'élément modèle
-            try {
-                arc.setDisplayName(label);
-                arc.setIsShowDisplayName(1);
-                System.out.println("[SVN] Label arc '" + arc.getName() + "' → " + label);
-                return;
-            } catch (Exception e) {
-                System.err.println("[SVN] setDisplayName échoué : " + e.getMessage());
-            }
-
-            // Tentative 2 : via les GraphElements du diagramme
-            try {
-                IRPCollection allDiags = project.getNestedElementsByMetaClass(
-                        "ObjectModelDiagram", 1);
-                for (int i = 1; i <= allDiags.getCount(); i++) {
-                    Object d = allDiags.getItem(i);
-                    if (!(d instanceof IRPObjectModelDiagram)) continue;
-                    IRPCollection graphElems =
-                            ((IRPObjectModelDiagram) d).getGraphicalElements();
-                    for (int j = 1; j <= graphElems.getCount(); j++) {
-                        Object ge = graphElems.getItem(j);
-                        if (!(ge instanceof IRPGraphElement)) continue;
-                        IRPGraphElement graphElem = (IRPGraphElement) ge;
-                        if (arc.equals(graphElem.getModelObject())) {
-                            graphElem.setGraphicalPropertyOfText("Keyword", "Text", label);
-                            System.out.println("[SVN] Label arc via GraphElement → " + label);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                System.err.println("[SVN] Mise à jour graphique échouée : " + e.getMessage());
-            }
-        }
     }
 
     @Override
@@ -269,7 +231,6 @@ public class SVNPlugin extends RPUserPlugin {
 
     @Override public void OnTrigger(String trigger) {}
     @Override public boolean RhpPluginCleanup() {
-        // Déconnecte proprement le listener à la fermeture
         if (listener != null) {
             try { listener.disconnect(); } catch (Exception ignored) {}
         }

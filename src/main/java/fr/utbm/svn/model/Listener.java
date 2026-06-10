@@ -35,12 +35,18 @@ public class Listener extends RPApplicationListener {
             calculationService.calculateImportance(project, app.getDiagramOfSelectedElement());
 
         } catch (Exception e) {
-            logger.error("Erreur lors de l'afterAddElement : " + e.getMessage());
+            logger.error("Error in afterAddElement: " + e.getMessage());
         } finally {
             project.setNotifyPluginOnElementsChanged(1);
         }
 
         return false;
+    }
+
+    @Override
+    public boolean onElementsChanged(String s) {
+        // TODO
+        return super.onElementsChanged(s);
     }
 
     @Override

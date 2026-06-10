@@ -3,6 +3,7 @@ package fr.utbm.svn;
 public class Logger {
 
     private static volatile Logger instance = null;
+    private static boolean DEBUG = false;
 
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_YELLOW = "\u001B[33m";
@@ -21,17 +22,25 @@ public class Logger {
         return instance;
     }
 
-
     public void log(String msg) {
-        System.out.println("[SVN] " + msg);
+        if (DEBUG) {
+            System.out.println("[SVN] " + msg);
+        }
     }
 
     public void warn(String msg) {
-        System.err.println(ANSI_YELLOW + "[SVN][WARN] " + msg + ANSI_RESET);
+        if (DEBUG) {
+            System.out.println(ANSI_YELLOW + "[SVN][WARN] " + msg + ANSI_RESET);
+        }
     }
 
-
     public void error(String msg) {
-        System.err.println(ANSI_RED + "[SVN][ERROR] " + msg + ANSI_RESET);
+        if (DEBUG) {
+            System.err.println(ANSI_RED + "[SVN][ERROR] " + msg + ANSI_RESET);
+        }
+    }
+
+    public void setDebug(Boolean isDebug) {
+        DEBUG = isDebug;
     }
 }

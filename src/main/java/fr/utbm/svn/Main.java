@@ -9,7 +9,9 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
+        Boolean isDebug = Boolean.parseBoolean(args[0]);
         Logger logger = Logger.getInstance();
+        logger.setDebug(isDebug);
 
         IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
         IRPProject project = app.activeProject();

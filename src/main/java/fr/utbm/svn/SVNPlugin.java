@@ -29,7 +29,7 @@ public class SVNPlugin extends RPUserPlugin {
         this.diagram = this.app.getDiagramOfSelectedElement();
 
         this.listener = new Listener(this.app, this.project);
-        // listener.connect(app);
+        listener.connect(app);
 
         this.logger.log("Plugin init success");
     }

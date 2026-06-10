@@ -16,7 +16,7 @@ import java.util.*;
 public class CalculationService implements ICalculationService {
     private ICalculationStrategy strategy;
     private IUpdateElementService updateElementService;
-    private Logger logger = Logger.getInstance();
+    private final Logger logger = Logger.getInstance();
 
     public void setStrategy(ICalculationStrategy strategy) {
 
@@ -26,6 +26,7 @@ public class CalculationService implements ICalculationService {
 
     @Override
     public void calculateImportance(IRPModelElement root, IRPDiagram diagram) {
+        // TODO: Note a t'on besoin de garder root en paramètre si c'est seulmeent pour le logging
         logger.log("Début du calcul d'importance pour : " + root.getName());
 
         List<Stakeholder> stakeholders = findStakeholders(diagram);
@@ -44,7 +45,7 @@ public class CalculationService implements ICalculationService {
 
         SVNSystem system = findSystem(diagram);
         if (system == null) {
-            System.out.println("[SVN] Aucun nœud «system» trouvé — "
+            logger.log("Aucun nœud «system» trouvé — "
                     + "calcul simplifié par somme des arcs.");
             calculateByArcSum(stakeholders, valueArcs);
             return;
@@ -52,7 +53,7 @@ public class CalculationService implements ICalculationService {
 
         this.strategy.computeScores(stakeholders, valueArcs, system);
 
-        System.out.println("[SVN] Système central : " + system.getName());
+        logger.log("Système central : " + system.getName());
 
         // Calcul par value loops (Équations 1 & 2)
         calculateByValueLoops(stakeholders, valueArcs, system);

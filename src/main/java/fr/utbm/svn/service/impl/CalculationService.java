@@ -4,9 +4,8 @@ import com.telelogic.rhapsody.core.*;
 
 import fr.utbm.RhapsodySVN.constants.SVNConstants;
 import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
-import fr.utbm.svn.model.SearchState;
-import fr.utbm.svn.model.ValueArc;
-import fr.utbm.svn.model.ValueLoop;
+import fr.utbm.svn.Logger;
+import fr.utbm.svn.model.*;
 import fr.utbm.svn.service.ICalculationService;
 import fr.utbm.svn.service.IUpdateElementService;
 import fr.utbm.svn.service.ICalculationStrategy;
@@ -17,6 +16,7 @@ import java.util.*;
 public class CalculationService implements ICalculationService {
     private ICalculationStrategy strategy;
     private IUpdateElementService updateElementService;
+    private Logger logger = Logger.getInstance();
 
     public void setStrategy(ICalculationStrategy strategy) {
 
@@ -26,74 +26,76 @@ public class CalculationService implements ICalculationService {
 
     @Override
     public void calculateImportance(IRPModelElement root, IRPDiagram diagram) {
-        System.out.println("[SVN] Début du calcul d'importance pour : " + root.getName());
+        logger.log("Début du calcul d'importance pour : " + root.getName());
 
-        List<IRPActor> stakeholders = findStakeholders(diagram);
+        List<Stakeholder> stakeholders = findStakeholders(diagram);
         if (stakeholders.isEmpty()) {
-            System.out.println("[SVN] Aucun stakeholder trouvé.");
+            logger.log("Aucun stakeholder trouvé.");
             return;
         }
 
-        List<IRPDependency> allArcs = findValueArcs(diagram);
-        System.out.println("[SVN] ValueArcs trouvés : " + allArcs.size());
-        if (allArcs.isEmpty()) {
-            System.out.println("[SVN] Aucun arc — calcul impossible.");
+        List<ValueArc> valueArcs = findValueArcs(diagram);
+        logger.log("ValueArcs trouvés : " + valueArcs.size());
+        if (valueArcs.isEmpty()) {
+            logger.log("Aucun arc — calcul impossible.");
             return;
         }
 
-        this.strategy.computeScores(stakeholders, valueArcs, )
 
-        IRPModelElement system = findSystem(diagram);
+        SVNSystem system = findSystem(diagram);
         if (system == null) {
             System.out.println("[SVN] Aucun nœud «system» trouvé — "
                     + "calcul simplifié par somme des arcs.");
-            calculateByArcSum(stakeholders, allArcs);
+            calculateByArcSum(stakeholders, valueArcs);
             return;
         }
+
+        this.strategy.computeScores(stakeholders, valueArcs, system);
+
         System.out.println("[SVN] Système central : " + system.getName());
 
         // Calcul par value loops (Équations 1 & 2)
-        calculateByValueLoops(stakeholders, allArcs, system);
+        calculateByValueLoops(stakeholders, valueArcs, system);
     }
 
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
-    private List<IRPActor> findStakeholders(IRPDiagram diagram) {
-        List<IRPActor> result = new ArrayList<>();
+    private List<Stakeholder> findStakeholders(IRPDiagram diagram) {
+        List<Stakeholder> result = new ArrayList<>();
         IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPActor
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
-                result.add((IRPActor) el);
+                result.add((Stakeholder) el);
                 System.out.println("[SVN] Stakeholder trouvé : " + el.getName());
             }
         }
         return result;
     }
     
-    private List<IRPDependency> findValueArcs(IRPDiagram diagram) {
-        List<IRPDependency> result = new ArrayList<>();
+    private List<ValueArc> findValueArcs(IRPDiagram diagram) {
+        List<ValueArc> result = new ArrayList<>();
         IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPDependency
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add((IRPDependency) el);
+                result.add((ValueArc) el);
             }
         }
         return result;
     }
 
-    private IRPModelElement findSystem(IRPDiagram diagram) {;
+    private SVNSystem findSystem(IRPDiagram diagram) {;
         IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            System.out.println("[SVN][SystemDebug] Project element : " + el.getName());
-            if (RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
-                return el;
+            if (el instanceof IRPActor
+                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
+                return (SVNSystem) el;
             }
         }
         return null;

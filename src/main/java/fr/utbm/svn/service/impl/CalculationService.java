@@ -71,7 +71,7 @@ public class CalculationService implements ICalculationService {
             if (el instanceof IRPActor
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
                 result.add((Stakeholder) el);
-                System.out.println("[SVN] Stakeholder trouvé : " + el.getName());
+                logger.log("Stakeholder trouvé : " + el.getName());
             }
         }
         return result;

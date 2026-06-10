@@ -2,12 +2,15 @@ package fr.utbm.svn.service.strategy;
 
 import com.telelogic.rhapsody.core.IRPActor;
 import com.telelogic.rhapsody.core.IRPModelElement;
+import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.*;
 import fr.utbm.svn.service.ICalculationStrategy;
 
 import java.util.*;
 
 public class ValueLoopStrategy implements ICalculationStrategy {
+
+    private final Logger logger = Logger.getInstance();
 
     @Override
     public Map<IRPActor, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
@@ -17,10 +20,10 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
         // Trouve tous les cycles passant par le système
         List<ValueLoop> loops = findValueLoops(svnSystem.getName(), graph);
-        System.out.println("[SVN] Value loops trouvés : " + loops.size());
+        logger.log("Value loops trouvés : " + loops.size());
 
         if (loops.isEmpty()) {
-            System.out.println("[SVN] Aucun loop — calcul simplifié par somme des arcs.");
+            logger.log("Aucun loop — calcul simplifié par somme des arcs.");
             calculateByArcSum(stakeholders, valueArcs);
             return;
         }
@@ -31,7 +34,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             loop.setScore(1);
             for (double s : loop.getArcScores()) loop.setScore(loop.getScore() * s);
             totalLoopScore += loop.getScore();
-            System.out.println("[SVN] Loop " + loop.getNodes() + " score=" + loop.getScore());
+            logger.log("Loop " + loop.getNodes() + " score=" + loop.getScore());
         }
 
         // Calcule l'importance de chaque stakeholder (Équation 2)
@@ -45,7 +48,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             double importance = (totalLoopScore > 0) ? sumLoopsContaining / totalLoopScore : 0;
             sh.setScore(importance);
             // scores.add(new StakeholderScore(sh, importance));
-            System.out.println("[SVN] Importance " + sh.getName()
+            logger.log("Importance " + sh.getName()
                     + " = " + String.format("%.4f", importance));
         }
 
@@ -55,7 +58,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
         return
         UpdateElementService.updateSystemTags(svnSystem, loops, totalLoopScore);
-        System.out.println("[SVN] Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
+        logger.log("Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
     }
 
     private Map<String, List<ValueArc>> buildGraph(List<ValueArc> arcs) {

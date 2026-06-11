@@ -1,6 +1,5 @@
 package fr.utbm.svn.service.strategy;
 
-import com.telelogic.rhapsody.core.IRPActor;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.*;
@@ -13,7 +12,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
     private final Logger logger = Logger.getInstance();
 
     @Override
-    public Map<IRPActor, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
+    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
 
         // Construit le graphe orienté : nom → liste de (voisin, arc)
         Map<String, List<ValueArc>> graph = this.buildGraph(valueArcs);
@@ -24,8 +23,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
         if (loops.isEmpty()) {
             logger.log("Aucun loop — calcul simplifié par somme des arcs.");
-            calculateByArcSum(stakeholders, valueArcs);
-            return;
+            return Collections.emptyMap();
         }
 
         // Calcule le score de chaque loop (produit des arcs)
@@ -47,18 +45,20 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             }
             double importance = (totalLoopScore > 0) ? sumLoopsContaining / totalLoopScore : 0;
             sh.setScore(importance);
-            // scores.add(new StakeholderScore(sh, importance));
             logger.log("Importance " + sh.getName()
                     + " = " + String.format("%.4f", importance));
         }
 
+        Map<Stakeholder, Double> scores = new HashMap<>();
+
         for (Stakeholder sh : stakeholders) {
-            updateImportanceTag(sh, sh.getScore());
+            scores.put(sh, sh.getScore());
         }
 
-        return
-        UpdateElementService.updateSystemTags(svnSystem, loops, totalLoopScore);
+        svnSystem.setTotalLoopScore(totalLoopScore);
         logger.log("Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
+
+        return scores;
     }
 
     private Map<String, List<ValueArc>> buildGraph(List<ValueArc> arcs) {
@@ -72,8 +72,6 @@ public class ValueLoopStrategy implements ICalculationStrategy {
                 graph.computeIfAbsent(dependent.getName(), k -> new ArrayList<>())
                         .add(arc);
 
-                // Si non-dirigé, ajouter aussi le sens inverse
-                // (les flows Rhapsody sont dirigés via Direction)
             } catch (Exception ignored) {}
         }
         return graph;
@@ -93,7 +91,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
             List<ValueArc> neighbors = graph.getOrDefault(state.getCurrent(), Collections.emptyList());
             for (ValueArc edge : neighbors) {
-                String next = edge.getTarget();
+                String next = edge.getDependsOn().getName();
 
                 // Boucle fermée : on est revenu au système
                 if (next.equals(systemName) && !state.getPath().isEmpty()) {

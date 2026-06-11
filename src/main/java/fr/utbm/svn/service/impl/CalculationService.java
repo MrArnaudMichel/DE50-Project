@@ -7,56 +7,50 @@ import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.*;
 import fr.utbm.svn.service.ICalculationService;
-import fr.utbm.svn.service.IUpdateElementService;
 import fr.utbm.svn.service.ICalculationStrategy;
+import fr.utbm.svn.service.strategy.ArcSumStrategy;
+import fr.utbm.svn.service.strategy.ValueLoopStrategy;
 
 import java.util.*;
 
-
 public class CalculationService implements ICalculationService {
     private ICalculationStrategy strategy;
-    private IUpdateElementService updateElementService;
     private final Logger logger = Logger.getInstance();
-
-    public void setStrategy(ICalculationStrategy strategy) {
-
-        this.strategy = strategy;
-    }
 
 
     @Override
-    public void calculateImportance(IRPModelElement root, IRPDiagram diagram) {
-        // TODO: Note a t'on besoin de garder root en paramètre si c'est seulmeent pour le logging
-        logger.log("Début du calcul d'importance pour : " + root.getName());
-
+    public void calculateImportance(IRPDiagram diagram) {
+        logger.log("Starting importance calculation.");
         List<Stakeholder> stakeholders = findStakeholders(diagram);
         if (stakeholders.isEmpty()) {
-            logger.log("Aucun stakeholder trouvé.");
+            logger.log("No stakeholders found.");
             return;
         }
 
         List<ValueArc> valueArcs = findValueArcs(diagram);
-        logger.log("ValueArcs trouvés : " + valueArcs.size());
         if (valueArcs.isEmpty()) {
-            logger.log("Aucun arc — calcul impossible.");
+            logger.log("No arcs, can't calculate.");
             return;
         }
-
 
         SVNSystem system = findSystem(diagram);
+
         if (system == null) {
-            logger.log("Aucun nœud «system» trouvé — "
-                    + "calcul simplifié par somme des arcs.");
-            calculateByArcSum(stakeholders, valueArcs);
-            return;
+            logger.log("No «SVNsystem» found — " + "switching to arc sum strategy.");
+            this.strategy = new ArcSumStrategy();
+        } else {
+            logger.log("SVNSystem : " + system.getName());
+            this.strategy = new ValueLoopStrategy();
         }
 
-        this.strategy.computeScores(stakeholders, valueArcs, system);
+        Map<Stakeholder, Double> scores = this.strategy.computeScores(stakeholders, valueArcs, system);
 
-        logger.log("Système central : " + system.getName());
+        if (scores.isEmpty()) {
+            scores = this.strategy.computeScores(stakeholders, valueArcs, system);
+        }
 
-        // Calcul par value loops (Équations 1 & 2)
-        calculateByValueLoops(stakeholders, valueArcs, system);
+        scores.forEach(UpdateElementService::updateStakeholderImportance);
+        if (system != null) UpdateElementService.updateSystemTags(system, system.getTotalLoopScore());
     }
 
     // -------------------------------------------------------------------------
@@ -70,7 +64,7 @@ public class CalculationService implements ICalculationService {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPActor
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
-                result.add((Stakeholder) el);
+                result.add(new Stakeholder((IRPActor) el));
                 logger.log("Stakeholder trouvé : " + el.getName());
             }
         }
@@ -84,7 +78,7 @@ public class CalculationService implements ICalculationService {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPDependency
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add((ValueArc) el);
+                result.add(new ValueArc((IRPDependency) el));
             }
         }
         return result;
@@ -94,38 +88,11 @@ public class CalculationService implements ICalculationService {
         IRPCollection descendants = diagram.getElementsInDiagram();
         for (int i = 1; i <= descendants.getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPActor
+            if (el instanceof IRPClass
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
-                return (SVNSystem) el;
+                return new SVNSystem((IRPClass) el);
             }
         }
         return null;
-    }
-
-    private void updateImportanceTag(IRPModelElement el, double score) {
-        IRPTag tag = el.getTag(SVNConstants.TAG_IMPORTANCE_SCORE);
-        if (tag == null) {
-            try { tag = (IRPTag) el.addNewAggr("Tag", SVNConstants.TAG_IMPORTANCE_SCORE); }
-            catch (Exception ignored) {}
-        }
-
-        if (tag != null) {
-            // 1. Mise à jour de la valeur du Tag (c'est le plus important)
-            tag.setValue(String.format("%.4f", score));
-
-            // 2. Correction du nom pour éviter l'accumulation
-            String currentName = el.getName();
-            String baseName = currentName;
-
-            // On nettoie le nom de tout ancien score existant (avec " : " ou votre ancien " _ ")
-            if (currentName.contains(" : ")) {
-                baseName = currentName.split(" : ")[0].trim();
-            } else if (currentName.contains(" _ ")) {
-                baseName = currentName.split(" _ ")[0].trim();
-            }
-
-            // On applique le DisplayName proprement sur le nom de base
-            el.setDisplayName(baseName + " : " + String.format("%.4f", score));
-        }
     }
 }

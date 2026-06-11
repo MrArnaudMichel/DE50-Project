@@ -1,10 +1,10 @@
 package fr.utbm.svn;
 
 import com.telelogic.rhapsody.core.IRPApplication;
-import com.telelogic.rhapsody.core.IRPDiagram;
 import com.telelogic.rhapsody.core.IRPProject;
 import com.telelogic.rhapsody.core.RPUserPlugin;
-import fr.utbm.svn.model.Listener;
+import fr.utbm.svn.controller.Listener;
+import fr.utbm.svn.service.impl.CalculationService;
 
 public class SVNPlugin extends RPUserPlugin {
 
@@ -20,7 +20,7 @@ public class SVNPlugin extends RPUserPlugin {
         }
         project.setNotifyPluginOnElementsChanged(1);
 
-        Listener listener = new Listener(irpApplication, project);
+        Listener listener = new Listener(irpApplication, project, new CalculationService());
         listener.connect(irpApplication);
 
         this.logger.log("Plugin init success");

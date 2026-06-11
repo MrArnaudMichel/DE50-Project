@@ -24,8 +24,8 @@ public class ArcSumStrategy implements ICalculationStrategy {
                 try {
                     IRPModelElement dependent = arc.getDependent();
                     IRPModelElement dependsOn = arc.getDependsOn();
-                    if ((dependent != null && sh.getName().equals(dependent.getName()))
-                            || (dependsOn != null && sh.getName().equals(dependsOn.getName()))) {
+                    if ((dependent != null && sh.getGUID().equals(dependent.getGUID()))
+                            || (dependsOn != null && sh.getGUID().equals(dependsOn.getGUID()))) {
                         score += arc.getScore();
                     }
                 } catch (Exception ignored) {}
@@ -39,7 +39,7 @@ public class ArcSumStrategy implements ICalculationStrategy {
         for (Stakeholder sh : stakeholders) {
             double importance = (total > 0) ? sh.getScore() / total : 0;
             scores.put(sh, importance);
-            logger.log("Importance " + sh.getName()
+            logger.log("Importance " + sh.getGUID()
                     + " = " + String.format("%.4f", importance));
         }
 

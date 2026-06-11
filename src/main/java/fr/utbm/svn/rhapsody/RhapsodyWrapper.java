@@ -5,6 +5,7 @@ import fr.utbm.svn.Logger;
 
 public class RhapsodyWrapper {
 
+
     public static boolean hasStereotype(IRPModelElement el, String stereotypeName) {
         if (el == null) return false;
         IRPCollection stereotypes = el.getStereotypes();

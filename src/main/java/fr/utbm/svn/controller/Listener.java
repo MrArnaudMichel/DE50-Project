@@ -5,7 +5,7 @@ import fr.utbm.svn.Logger;
 import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.ValueArc;
 import fr.utbm.svn.service.ICalculationService;
-import fr.utbm.svn.service.impl.UpdateElementService;
+import fr.utbm.svn.rhapsody.RhapsodyElementUpdater;
 
 public class Listener extends RPApplicationListener {
     private final IRPApplication app;
@@ -33,7 +33,7 @@ public class Listener extends RPApplicationListener {
         try {
             // Stop notifications to avoid initializations of onElementsChanged
             project.setNotifyPluginOnElementsChanged(0);
-            UpdateElementService.updateArcLabel(arc, project);
+            RhapsodyElementUpdater.updateArcLabel(arc, project);
             calculationService.calculateImportance(this.diagram);
 
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class Listener extends RPApplicationListener {
                             // Silence notifications from calculations modifications
                             project.setNotifyPluginOnElementsChanged(0);
 
-                            UpdateElementService.updateArcLabel(new ValueArc((IRPDependency) owner), project);
+                            RhapsodyElementUpdater.updateArcLabel(new ValueArc((IRPDependency) owner), project);
                             calculationService.calculateImportance(this.diagram);
 
                         } finally {

@@ -6,6 +6,7 @@ import fr.utbm.svn.rhapsody.RhapsodyWrapper;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.*;
+import fr.utbm.svn.rhapsody.RhapsodyElementUpdater;
 import fr.utbm.svn.service.ICalculationService;
 import fr.utbm.svn.service.ICalculationStrategy;
 import fr.utbm.svn.service.strategy.ArcSumStrategy;
@@ -19,6 +20,8 @@ public class CalculationService implements ICalculationService {
 
     @Override
     public void calculateImportance(IRPDiagram diagram) {
+        ICalculationStrategy fallBackStrategy = new ArcSumStrategy();
+
         logger.log("Starting importance calculation.");
         List<Stakeholder> stakeholders = findStakeholders(diagram);
         if (stakeholders.isEmpty()) {
@@ -27,30 +30,23 @@ public class CalculationService implements ICalculationService {
         }
 
         List<ValueArc> valueArcs = findValueArcs(diagram);
-        if (valueArcs.isEmpty()) {
-            logger.log("No arcs, can't calculate.");
-            return;
-        }
+        if (valueArcs.isEmpty()) { logger.log("No arcs, can't calculate."); return; }
 
         SVNSystem system = findSystem(diagram);
 
-        ICalculationStrategy strategy;
-        if (system == null) {
-            logger.log("No «SVNsystem» found — " + "switching to arc sum strategy.");
-            strategy = new ArcSumStrategy();
-        } else {
-            logger.log("SVNSystem : " + system.getName());
-            strategy = new ValueLoopStrategy();
-        }
+        Map<Stakeholder, Double> scores = Collections.emptyMap();
 
-        Map<Stakeholder, Double> scores = strategy.computeScores(stakeholders, valueArcs, system);
+        if (system != null) {
+            logger.log("SVNSystem : " + system.getName());
+            scores = new ValueLoopStrategy().computeScores(stakeholders, valueArcs, system);
+        }
 
         if (scores.isEmpty()) {
-            scores = strategy.computeScores(stakeholders, valueArcs, system);
+            scores = fallBackStrategy.computeScores(stakeholders, valueArcs, system);
         }
 
-        scores.forEach(UpdateElementService::updateStakeholderImportance);
-        if (system != null) UpdateElementService.updateSystemTags(system, system.getTotalLoopScore());
+        scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
+        if (system != null) RhapsodyElementUpdater.updateSystemTags(system, system.getTotalLoopScore());
     }
 
     // -------------------------------------------------------------------------

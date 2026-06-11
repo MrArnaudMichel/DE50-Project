@@ -1,4 +1,4 @@
-package fr.utbm.svn.service.impl;
+package fr.utbm.svn.rhapsody;
 
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.svn.Logger;
@@ -9,7 +9,7 @@ import fr.utbm.svn.model.ValueArc;
 
 import static fr.utbm.svn.rhapsody.RhapsodyWrapper.setOrCreateTag;
 
-public class UpdateElementService {
+public class RhapsodyElementUpdater {
 
     public static void updateArcLabel(ValueArc arc, IRPProject project) {
         final Logger logger = Logger.getInstance();

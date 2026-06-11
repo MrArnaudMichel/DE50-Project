@@ -3,15 +3,15 @@ package fr.utbm.svn;
 import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPProject;
 import com.telelogic.rhapsody.core.RhapsodyAppServer;
-import fr.utbm.RhapsodySVN.SVNPlugin;
 
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        Boolean isDebug = Boolean.parseBoolean(args[0]);
         Logger logger = Logger.getInstance();
-        logger.setDebug(isDebug);
+        if (args.length > 0 && args[0].equalsIgnoreCase("debug")) {
+            logger.setDebug(true);
+        }
 
         IRPApplication app = RhapsodyAppServer.getActiveRhapsodyApplication();
         IRPProject project = app.activeProject();
@@ -21,7 +21,7 @@ public class Main {
             return;
         }
 
-        fr.utbm.RhapsodySVN.SVNPlugin plugin = new SVNPlugin();
+        SVNPlugin plugin = new SVNPlugin();
         plugin.RhpPluginInit(app);
 
         // to make sure that the client keeps listening Rhapsody,

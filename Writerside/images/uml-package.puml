@@ -1,0 +1,177 @@
+@startuml
+interface fr.utbm.svn.service.ICalculationStrategy {
+~ Map<Stakeholder,Double> computeScores(List<Stakeholder>,List<ValueArc>,SVNSystem)
+}
+
+class fr.utbm.svn.Main {
++ {static} void main(String[])
+}
+
+class fr.utbm.svn.model.Stakeholder {
+- IRPActor actor
+~ double score
++ double getScore()
++ IRPActor getActor()
++ void setScore(double)
++ String getName()
++ String getGUID()
++ IRPTag getTag(String)
++ void setDisplayName(String)
++ IRPModelElement addNewAggr(String,String)
+}
+
+
+class fr.utbm.svn.service.strategy.ValueLoopStrategy {
+- Logger logger
++ Map<Stakeholder,Double> computeScores(List<Stakeholder>,List<ValueArc>,SVNSystem)
+- Map<String,List<ValueArc>> buildGraph(List<ValueArc>)
+- List<ValueLoop> findValueLoops(String,Map<String,List<ValueArc>>)
+}
+
+
+class fr.utbm.svn.model.ValueLoop {
+~ List<String> nodes
+~ List<Double> arcScores
+~ double score
++ List<String> getNodes()
++ List<Double> getArcScores()
++ double getScore()
++ void setScore(double)
+}
+
+
+class fr.utbm.svn.model.SVNSystem {
+- IRPClass system
+- double totalLoopScore
++ IRPClass getSystem()
++ double getTotalLoopScore()
++ void setTotalLoopScore(double)
++ String getName()
++ String getGUID()
+}
+
+
+class fr.utbm.svn.model.ValueArc {
+- IRPDependency dependency
++ {static} double getArcScore(String,String)
++ IRPDependency getDependency()
++ double getScore()
++ void initDefaultTags()
++ {static} boolean isValueArc(IRPModelElement)
++ String getTagValue(String,String)
++ String getName()
++ String getGUID()
++ IRPModelElement getDependent()
++ IRPModelElement getDependsOn()
++ void setDisplayName(String)
++ void setIsShowDisplayName(int)
+}
+
+
+class fr.utbm.svn.rhapsody.RhapsodyWrapper {
++ {static} boolean hasStereotype(IRPModelElement,String)
++ {static} void initTagIfAbsent(IRPModelElement,String,String)
++ {static} void initTagIfAbsent(IRPModelElement,String)
++ {static} void setOrCreateTag(IRPModelElement,String,String)
+}
+
+class fr.utbm.svn.constants.SVNConstants {
++ {static} String STEREOTYPE_STAKEHOLDER
++ {static} String STEREOTYPE_SYSTEM
++ {static} String STEREOTYPE_VALUE_ARC
++ {static} String STEREOTYPE_DIAGRAM
++ {static} String TAG_IMPORTANCE_SCORE
++ {static} String TAG_BENEFIT_RANKING
++ {static} String TAG_SUPPLY_IMPORTANCE
++ {static} String TAG_TOTAL_LOOP_SCORE
++ {static} String[] LITERALS_BENEFIT
++ {static} String[] LITERALS_SUPPLY
+}
+
+class fr.utbm.svn.controller.Listener {
+- IRPApplication app
+- IRPProject project
+- Logger logger
+- ICalculationService calculationService
+- IRPDiagram diagram
++ boolean afterAddElement(IRPModelElement)
++ boolean onElementsChanged(String)
++ boolean afterProjectClose(String)
++ boolean beforeProjectClose(IRPProject)
++ String getId()
++ boolean onDiagramOpen(IRPDiagram)
++ boolean onDoubleClick(IRPModelElement)
++ boolean onFeaturesOpen(IRPModelElement)
+}
+
+
+class fr.utbm.svn.service.impl.UpdateElementService {
++ {static} void updateArcLabel(ValueArc,IRPProject)
++ {static} void updateSystemTags(SVNSystem,double)
++ {static} void updateStakeholderImportance(Stakeholder,double)
+}
+
+interface fr.utbm.svn.service.ICalculationService {
+~ void calculateImportance(IRPDiagram)
+}
+
+class fr.utbm.svn.Logger {
+- {static} Logger instance
+- {static} boolean DEBUG
+- {static} String ANSI_RESET
+- {static} String ANSI_YELLOW
+- {static} String ANSI_RED
++ {static} Logger getInstance()
++ void log(String)
++ void warn(String)
++ void error(String)
++ void setDebug(Boolean)
+}
+
+
+class fr.utbm.svn.SVNPlugin {
+- Logger logger
++ void RhpPluginInit(IRPApplication)
++ void RhpPluginInvokeItem()
++ void OnMenuItemSelect(String)
++ void OnTrigger(String)
++ boolean RhpPluginCleanup()
++ void RhpPluginFinalCleanup()
+}
+
+
+class fr.utbm.svn.service.impl.CalculationService {
+- Logger logger
++ void calculateImportance(IRPDiagram)
+- List<Stakeholder> findStakeholders(IRPDiagram)
+- List<ValueArc> findValueArcs(IRPDiagram)
+- SVNSystem findSystem(IRPDiagram)
+}
+
+
+class fr.utbm.svn.service.strategy.ArcSumStrategy {
+- Logger logger
++ Map<Stakeholder,Double> computeScores(List<Stakeholder>,List<ValueArc>,SVNSystem)
+}
+
+
+class fr.utbm.svn.model.SearchState {
+~ String current
+~ List<String> path
+~ List<Double> scores
+~ Set<String> visited
++ List<Double> getScores()
++ String getCurrent()
++ List<String> getPath()
++ Set<String> getVisited()
+}
+
+
+
+
+fr.utbm.svn.service.ICalculationStrategy <|.. fr.utbm.svn.service.strategy.ValueLoopStrategy
+fr.utbm.svn.controller.RPApplicationListener <|-- fr.utbm.svn.controller.Listener
+com.telelogic.rhapsody.core.RPUserPlugin <|-- fr.utbm.svn.SVNPlugin
+fr.utbm.svn.service.ICalculationService <|.. fr.utbm.svn.service.impl.CalculationService
+fr.utbm.svn.service.ICalculationStrategy <|.. fr.utbm.svn.service.strategy.ArcSumStrategy
+@enduml

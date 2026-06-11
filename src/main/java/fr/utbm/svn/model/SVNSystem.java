@@ -24,7 +24,7 @@ public class SVNSystem {
         this.totalLoopScore = totalLoopScore;
     }
 
-    // FROM IRPObjectModelDiagram
+    // FROM IRPClass
 
     public String getName() { return system.getName(); }
 }

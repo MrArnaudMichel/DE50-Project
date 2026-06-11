@@ -14,7 +14,6 @@ import fr.utbm.svn.service.strategy.ValueLoopStrategy;
 import java.util.*;
 
 public class CalculationService implements ICalculationService {
-    private ICalculationStrategy strategy;
     private final Logger logger = Logger.getInstance();
 
 
@@ -35,18 +34,19 @@ public class CalculationService implements ICalculationService {
 
         SVNSystem system = findSystem(diagram);
 
+        ICalculationStrategy strategy;
         if (system == null) {
             logger.log("No «SVNsystem» found — " + "switching to arc sum strategy.");
-            this.strategy = new ArcSumStrategy();
+            strategy = new ArcSumStrategy();
         } else {
             logger.log("SVNSystem : " + system.getName());
-            this.strategy = new ValueLoopStrategy();
+            strategy = new ValueLoopStrategy();
         }
 
-        Map<Stakeholder, Double> scores = this.strategy.computeScores(stakeholders, valueArcs, system);
+        Map<Stakeholder, Double> scores = strategy.computeScores(stakeholders, valueArcs, system);
 
         if (scores.isEmpty()) {
-            scores = this.strategy.computeScores(stakeholders, valueArcs, system);
+            scores = strategy.computeScores(stakeholders, valueArcs, system);
         }
 
         scores.forEach(UpdateElementService::updateStakeholderImportance);
@@ -65,7 +65,7 @@ public class CalculationService implements ICalculationService {
             if (el instanceof IRPActor
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
                 result.add(new Stakeholder((IRPActor) el));
-                logger.log("Stakeholder trouvé : " + el.getName());
+                logger.log("Stakeholder found : " + el.getName());
             }
         }
         return result;

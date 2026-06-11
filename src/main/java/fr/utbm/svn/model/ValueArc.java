@@ -11,7 +11,7 @@ import static fr.utbm.svn.service.strategy.ArcScoreStrategy.getArcScore;
 
 public class ValueArc {
 
-    private final IRPDependency dependency; // l'objet Rhapsody réel
+    private final IRPDependency dependency;
 
     public ValueArc(IRPDependency dependency) {
         this.dependency = dependency;
@@ -51,6 +51,8 @@ public class ValueArc {
             return (val == null || val.isEmpty()) ? defaultVal : val;
         } catch (Exception e) { return defaultVal; }
     }
+
+    // FROM IRPDependency
 
     public String getName()     { return dependency.getName(); }
     public String getGUID()     { return dependency.getGUID(); }

@@ -2,23 +2,11 @@
 
 ## Interface matériel / logiciel
 
-### Configuration minimale
-
-| Composant | Configuration minimale |
-|---|---|
-| Système d'exploitation | Windows (7, 10 ou 11) — **Windows uniquement** |
-| Processeur | Compatible avec l'exécution d'IBM Rhapsody 9.0 |
-| Mémoire RAM | 4 Go minimum (8 Go recommandés, requis par IBM Rhapsody) |
-| Espace disque | 500 Mo (installation Rhapsody non comprise) |
-| JDK | JDK 1.8 (Java 8) installé et accessible dans le PATH |
-
-### Périphériques requis
-
-| Périphérique | Usage |
-|---|---|
-| Écran | Affichage des diagrammes Rhapsody et des boîtes de dialogue Swing |
-| Souris | Sélection des éléments graphiques dans les diagrammes (UC2, UC3, UC6) |
-| Clavier | Saisie de noms d'éléments dans Rhapsody |
+| Composant              | Configuration minimale                               |
+|------------------------|------------------------------------------------------|
+| Système d'exploitation | Windows (7, 10 ou 11) — **Windows uniquement**       |
+| Ressources matérielles | Ne consome pas plus que Rhapsody sans plugin         |
+| JDK                    | JDK 1.8 (Java 8) installé et accessible dans le PATH |
 
 ---
 
@@ -26,85 +14,67 @@
 
 ### IBM Rhapsody 9.0
 
-| Propriété | Valeur |
-|---|---|
-| **Nom** | IBM Rational Rhapsody |
-| **Version** | 9.0 (obligatoire — l'API COM utilisée est spécifique à cette version) |
-| **Provenance** | Fourni par IBM. Disponible via les licences académiques UTBM. |
-| **But d'utilisation** | Application hôte du plugin. Fournit l'API Java via `rhapsody.jar`. |
-| **Interface** | `IRPApplication`, `IRPProject`, `IRPProfile`, `IRPFlow`, `IRPActor`, `IRPCollection`, `RPUserPlugin`, `RhapsodyAppServer` |
-| **Mode d'accès** | Appel de `RhapsodyAppServer.getActiveRhapsodyApplication()` pour obtenir l'application active |
+| Propriété             | Valeur                                                                                                                    |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------|
+| **Nom**               | IBM Rational Rhapsody                                                                                                     |
+| **Version**           | 9.0 (obligatoire — l'API COM utilisée est spécifique à cette version)                                                     |
+| **Provenance**        | Fourni par IBM. *Nécésite une liscence spécifique*                                                                        |
+| **But d'utilisation** | Application hôte du plugin. Fournit l'API Java via `rhapsody.jar`.                                                        |
+| **Interface**         | `IRPApplication`, `IRPProject`, `IRPProfile`, `IRPFlow`, `IRPActor`, `IRPCollection`, `RPUserPlugin`, `RhapsodyAppServer` |
 
-Le JAR `rhapsody.jar` est inclus comme dépendance locale dans `lib/rhapsody.jar` et déclaré dans `pom.xml` avec `<scope>system</scope>`.
+Le JAR `rhapsody.jar` est inclus comme dépendance locale dans `lib/rhapsody.jar` et déclaré dans `pom.xml`.
 
 ### Maven 3.x
 
-| Propriété | Valeur |
-|---|---|
-| **Nom** | Apache Maven |
-| **Version** | 3.x |
-| **But** | Outil de build et de gestion des dépendances |
-| **Usage** | Compilation du projet, packaging en JAR (`mvn package`) |
-
-### Java Swing (javax.swing)
-
-| Propriété | Valeur |
-|---|---|
-| **Nom** | Java Swing |
-| **Version** | Incluse dans JDK 1.8 |
-| **But** | Affichage des boîtes de dialogue interactives du plugin |
-| **Classes utilisées** | `JOptionPane` (sélection des pondérations UC3), `JColorChooser` (sélection de couleur UC6) |
+| Propriété   | Valeur                                                  |
+|-------------|---------------------------------------------------------|
+| **Nom**     | Apache Maven                                            |
+| **Version** | 3.x                                                     |
+| **But**     | Outil de build et de gestion des dépendances            |
+| **Usage**   | Compilation du projet, packaging en JAR (`mvn package`) |
 
 ---
 
 ## Interface Homme / logiciel
 
-### Menu contextuel Rhapsody
+### Interaction via Rhapsody
 
-Le plugin s'intègre dans le menu de Rhapsody via la classe `SVNPlugin`. Les commandes disponibles depuis le menu sont :
+Le plugin ne possède **aucune interface graphique propre**. Il est entièrement réactif : l'utilisateur interagit
+exclusivement via les outils natifs de Rhapsody, et le plugin répond automatiquement à ces actions.
 
-| Entrée de menu | Cas d'utilisation |
-|---|---|
-| `SVN Configure` | UC1 — Configurer le profil |
-| `SVN Create Arc` | UC2 — Créer un arc de valeur |
-| (via sélection + menu) | UC3 — Éditer les pondérations |
-| `SVN Calculate` | UC4 — Calculer l'importance |
-| `SVN Colorize Stakeholders` | UC5 — Coloriser les stakeholders |
-| `SVN Set Arc Color` | UC6 — Coloriser un arc |
-| `SVN Update Arc Labels` | UC7 — Mettre à jour les labels |
-| `SVN Clean` | UC8 — Nettoyer le modèle |
-
-### Boîtes de dialogue Swing
-
-Deux commandes ouvrent des fenêtres interactives :
-
-**UC3 — SVN Edit Arc** : deux boîtes `JOptionPane.showInputDialog` successives permettent de sélectionner :
-1. La valeur de `benefitRanking` parmi `{MIGHT_BE, SHOULD_BE, MUST_BE}`
-2. La valeur de `supplyImportance` parmi `{LOW, MEDIUM, HIGH}`
-
-**UC6 — SVN Set Arc Color** : une fenêtre `JColorChooser` permet à l'utilisateur de choisir librement une couleur pour l'arc sélectionné.
+| Action utilisateur dans Rhapsody                                                                 | Réaction automatique du plugin                                                |
+|--------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| Création d'un élément `«valuearc»` dans le diagramme                                             | Initialisation des tags par défaut, mise à jour du label, recalcul des scores |
+| Modification du tag `benefitRanking` ou `supplyImportance` via le panneau de propriétés Rhapsody | Mise à jour du label de l'arc, recalcul des scores d'importance               |
+| Suppression d'un élément SVN                                                                     | Recalcul des scores d'importance                                              |
 
 ### Messages console
 
-Le plugin communique son état interne via des messages sur la sortie standard (console Rhapsody ou terminal) :
+Le plugin utilise un `Logger` singleton qui écrit sur la sortie standard. Trois niveaux sont définis :
 
-| Préfixe | Signification |
-|---|---|
-| `[SVN]` | Message d'information (opération normale) |
-| `[SVN]` (sur `System.err`) | Message d'erreur ou d'avertissement |
+| Niveau        | Format                           | Condition d'affichage                  |
+|---------------|----------------------------------|----------------------------------------|
+| Info          | `[SVN] <message>`                | Uniquement si le mode debug est activé |
+| Avertissement | `[SVN][WARN] <message>` (jaune)  | Uniquement si le mode debug est activé |
+| Erreur        | `[SVN][ERROR] <message>` (rouge) | Toujours affiché                       |
+
+Le mode debug s'active en passant l'argument `debug` au lancement via `Main`, ou via `logger.setDebug(true)`.
 
 Exemples de messages produits :
-- `[SVN] Plugin initialisé.` — à l'ouverture du plugin
-- `[SVN] Importance Stakeholder1 = 0.3750` — après UC4
-- `[SVN] Nettoyage terminé : 7 élément(s) supprimé(s).` — après UC8
-- `[SVN] Commande inconnue : <nom>` — si une entrée de menu non reconnue est déclenchée
+
+- `[SVN] Plugin init success` — à l'ouverture du plugin
+- `[SVN] Stakeholder found : Stakeholder1` — lors du calcul UC4
+- `[SVN] Value loops found : 3` — lors du calcul UC4
+- `[SVN] Importance 0.3750` — score calculé pour un stakeholder
+- `[SVN][ERROR] Error in afterAddElement: <détail>` — en cas d'exception dans le Listener
 
 ### Spécification des messages d'erreur
 
-| Situation | Message affiché |
-|---|---|
-| Élément sélectionné non valide pour UC3 | Boîte `JOptionPane` WARNING : *"Sélectionnez un arc «valuearc» dans le diagramme."* |
-| Élément sélectionné non valuearc pour UC3 | Boîte `JOptionPane` WARNING : *"L'élément sélectionné n'est pas un «valuearc»."* |
-| Moins de 2 éléments sélectionnés pour UC2 | Message console : *"Sélectionnez 2 éléments (stakeholder ou system) dans le diagramme."* |
-| Aucun projet actif | Message console : *"Aucun projet actif."* |
-| Aucun stakeholder trouvé pour UC4 | Message console : *"Aucun stakeholder trouvé."* |
+| Situation                                  | Message affiché                                               |
+|--------------------------------------------|---------------------------------------------------------------|
+| Projet Rhapsody non actif au démarrage     | `[SVN] Project is null`                                       |
+| Aucun stakeholder trouvé dans le diagramme | `[SVN] No stakeholders found.`                                |
+| Aucun arc `«valuearc»` trouvé              | `[SVN] No arcs, can't calculate.`                             |
+| Aucun value loop détecté (fallback)        | `[SVN] No «SVNsystem» found — switching to arc sum strategy.` |
+| Exception dans `afterAddElement`           | `[SVN][ERROR] Error in afterAddElement: <détail>`             |
+| Exception dans `onElementsChanged`         | `[SVN][ERROR] Error on onElementsChanged : <détail>`          |

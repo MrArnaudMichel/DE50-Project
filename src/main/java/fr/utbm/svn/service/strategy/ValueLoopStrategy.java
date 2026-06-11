@@ -9,13 +9,19 @@ import java.util.*;
 
 public class ValueLoopStrategy implements ICalculationStrategy {
 
+    private final SVNSystem system;
+
     private final Logger logger = Logger.getInstance();
 
+    public ValueLoopStrategy(SVNSystem system) {
+        this.system = system;
+    }
+
     @Override
-    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
+    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs) {
         Map<String, List<ValueArc>> graph = this.buildGraph(valueArcs);
 
-        List<ValueLoop> loops = findValueLoops(svnSystem.getGUID(), graph);
+        List<ValueLoop> loops = findValueLoops(system.getGUID(), graph);
         logger.log("Value loops found : " + loops.size());
 
         if (loops.isEmpty()) {
@@ -50,7 +56,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             scores.put(sh, sh.getScore());
         }
 
-        svnSystem.setTotalLoopScore(totalLoopScore);
+        system.setTotalLoopScore(totalLoopScore);
         logger.log("Calcul finished. " + stakeholders.size() + " actors updated.");
 
         return scores;

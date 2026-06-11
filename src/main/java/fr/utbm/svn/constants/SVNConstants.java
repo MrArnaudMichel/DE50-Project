@@ -1,9 +1,5 @@
 package fr.utbm.svn.constants;
 
-import com.telelogic.rhapsody.core.IRPModelElement;
-import com.telelogic.rhapsody.core.IRPTag;
-import fr.utbm.svn.Logger;
-
 public class SVNConstants {
     public static final String PROFILE_NAME = "SVNProfile";
     
@@ -34,45 +30,4 @@ public class SVNConstants {
     public static final String[] LITERALS_BENEFIT = {"MIGHT_BE", "SHOULD_BE", "MUST_BE"};
     public static final String[] LITERALS_SUPPLY = {"LOW", "MEDIUM", "HIGH"};
 
-
-    // STATIC METHODS TO SET OR CREATE TAGS
-
-    public static void initTagIfAbsent(IRPModelElement el, String tagName, String defaultValue) {
-        try {
-            IRPTag tag = el.getTag(tagName);
-            if (tag == null) {
-                tag = (IRPTag) el.addNewAggr("Tag", tagName);
-                tag.setValue(defaultValue);
-
-            }
-        } catch (Exception e) {
-            Logger logger = Logger.getInstance();
-            logger.error("initTagIfAbsent " + tagName + " : " + e.getMessage());
-        }
-    }
-
-    public static void initTagIfAbsent(IRPModelElement el, String tagName) {
-        try {
-            IRPTag tag = el.getTag(tagName);
-            if (tag == null) {
-                el.addNewAggr("Tag", tagName);
-            }
-        } catch (Exception e) {
-            Logger logger = Logger.getInstance();
-            logger.error("initTagIfAbsent " + tagName + " : " + e.getMessage());
-        }
-    }
-
-    public static void setOrCreateTag(IRPModelElement el, String tagName, String value) {
-        try {
-            IRPTag tag = el.getTag(tagName);
-            if (tag == null) {
-                tag = (IRPTag) el.addNewAggr("Tag", tagName);
-            }
-            if (tag != null) tag.setValue(value);
-        } catch (Exception e) {
-            Logger logger = Logger.getInstance();
-            logger.error("setOrCreateTag " + tagName + " : " + e.getMessage());
-        }
-    }
 }

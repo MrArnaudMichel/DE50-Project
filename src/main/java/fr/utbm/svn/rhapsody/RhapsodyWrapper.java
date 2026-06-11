@@ -1,6 +1,7 @@
-package fr.utbm.RhapsodySVN.rhapsody;
+package fr.utbm.svn.rhapsody;
 
 import com.telelogic.rhapsody.core.*;
+import fr.utbm.svn.Logger;
 
 public class RhapsodyWrapper {
 
@@ -14,13 +15,42 @@ public class RhapsodyWrapper {
         return false;
     }
 
-    public static String getTagValue(IRPDependency arc, String tagName, String defaultVal) {
+    public static void initTagIfAbsent(IRPModelElement el, String tagName, String defaultValue) {
         try {
-            IRPTag tag = arc.getTag(tagName);
-            if (tag == null) return defaultVal;
-            String val = tag.getValue();
-            return (val == null || val.isEmpty()) ? defaultVal : val;
-        } catch (Exception e) { return defaultVal; }
+            IRPTag tag = el.getTag(tagName);
+            if (tag == null) {
+                tag = (IRPTag) el.addNewAggr("Tag", tagName);
+                tag.setValue(defaultValue);
+
+            }
+        } catch (Exception e) {
+            Logger logger = Logger.getInstance();
+            logger.error("initTagIfAbsent " + tagName + " : " + e.getMessage());
+        }
     }
 
+    public static void initTagIfAbsent(IRPModelElement el, String tagName) {
+        try {
+            IRPTag tag = el.getTag(tagName);
+            if (tag == null) {
+                el.addNewAggr("Tag", tagName);
+            }
+        } catch (Exception e) {
+            Logger logger = Logger.getInstance();
+            logger.error("initTagIfAbsent " + tagName + " : " + e.getMessage());
+        }
+    }
+
+    public static void setOrCreateTag(IRPModelElement el, String tagName, String value) {
+        try {
+            IRPTag tag = el.getTag(tagName);
+            if (tag == null) {
+                tag = (IRPTag) el.addNewAggr("Tag", tagName);
+            }
+            if (tag != null) tag.setValue(value);
+        } catch (Exception e) {
+            Logger logger = Logger.getInstance();
+            logger.error("setOrCreateTag " + tagName + " : " + e.getMessage());
+        }
+    }
 }

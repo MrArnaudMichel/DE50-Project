@@ -8,9 +8,9 @@
 
     <toc-element topic="01-introduction.md"/>
     <toc-element topic="02-description-generale.md"/>
-    <toc-element topic="besoins-fonctionnels.md"/>
-    <toc-element topic="structures-donnees.md"/>
-    <toc-element topic="interfaces-externes.md"/>
+    <toc-element topic="03-besoins-fonctionnels.md"/>
+    <toc-element topic="04-structures-donnees.md"/>
+    <toc-element topic="05-interfaces-externes.md"/>
     <toc-element topic="performance.md"/>
     <toc-element topic="contraintes-developpement.md"/>
     <toc-element topic="references.md"/>

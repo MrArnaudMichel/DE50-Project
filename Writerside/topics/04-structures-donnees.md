@@ -1,6 +1,7 @@
 # 4. Spécification des structures de données
 
-Le plugin RhapsodySVN ne possède pas de base de données propre. Toutes les données sont stockées directement dans le **modèle Rhapsody** sous forme de stéréotypes, de tags et de types énumérés. Cette section décrit les entités manipulées, leurs relations et leurs attributs.
+>Le plugin RhapsodySVN ne possède pas de base de données propre. Toutes les données sont stockées directement dans le **modèle Rhapsody** sous forme de stéréotypes, de tags et de types énumérés. Cette section décrit les entités manipulées, leurs relations et leurs attributs.
+{style=warning}
 
 ## Modèle d'entités
 
@@ -27,14 +28,14 @@ Le plugin RhapsodySVN ne possède pas de base de données propre. Toutes les don
 
 ## Entité : «stakeholder»
 
-| Propriété | Valeur |
-|---|---|
-| **Nom** | `stakeholder` |
+| Propriété | Valeur                                                                                                                                            |
+|---|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Nom** | `stakeholder`                                                                                                                                     |
 | **But** | Représente une partie prenante du système (acteur humain ou organisation) dont on souhaite évaluer l'importance relative dans le réseau de valeur |
-| **Métaclasse Rhapsody** | `Actor` (`IRPActor`) |
-| **Profil** | `SVNProfile` |
-| **Tag** | `importanceScore` (Float, entre 0 et 1) — score d'importance calculé par UC4 |
-| **Relations** | Peut être relié à d'autres `«stakeholder»` ou à un `«system»` via des arcs `«valuearc»` |
+| **Métaclasse Rhapsody** | `Actor` (`IRPActor`)                                                                                                                              |
+| **Profil** | `SVNProfile`                                                                                                                                      |
+| **Tag** | `importanceScore` (Float, entre 0 et 1) — score d'importance calculé par [UC4](03-besoins-fonctionnels.md#uc4-calculer-l-importance-des-stakeholders)                                          |
+| **Relations** | Peut être relié à d'autres `«stakeholder»` ou à un `«system»` via des arcs `«valuearc»`                                                           |
 
 ---
 
@@ -113,13 +114,16 @@ Le plugin RhapsodySVN ne possède pas de base de données propre. Toutes les don
 
 ## Relations entre entités
 
-```
-  «stakeholder» ──«valuearc»──► «system»
-       ▲                           │
-       │         «valuearc»        │
-       └───────────────────────────┘
+```mermaid
+flowchart TB
+    SH1["«stakeholder»<br/>Stakeholder A"]
+    SH2["«stakeholder»<br/>Stakeholder B"]
+    SY["«system»<br/>System"]
 
-  «stakeholder» ──«valuearc»──► «stakeholder»
+    SH1 -->|"«valuearc»"| SY
+    SY  -->|"«valuearc»"| SH2
+    SH2 -->|"«valuearc»"| SH1
+    SH2 -->|"«valuearc»"| SY
 ```
 
 Un réseau SVN typique comprend :

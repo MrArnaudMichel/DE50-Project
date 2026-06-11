@@ -2,7 +2,7 @@
   <configuration default="false" name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="ALTERNATIVE_JRE_PATH" value="corretto-1.8" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <option name="MAIN_CLASS_NAME" value="fr.utbm.RhapsodySVN.Main" />
+    <option name="MAIN_CLASS_NAME" value="fr.utbm.svn.Main" />
     <module name="RhapsodySVN" />
     <option name="PROGRAM_PARAMETERS" value="debug" />
     <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;$MODULE_DIR$/lib/64Bit&quot;" />

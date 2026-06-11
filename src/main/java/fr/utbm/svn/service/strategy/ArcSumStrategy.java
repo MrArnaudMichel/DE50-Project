@@ -2,7 +2,6 @@ package fr.utbm.svn.service.strategy;
 
 import com.telelogic.rhapsody.core.IRPModelElement;
 import fr.utbm.svn.Logger;
-import fr.utbm.svn.model.SVNSystem;
 import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
 import fr.utbm.svn.service.ICalculationStrategy;
@@ -15,7 +14,7 @@ public class ArcSumStrategy implements ICalculationStrategy {
     private final Logger logger = Logger.getInstance();
 
     @Override
-    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
+    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs) {
         double total = 0;
 
         for (Stakeholder sh : stakeholders) {

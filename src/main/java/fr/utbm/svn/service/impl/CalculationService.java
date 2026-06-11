@@ -38,11 +38,11 @@ public class CalculationService implements ICalculationService {
 
         if (system != null) {
             logger.log("SVNSystem : " + system.getName());
-            scores = new ValueLoopStrategy().computeScores(stakeholders, valueArcs, system);
+            scores = new ValueLoopStrategy(system).computeScores(stakeholders, valueArcs);
         }
 
         if (scores.isEmpty()) {
-            scores = fallBackStrategy.computeScores(stakeholders, valueArcs, system);
+            scores = fallBackStrategy.computeScores(stakeholders, valueArcs);
         }
 
         scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);

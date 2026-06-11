@@ -13,20 +13,16 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
     @Override
     public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
-
-        // Construit le graphe orienté : nom → liste de (voisin, arc)
         Map<String, List<ValueArc>> graph = this.buildGraph(valueArcs);
 
-        // Trouve tous les cycles passant par le système
         List<ValueLoop> loops = findValueLoops(svnSystem.getName(), graph);
-        logger.log("Value loops trouvés : " + loops.size());
+        logger.log("Value loops found : " + loops.size());
 
         if (loops.isEmpty()) {
-            logger.log("Aucun loop — calcul simplifié par somme des arcs.");
+            logger.log("No loop — calculation failed.");
             return Collections.emptyMap();
         }
 
-        // Calcule le score de chaque loop (produit des arcs)
         double totalLoopScore = 0;
         for (ValueLoop loop : loops) {
             loop.setScore(1);
@@ -35,7 +31,6 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             logger.log("Loop " + loop.getNodes() + " score=" + loop.getScore());
         }
 
-        // Calcule l'importance de chaque stakeholder (Équation 2)
         for (Stakeholder sh : stakeholders) {
             double sumLoopsContaining = 0;
             for (ValueLoop loop : loops) {
@@ -56,7 +51,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
         }
 
         svnSystem.setTotalLoopScore(totalLoopScore);
-        logger.log("Calcul terminé. " + stakeholders.size() + " acteurs mis à jour.");
+        logger.log("Calcul finished. " + stakeholders.size() + " actors updated.");
 
         return scores;
     }
@@ -93,7 +88,6 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             for (ValueArc edge : neighbors) {
                 String next = edge.getDependsOn().getName();
 
-                // Boucle fermée : on est revenu au système
                 if (next.equals(systemName) && !state.getPath().isEmpty()) {
                     List<String> loopNode = new ArrayList<>(state.getPath());
                     loopNode.add(systemName);
@@ -104,7 +98,6 @@ public class ValueLoopStrategy implements ICalculationStrategy {
                     continue;
                 }
 
-                // Évite les cycles infinis
                 if (state.getVisited().contains(next)) continue;
 
                 Set<String> newVisited = new HashSet<>(state.getVisited());

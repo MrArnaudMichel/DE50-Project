@@ -22,7 +22,7 @@ public class UpdateElementService {
             logger.log("Label arc '" + arc.getName() + "' → " + label);
             return;
         } catch (Exception e) {
-            logger.error("setDisplayName échoué : " + e.getMessage());
+            logger.error("setDisplayName failed : " + e.getMessage());
         }
 
         try {
@@ -49,7 +49,7 @@ public class UpdateElementService {
                 }
             }
         } catch (Exception e) {
-            logger.error("Mise à jour graphique échouée : " + e.getMessage());
+            logger.error("Graphic update failed : " + e.getMessage());
         }
     }
 

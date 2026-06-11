@@ -39,7 +39,7 @@ public class ArcSumStrategy implements ICalculationStrategy {
         for (Stakeholder sh : stakeholders) {
             double importance = (total > 0) ? sh.getScore() / total : 0;
             scores.put(sh, importance);
-            logger.log("Importance (simplifié) " + sh.getName()
+            logger.log("Importance " + sh.getName()
                     + " = " + String.format("%.4f", importance));
         }
 

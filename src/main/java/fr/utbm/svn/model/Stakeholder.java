@@ -30,6 +30,7 @@ public class Stakeholder {
     // FROM IRPActor
 
     public String getName() { return actor.getName(); }
+    public String getGUID() { return actor.getGUID(); }
     public IRPTag getTag(String s) { return actor.getTag(s); }
     public void setDisplayName(String displayName) {
         actor.setDisplayName(displayName);

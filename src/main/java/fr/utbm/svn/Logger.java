@@ -35,9 +35,7 @@ public class Logger {
     }
 
     public void error(String msg) {
-        if (DEBUG) {
-            System.err.println(ANSI_RED + "[SVN][ERROR] " + msg + ANSI_RESET);
-        }
+        System.err.println(ANSI_RED + "[SVN][ERROR] " + msg + ANSI_RESET);
     }
 
     public void setDebug(Boolean isDebug) {

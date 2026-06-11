@@ -15,7 +15,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
     public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
         Map<String, List<ValueArc>> graph = this.buildGraph(valueArcs);
 
-        List<ValueLoop> loops = findValueLoops(svnSystem.getName(), graph);
+        List<ValueLoop> loops = findValueLoops(svnSystem.getGUID(), graph);
         logger.log("Value loops found : " + loops.size());
 
         if (loops.isEmpty()) {
@@ -34,13 +34,13 @@ public class ValueLoopStrategy implements ICalculationStrategy {
         for (Stakeholder sh : stakeholders) {
             double sumLoopsContaining = 0;
             for (ValueLoop loop : loops) {
-                if (loop.getNodes().contains(sh.getName())) {
+                if (loop.getNodes().contains(sh.getGUID())) {
                     sumLoopsContaining += loop.getScore();
                 }
             }
             double importance = (totalLoopScore > 0) ? sumLoopsContaining / totalLoopScore : 0;
             sh.setScore(importance);
-            logger.log("Importance " + sh.getName()
+            logger.log("Importance " + sh.getGUID()
                     + " = " + String.format("%.4f", importance));
         }
 
@@ -64,7 +64,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
                 IRPModelElement dependsOn = arc.getDependsOn();
                 if (dependent == null || dependsOn == null) continue;
 
-                graph.computeIfAbsent(dependent.getName(), k -> new ArrayList<>())
+                graph.computeIfAbsent(dependent.getGUID(), k -> new ArrayList<>())
                         .add(arc);
 
             } catch (Exception ignored) {}
@@ -86,7 +86,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
             List<ValueArc> neighbors = graph.getOrDefault(state.getCurrent(), Collections.emptyList());
             for (ValueArc edge : neighbors) {
-                String next = edge.getDependsOn().getName();
+                String next = edge.getDependsOn().getGUID();
 
                 if (next.equals(systemName) && !state.getPath().isEmpty()) {
                     List<String> loopNode = new ArrayList<>(state.getPath());

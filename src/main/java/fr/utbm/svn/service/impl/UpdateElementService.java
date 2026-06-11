@@ -44,7 +44,7 @@ public class UpdateElementService {
 
                     if (arc.equals(graphElem.getModelObject())) {
                         graphElem.setGraphicalPropertyOfText("Keyword", "Text", label);
-                        logger.error("Label arc via GraphElement → " + label);
+                        logger.log("Label arc via GraphElement → " + label);
                     }
                 }
             }

@@ -27,4 +27,5 @@ public class SVNSystem {
     // FROM IRPClass
 
     public String getName() { return system.getName(); }
+    public String getGUID() { return system.getGUID(); }
 }

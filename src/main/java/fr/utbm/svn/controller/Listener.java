@@ -1,10 +1,10 @@
-package fr.utbm.svn.model;
+package fr.utbm.svn.controller;
 
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.constants.SVNConstants;
+import fr.utbm.svn.model.ValueArc;
 import fr.utbm.svn.service.ICalculationService;
-import fr.utbm.svn.service.impl.CalculationService;
 import fr.utbm.svn.service.impl.UpdateElementService;
 
 public class Listener extends RPApplicationListener {
@@ -14,12 +14,11 @@ public class Listener extends RPApplicationListener {
     private final ICalculationService calculationService;
     private IRPDiagram diagram;
 
-    public Listener(IRPApplication app, IRPProject project){
+    public Listener(IRPApplication app, IRPProject project, ICalculationService calculationService){
         this.app = app;
         this.project = project;
-        this.calculationService = new CalculationService();
-        this.diagram = null;
-        this.connect(app);
+        this.calculationService = calculationService;
+        this.diagram = app.getDiagramOfSelectedElement();
     }
 
     @Override

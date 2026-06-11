@@ -1,7 +1,5 @@
 package fr.utbm.svn.service.strategy;
 
-
-import com.telelogic.rhapsody.core.IRPActor;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.SVNSystem;
@@ -9,14 +7,15 @@ import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
 import fr.utbm.svn.service.ICalculationStrategy;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ArcSumStrategy implements ICalculationStrategy {
-    private Logger logger = Logger.getInstance();
+    private final Logger logger = Logger.getInstance();
 
     @Override
-    public Map<IRPActor, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
+    public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs, SVNSystem svnSystem) {
         double total = 0;
 
         for (Stakeholder sh : stakeholders) {
@@ -35,11 +34,15 @@ public class ArcSumStrategy implements ICalculationStrategy {
             total += score;
         }
 
+        Map<Stakeholder, Double> scores = new HashMap<>();
+
         for (Stakeholder sh : stakeholders) {
             double importance = (total > 0) ? sh.getScore() / total : 0;
-            updateImportanceTag(sh, importance);
+            scores.put(sh, importance);
             logger.log("Importance (simplifié) " + sh.getName()
                     + " = " + String.format("%.4f", importance));
         }
+
+        return scores;
     }
 }

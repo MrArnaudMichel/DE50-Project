@@ -2,9 +2,9 @@ package fr.utbm.svn.service.impl;
 
 import com.telelogic.rhapsody.core.*;
 
-import fr.utbm.RhapsodySVN.constants.SVNConstants;
-import fr.utbm.RhapsodySVN.rhapsody.RhapsodyWrapper;
+import fr.utbm.svn.rhapsody.RhapsodyWrapper;
 import fr.utbm.svn.Logger;
+import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.*;
 import fr.utbm.svn.service.ICalculationService;
 import fr.utbm.svn.service.ICalculationStrategy;

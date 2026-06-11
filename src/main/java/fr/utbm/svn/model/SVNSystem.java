@@ -1,6 +1,7 @@
 package fr.utbm.svn.model;
 
 import com.telelogic.rhapsody.core.*;
+import fr.utbm.svn.rhapsody.RhapsodyWrapper;
 import fr.utbm.svn.constants.SVNConstants;
 
 public class SVNSystem {
@@ -10,7 +11,7 @@ public class SVNSystem {
 
     public SVNSystem(IRPClass system) {
         this.system = system;
-        SVNConstants.setOrCreateTag(system, SVNConstants.TAG_TOTAL_LOOP_SCORE, "?");
+        RhapsodyWrapper.setOrCreateTag(system, SVNConstants.TAG_TOTAL_LOOP_SCORE, "?");
     }
 
     public IRPClass getSystem() {

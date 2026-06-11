@@ -3,11 +3,9 @@ package fr.utbm.svn.model;
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.svn.constants.SVNConstants;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static fr.utbm.svn.constants.SVNConstants.initTagIfAbsent;
+import static fr.utbm.svn.rhapsody.RhapsodyWrapper.initTagIfAbsent;
 import static fr.utbm.svn.service.strategy.ArcScoreStrategy.getArcScore;
 
 

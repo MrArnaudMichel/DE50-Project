@@ -7,7 +7,7 @@ import fr.utbm.svn.model.SVNSystem;
 import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
 
-import static fr.utbm.svn.constants.SVNConstants.setOrCreateTag;
+import static fr.utbm.svn.rhapsody.RhapsodyWrapper.setOrCreateTag;
 
 public class UpdateElementService {
 

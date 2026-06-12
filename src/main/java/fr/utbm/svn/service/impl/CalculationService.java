@@ -19,9 +19,8 @@ public class CalculationService implements ICalculationService {
 
 
     @Override
-    public void calculateImportance(IRPProject project, IRPApplication app) {
+    public void calculateImportance(IRPProject project, IRPDiagram diagram) {
         ICalculationStrategy fallBackStrategy = new ArcSumStrategy();
-        IRPDiagram diagram = app.getDiagramOfSelectedElement();
 
         if (diagram == null) {
             logger.error("calculateImportance: getDiagramOfSelectedElement() returned null - " +

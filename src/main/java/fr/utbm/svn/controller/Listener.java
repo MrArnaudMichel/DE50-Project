@@ -4,8 +4,12 @@ import com.telelogic.rhapsody.core.*;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.ValueArc;
+import fr.utbm.svn.rhapsody.RhapsodyWrapper;
 import fr.utbm.svn.service.ICalculationService;
 import fr.utbm.svn.rhapsody.RhapsodyElementUpdater;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Listener extends RPApplicationListener {
     private final IRPApplication app;
@@ -19,6 +23,39 @@ public class Listener extends RPApplicationListener {
         this.calculationService = calculationService;
     }
 
+    private IRPDiagram getSVNDiagrams(IRPModelElement element) {
+        IRPDiagram diagram = null;
+        List<IRPDiagram> svnDiagrams = new ArrayList<>();
+        IRPCollection allDiags = project.getNestedElementsByMetaClass("ObjectModelDiagram", 1);
+
+        for (int i = 1; i <= allDiags.getCount(); i++) {
+            Object item = allDiags.getItem(i);
+            if (item instanceof IRPDiagram) {
+                IRPModelElement diagElement = (IRPModelElement) item;
+                if (RhapsodyWrapper.hasStereotype(diagElement, SVNConstants.STEREOTYPE_DIAGRAM)) {
+                    svnDiagrams.add((IRPDiagram) diagElement);
+                }
+            }
+        }
+
+        for (IRPDiagram diag : svnDiagrams) {
+            IRPCollection graphElems = diag.getGraphicalElements();
+
+            for (int j = 1; j <= graphElems.getCount(); j++) {
+                Object ge = graphElems.getItem(j);
+                if (!(ge instanceof IRPGraphElement)) continue;
+
+                IRPGraphElement graphElem = (IRPGraphElement) ge;
+
+                if (element.equals(graphElem.getModelObject())) {
+                    diagram = diag;
+                }
+            }
+        }
+
+        return diagram;
+    }
+
     @Override
     public boolean afterAddElement(IRPModelElement irpModelElement) {
         if (!ValueArc.isValueArc(irpModelElement)) {
@@ -27,12 +64,13 @@ public class Listener extends RPApplicationListener {
         ValueArc arc = new ValueArc((IRPDependency) irpModelElement);;
         logger.log("New value arc detected");
 
+        IRPDiagram diagram = getSVNDiagrams(irpModelElement);
 
         try {
             // Stop notifications to avoid initializations of onElementsChanged
             project.setNotifyPluginOnElementsChanged(0);
             RhapsodyElementUpdater.updateArcLabel(arc, project);
-            calculationService.calculateImportance(this.project, app);
+            calculationService.calculateImportance(this.project, diagram);
 
         } catch (Exception e) {
             logger.error("Error in afterAddElement: " + e.getMessage());
@@ -64,6 +102,7 @@ public class Listener extends RPApplicationListener {
 
                 if (element instanceof IRPTag) {
                     String tagName = element.getName();
+                    IRPDiagram diagram = this.getSVNDiagrams(element.getOwner());
                     if (!SVNConstants.TAG_BENEFIT_RANKING.equals(tagName)
                             && !SVNConstants.TAG_SUPPLY_IMPORTANCE.equals(tagName)) {
                         continue;
@@ -76,7 +115,7 @@ public class Listener extends RPApplicationListener {
                             project.setNotifyPluginOnElementsChanged(0);
 
                             RhapsodyElementUpdater.updateArcLabel(new ValueArc((IRPDependency) owner), project);
-                            calculationService.calculateImportance(this.project, app);
+                            calculationService.calculateImportance(this.project, diagram);
 
                         } finally {
                             project.setNotifyPluginOnElementsChanged(1);
@@ -90,9 +129,10 @@ public class Listener extends RPApplicationListener {
             }
 
             if (elementHasBeenDeleted) {
+                IRPDiagram diagram = app.getDiagramOfSelectedElement();
                 try {
                     project.setNotifyPluginOnElementsChanged(0);
-                    calculationService.calculateImportance(this.project, app);
+                    calculationService.calculateImportance(this.project, diagram);
 
                 } finally {
                     project.setNotifyPluginOnElementsChanged(1);

@@ -19,26 +19,53 @@ public final class ValueArcEditor {
     private ValueArcEditor() {}
 
     /**
+     * Outcome of the edit dialog.
+     */
+    public enum Choice {
+        /** User picked OK with the dropdown selections. */
+        APPLY,
+        /** User cancelled - nothing should change. */
+        CANCEL,
+        /** User asked to open the standard Rhapsody Features dialog instead. */
+        OPEN_FEATURES
+    }
+
+    /**
      * Result of the edit dialog.
      */
     public static final class Result {
+        public final Choice choice;
         public final String benefitRanking;
         public final String supplyImportance;
 
-        public Result(String benefitRanking, String supplyImportance) {
+        private Result(Choice choice, String benefitRanking, String supplyImportance) {
+            this.choice = choice;
             this.benefitRanking = benefitRanking;
             this.supplyImportance = supplyImportance;
+        }
+
+        static Result apply(String benefitRanking, String supplyImportance) {
+            return new Result(Choice.APPLY, benefitRanking, supplyImportance);
+        }
+
+        static Result cancel() {
+            return new Result(Choice.CANCEL, null, null);
+        }
+
+        static Result openFeatures() {
+            return new Result(Choice.OPEN_FEATURES, null, null);
         }
     }
 
     /**
      * Shows a modal dialog with two dropdowns, pre-selected to the arc's
      * current tag values, allowing the user to pick new values for
-     * BenefitRanking and SupplyImportance.
+     * BenefitRanking and SupplyImportance, cancel, or fall back to the
+     * standard Rhapsody Features dialog for this element.
      *
      * @param arc the value arc whose current tag values should be used to
      *            pre-populate the dropdowns
-     * @return the selected values, or {@code null} if the user cancelled
+     * @return the user's choice, including selected values when applicable
      */
     public static Result showEditDialog(ValueArc arc) {
         String currentBenefit = arc.getTagValue(SVNConstants.TAG_BENEFIT_RANKING, SVNConstants.LITERALS_BENEFIT[0]);
@@ -83,6 +110,14 @@ public final class ValueArcEditor {
             // keep default title
         }
 
+        // Three explicit buttons: OK, Cancel, and an escape hatch to the
+        // standard Rhapsody Features dialog for users who need to edit
+        // something this popup doesn't cover (description, other tags...).
+        String okOption = "OK";
+        String cancelOption = "Cancel";
+        String featuresOption = "Open Features...";
+        Object[] options = {okOption, cancelOption, featuresOption};
+
         // Build our own JOptionPane + JDialog instead of using the static
         // JOptionPane.showXxxDialog(null, ...) helpers. With a null owner,
         // the implicit shared frame Java creates has no real presence in
@@ -92,7 +127,14 @@ public final class ValueArcEditor {
         //
         // Using an explicit, always-on-top JDialog and forcing it to the
         // front after becoming visible avoids that.
-        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        JOptionPane optionPane = new JOptionPane(
+                panel,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                null,
+                options,
+                okOption
+        );
         JDialog dialog = optionPane.createDialog(title);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setAlwaysOnTop(true);
@@ -114,12 +156,17 @@ public final class ValueArcEditor {
         Object value = optionPane.getValue();
         dialog.dispose();
 
-        if (value == null || !(value instanceof Integer) || (Integer) value != JOptionPane.OK_OPTION) {
-            return null;
+        if (okOption.equals(value)) {
+            String selectedBenefit = (String) benefitCombo.getSelectedItem();
+            String selectedSupply = (String) supplyCombo.getSelectedItem();
+            return Result.apply(selectedBenefit, selectedSupply);
         }
 
-        String selectedBenefit = (String) benefitCombo.getSelectedItem();
-        String selectedSupply = (String) supplyCombo.getSelectedItem();
-        return new Result(selectedBenefit, selectedSupply);
+        if (featuresOption.equals(value)) {
+            return Result.openFeatures();
+        }
+
+        // Cancel, window closed (X button / Esc), or any other value.
+        return Result.cancel();
     }
 }

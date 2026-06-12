@@ -58,25 +58,20 @@ public class UpdateElementService {
     }
 
     public static void updateStakeholderImportance(Stakeholder sh, double score) {
-        IRPTag tag = sh.getTag(SVNConstants.TAG_IMPORTANCE_SCORE);
-        if (tag == null) {
-            try { tag = (IRPTag) sh.addNewAggr("Tag", SVNConstants.TAG_IMPORTANCE_SCORE); }
-            catch (Exception ignored) {}
-        }
-
-        if (tag != null) {
-            tag.setValue(String.format("%.4f", score));
+        final Logger logger = Logger.getInstance();
+        try {
+            setOrCreateTag(sh.getActor(), SVNConstants.TAG_IMPORTANCE_SCORE,
+                    String.format("%.4f", score));
 
             String currentName = sh.getName();
             String baseName = currentName;
-
-            if (currentName.contains(" : ")) {
-                baseName = currentName.split(" : ")[0].trim();
-            } else if (currentName.contains(" _ ")) {
-                baseName = currentName.split(" _ ")[0].trim();
-            }
+            if (currentName.contains(" : "))      baseName = currentName.split(" : ")[0].trim();
+            else if (currentName.contains(" _ ")) baseName = currentName.split(" _ ")[0].trim();
 
             sh.setDisplayName(baseName + " : " + String.format("%.4f", score));
+        } catch (Exception e) {
+            logger.error("updateStakeholderImportance (score="
+                    + String.format("%.4f", score) + ") : " + e.getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
 package fr.utbm.svn.service.strategy;
 
 import com.telelogic.rhapsody.core.IRPModelElement;
+import com.telelogic.rhapsody.core.IRPPort;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.*;
 import fr.utbm.svn.service.ICalculationStrategy;
@@ -68,7 +69,9 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             try {
                 IRPModelElement dependent = arc.getDependent();
                 IRPModelElement dependsOn = arc.getDependsOn();
-                if (dependent == null || dependsOn == null) continue;
+                dependsOn = dependsOn instanceof IRPPort ? (dependsOn).getOwner() : dependsOn;
+                dependent = dependent instanceof IRPPort ? (dependent).getOwner() : dependent;
+                if (dependsOn == null || dependent == null) continue;
 
                 graph.computeIfAbsent(dependent.getGUID(), k -> new ArrayList<>())
                         .add(arc);
@@ -92,7 +95,9 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
             List<ValueArc> neighbors = graph.getOrDefault(state.getCurrent(), Collections.emptyList());
             for (ValueArc edge : neighbors) {
-                String next = edge.getDependsOn().getGUID();
+                IRPModelElement dependent = edge.getDependent();
+                dependent = dependent instanceof IRPPort ? (dependent).getOwner() : dependent;
+                String next = dependent.getGUID();
 
                 if (next.equals(systemName) && !state.getPath().isEmpty()) {
                     List<String> loopNode = new ArrayList<>(state.getPath());

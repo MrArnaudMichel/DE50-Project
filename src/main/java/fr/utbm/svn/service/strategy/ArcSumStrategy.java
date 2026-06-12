@@ -1,6 +1,7 @@
 package fr.utbm.svn.service.strategy;
 
 import com.telelogic.rhapsody.core.IRPModelElement;
+import com.telelogic.rhapsody.core.IRPPort;
 import fr.utbm.svn.Logger;
 import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
@@ -23,8 +24,9 @@ public class ArcSumStrategy implements ICalculationStrategy {
                 try {
                     IRPModelElement dependent = arc.getDependent();
                     IRPModelElement dependsOn = arc.getDependsOn();
-                    if ((dependent != null && sh.getGUID().equals(dependent.getGUID()))
-                            || (dependsOn != null && sh.getGUID().equals(dependsOn.getGUID()))) {
+                    IRPModelElement out = dependsOn instanceof IRPPort ? (dependsOn).getOwner() : dependsOn;
+                    IRPModelElement in = dependent instanceof IRPPort ? (dependent).getOwner() : dependent;
+                    if ((in != null && sh.getGUID().equals(in.getGUID())) || (out != null && sh.getGUID().equals(out.getGUID()))) {
                         score += arc.getScore();
                     }
                 } catch (Exception ignored) {}

@@ -19,8 +19,9 @@ public class CalculationService implements ICalculationService {
 
 
     @Override
-    public void calculateImportance(IRPDiagram diagram) {
+    public void calculateImportance(IRPProject project, IRPApplication app) {
         ICalculationStrategy fallBackStrategy = new ArcSumStrategy();
+        IRPDiagram diagram = app.getDiagramOfSelectedElement();
 
         logger.log("Starting importance calculation.");
         List<Stakeholder> stakeholders = findStakeholders(diagram);

@@ -12,13 +12,11 @@ public class Listener extends RPApplicationListener {
     private final IRPProject project;
     private final Logger logger = Logger.getInstance();
     private final ICalculationService calculationService;
-    private IRPDiagram diagram;
 
     public Listener(IRPApplication app, IRPProject project, ICalculationService calculationService){
         this.app = app;
         this.project = project;
         this.calculationService = calculationService;
-        this.diagram = app.getDiagramOfSelectedElement();
     }
 
     @Override
@@ -34,7 +32,7 @@ public class Listener extends RPApplicationListener {
             // Stop notifications to avoid initializations of onElementsChanged
             project.setNotifyPluginOnElementsChanged(0);
             RhapsodyElementUpdater.updateArcLabel(arc, project);
-            calculationService.calculateImportance(this.diagram);
+            calculationService.calculateImportance(this.project, app);
 
         } catch (Exception e) {
             logger.error("Error in afterAddElement: " + e.getMessage());
@@ -78,7 +76,7 @@ public class Listener extends RPApplicationListener {
                             project.setNotifyPluginOnElementsChanged(0);
 
                             RhapsodyElementUpdater.updateArcLabel(new ValueArc((IRPDependency) owner), project);
-                            calculationService.calculateImportance(this.diagram);
+                            calculationService.calculateImportance(this.project, app);
 
                         } finally {
                             project.setNotifyPluginOnElementsChanged(1);
@@ -94,7 +92,7 @@ public class Listener extends RPApplicationListener {
             if (elementHasBeenDeleted) {
                 try {
                     project.setNotifyPluginOnElementsChanged(0);
-                    calculationService.calculateImportance(this.diagram);
+                    calculationService.calculateImportance(this.project, app);
 
                 } finally {
                     project.setNotifyPluginOnElementsChanged(1);
@@ -124,10 +122,7 @@ public class Listener extends RPApplicationListener {
     }
 
     @Override
-    public boolean onDiagramOpen(IRPDiagram irpDiagram) {
-        this.diagram = irpDiagram;
-        return false;
-    }
+    public boolean onDiagramOpen(IRPDiagram irpDiagram) { return false; }
 
     @Override
     public boolean onDoubleClick(IRPModelElement irpModelElement) {
@@ -135,8 +130,5 @@ public class Listener extends RPApplicationListener {
     }
 
     @Override
-    public boolean onFeaturesOpen(IRPModelElement irpModelElement) {
-        if (diagram == null) this.diagram = app.getDiagramOfSelectedElement();
-        return false;
-    }
+    public boolean onFeaturesOpen(IRPModelElement irpModelElement) { return false; }
 }

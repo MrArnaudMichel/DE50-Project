@@ -23,6 +23,12 @@ public class CalculationService implements ICalculationService {
         ICalculationStrategy fallBackStrategy = new ArcSumStrategy();
         IRPDiagram diagram = app.getDiagramOfSelectedElement();
 
+        if (diagram == null) {
+            logger.error("calculateImportance: getDiagramOfSelectedElement() returned null - " +
+                    "no element selected, or selection lost. Calculation skipped.");
+            return;
+        }
+
         logger.log("Starting importance calculation.");
         List<Stakeholder> stakeholders = findStakeholders(diagram);
         if (stakeholders.isEmpty()) {
@@ -67,7 +73,7 @@ public class CalculationService implements ICalculationService {
         }
         return result;
     }
-    
+
     private List<ValueArc> findValueArcs(IRPDiagram diagram) {
         List<ValueArc> result = new ArrayList<>();
         IRPCollection descendants = diagram.getElementsInDiagram();

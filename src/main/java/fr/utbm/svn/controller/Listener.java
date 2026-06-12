@@ -56,6 +56,7 @@ public class Listener extends RPApplicationListener {
             project.setNotifyPluginOnElementsChanged(0);
             RhapsodyElementUpdater.updateArcLabel(arc, project);
             calculationService.calculateImportance(this.project, app);
+          //  app.refreshAllViews();
 
         } catch (Exception e) {
             logger.error("Error in afterAddElement: " + e.getMessage());
@@ -102,6 +103,7 @@ public class Listener extends RPApplicationListener {
 
                             RhapsodyElementUpdater.updateArcLabel(new ValueArc((IRPDependency) owner), project);
                             calculationService.calculateImportance(this.project, app);
+                          //  app.refreshAllViews();
 
                         } finally {
                             project.setNotifyPluginOnElementsChanged(1);
@@ -118,6 +120,7 @@ public class Listener extends RPApplicationListener {
                 try {
                     project.setNotifyPluginOnElementsChanged(0);
                     calculationService.calculateImportance(this.project, app);
+                   // app.refreshAllViews();
 
                 } finally {
                     project.setNotifyPluginOnElementsChanged(1);
@@ -165,22 +168,7 @@ public class Listener extends RPApplicationListener {
             if (!ValueArc.isValueArc(irpModelElement)) {
                 return false;
             }
-
             final ValueArc arc = new ValueArc((IRPDependency) irpModelElement);
-
-            // IMPORTANT: onDoubleClick is a synchronous native callback -
-            // Rhapsody blocks waiting for this method to return. Showing a
-            // modal Swing dialog here (even via invokeAndWait) blocks the
-            // native event loop and can deadlock/crash the host.
-            //
-            // So: return immediately (suppressing the default Features
-            // dialog), and do the dialog + writes asynchronously afterwards.
-            //
-            // A short delay is also needed: Rhapsody performs its own
-            // post-double-click housekeeping (repaint/focus) right after
-            // this callback returns, and if our dialog appears too quickly
-            // it gets immediately pushed behind / torn down by that. Giving
-            // Rhapsody ~150ms to settle first lets the dialog keep focus.
             java.util.Timer timer = new java.util.Timer("SVNEditArcDialogTimer", true);
             timer.schedule(new java.util.TimerTask() {
                 @Override
@@ -188,12 +176,9 @@ public class Listener extends RPApplicationListener {
                     SwingUtilities.invokeLater(() -> editValueArc(arc));
                 }
             }, 150);
-
             return true;
 
         } catch (Throwable t) {
-            // Never let anything escape across the JNI boundary uncaught -
-            // an uncaught exception/error here can crash the host process.
             logger.error("Error in onDoubleClick (value arc edit): " + t);
             return false;
         }
@@ -208,29 +193,75 @@ public class Listener extends RPApplicationListener {
     private void editValueArc(ValueArc arc) {
         try {
             ValueArcEditor.Result result = ValueArcEditor.showEditDialog(arc);
-            if (result == null) {
-                return; // cancelled
-            }
 
-            RHAPSODY_LOCK.lock();
-            try {
-                project.setNotifyPluginOnElementsChanged(0);
+            switch (result.choice) {
+                case CANCEL:
+                    return;
 
-                // setOrCreateTag already handles the case where the tag is
-                // inherited from a (possibly read-only) profile: it creates a
-                // local override on the instance so the write always succeeds.
-                RhapsodyWrapper.setOrCreateTag(arc.getDependency(), SVNConstants.TAG_BENEFIT_RANKING, result.benefitRanking);
-                RhapsodyWrapper.setOrCreateTag(arc.getDependency(), SVNConstants.TAG_SUPPLY_IMPORTANCE, result.supplyImportance);
+                case OPEN_FEATURES:
+                    RHAPSODY_LOCK.lock();
+                    try {
+                        // Re-select the arc so the Features dialog opens for
+                        // the right element, and bring Rhapsody's window to
+                        // the front - opening a native dialog from this
+                        // background/timer thread context can otherwise
+                        // leave it behind the main window or unfocused.
+                        reselectArc(arc);
+                        arc.getDependency().openFeaturesDialog(1);
+                       // app.bringWindowToTop();
+                    } finally {
+                        RHAPSODY_LOCK.unlock();
+                    }
+                    return;
 
-                RhapsodyElementUpdater.updateArcLabel(arc, project);
-                calculationService.calculateImportance(this.project, app);
+                case APPLY:
+                    RHAPSODY_LOCK.lock();
+                    try {
+                        project.setNotifyPluginOnElementsChanged(0);
 
-            } finally {
-                project.setNotifyPluginOnElementsChanged(1);
-                RHAPSODY_LOCK.unlock();
+                        // setOrCreateTag already handles the case where the tag is
+                        // inherited from a (possibly read-only) profile: it creates a
+                        // local override on the instance so the write always succeeds.
+                        RhapsodyWrapper.setOrCreateTag(arc.getDependency(), SVNConstants.TAG_BENEFIT_RANKING, result.benefitRanking);
+                        RhapsodyWrapper.setOrCreateTag(arc.getDependency(), SVNConstants.TAG_SUPPLY_IMPORTANCE, result.supplyImportance);
+
+                        RhapsodyElementUpdater.updateArcLabel(arc, project);
+
+                        // calculationService.calculateImportance relies on
+                        // app.getDiagramOfSelectedElement(), which reflects
+                        // Rhapsody's CURRENT selection. By the time this
+                        // async block runs (after the modal dialog), the
+                        // selection may have been lost/changed - re-select
+                        // the arc first so the diagram resolves correctly.
+                        reselectArc(arc);
+
+                        calculationService.calculateImportance(this.project, app);
+                      //  app.refreshAllViews();
+
+                    } finally {
+                        project.setNotifyPluginOnElementsChanged(1);
+                        RHAPSODY_LOCK.unlock();
+                    }
+                    return;
             }
         } catch (Throwable t) {
             logger.error("Error while editing value arc: " + t);
+        }
+    }
+
+    /**
+     * Re-selects the given value arc's underlying model element in
+     * Rhapsody, so that {@code IRPApplication.getSelectedElement()} and
+     * {@code getDiagramOfSelectedElement()} resolve to this arc and its
+     * containing diagram again.
+     */
+    private void reselectArc(ValueArc arc) {
+        try {
+            IRPCollection toSelect = app.createNewCollection();
+            toSelect.addItem(arc.getDependency());
+            app.selectModelElements(toSelect);
+        } catch (Exception e) {
+            logger.error("Could not re-select value arc before recalculation: " + e.getMessage());
         }
     }
 

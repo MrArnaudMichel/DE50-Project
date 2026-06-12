@@ -45,13 +45,16 @@ public class RhapsodyWrapper {
     public static void setOrCreateTag(IRPModelElement el, String tagName, String value) {
         try {
             IRPTag tag = el.getTag(tagName);
-            if (tag == null) {
-                tag = (IRPTag) el.addNewAggr("Tag", tagName);
+            // Inherited from a stereotype (e.g. a read-only referenced profile)?
+            // Its owner won't be this element — create a local override so it's writable.
+            boolean inherited = (tag != null)
+                    && !el.getGUID().equals(tag.getOwner().getGUID());
+            if (tag == null || inherited) {
+                tag = (IRPTag) el.addNewAggr("Tag", tagName);   // local override on the instance
             }
             if (tag != null) tag.setValue(value);
         } catch (Exception e) {
-            Logger logger = Logger.getInstance();
-            logger.error("setOrCreateTag " + tagName + " : " + e.getMessage());
+            Logger.getInstance().error("setOrCreateTag " + tagName + " : " + e.getMessage());
         }
     }
 }

@@ -1,0 +1,291 @@
+/* ============================================================
+   RhapsodySVN — DE50 P26 — PDF Style
+   ============================================================ */
+
+body {
+    background: red !important;
+}
+
+/* ------------------------------------------------------------
+   Racine et mise en page globale
+   ------------------------------------------------------------ */
+
+:root {
+    width: 95%;
+    max-width: 95vw;
+    padding: 0 0 0 30px;
+}
+
+body {
+    font-family: "JetBrains Sans", serif;
+}
+
+
+/* ------------------------------------------------------------
+   Typographie
+   ------------------------------------------------------------ */
+
+h1 {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 24px;
+}
+
+h2 {
+    padding-top: 16px;
+    padding-bottom: 8px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 20px;
+}
+
+h3 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 16px;
+}
+
+h4 {
+    padding-top: 4px;
+    padding-bottom: 8px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 14px;
+}
+
+p {
+    padding: 4px 0;
+    border: 0;
+    line-height: 15px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 12px;
+    color: #1b5e20;
+}
+
+a {
+    overflow-wrap: anywhere;
+    width: 100vw;
+}
+
+code {
+    display: inline;
+    word-break: break-word;
+    font-size: 15px;
+    line-height: inherit;
+    font-variant-ligatures: none;
+    font-family: "JetBrains Sans", monospace;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+}
+
+
+/* ------------------------------------------------------------
+   Tableaux
+   ------------------------------------------------------------ */
+
+table {
+    margin-top: 4px;
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: auto;
+    page-break-inside: avoid;
+}
+
+th {
+    border: 1px solid #c4c4c4;
+    padding: 2px 6px;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+td {
+    border: 1px solid #c4c4c4;
+    padding: 2px 6px;
+    text-align: left;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    font-size: 12px;
+}
+
+.header-row {
+    background: #e6e6e6;
+}
+
+
+/* ------------------------------------------------------------
+   Code inline
+   ------------------------------------------------------------ */
+
+.inline-code {
+    border-radius: 4px;
+    display: inline;
+    padding: 2px 1px;
+    font-family: "JetBrains Sans", monospace;
+    background: #e6e6e6;
+}
+
+
+/* ------------------------------------------------------------
+   Callouts (tip, warning)
+   ------------------------------------------------------------ */
+
+.tip {
+    background-color: rgba(25, 25, 28, .05);
+}
+
+.warning {
+    background: rgba(244, 92, 74, .2);
+}
+
+
+/* ------------------------------------------------------------
+   Sauts de page
+   ------------------------------------------------------------ */
+
+/* Chaque topic commence sur une nouvelle page */
+.topic {
+    page-break-before: always;
+}
+
+/* Saut de page manuel : <div class="page-break"></div> dans le markdown */
+.page-break {
+    page-break-after: always;
+    height: 0;
+    display: block;
+}
+
+/* Évite les coupures dans les diagrammes */
+.mermaid {
+    page-break-inside: avoid;
+}
+
+.container {
+    page-break-inside: avoid;
+}
+
+
+/* ------------------------------------------------------------
+   Header et footer (répétés sur chaque page via position: fixed)
+   ------------------------------------------------------------ */
+
+.page-header {
+    position: fixed;
+    top: -10mm;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    color: #666;
+    border-bottom: 0.5px solid #eee;
+    padding-bottom: 5px;
+}
+
+.page-footer {
+    position: fixed;
+    bottom: -10mm;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    border-top: 0.5px solid #eee;
+    padding-top: 5px;
+}
+
+.page-number::after {
+    content: counter(page);
+}
+
+/* Le header et footer n'apparaissent qu'après la page de garde */
+@media print {
+    .cover-page ~ .page-header,
+    .cover-page ~ .page-footer {
+        display: block;
+    }
+}
+
+
+/* ------------------------------------------------------------
+   Page de garde
+   ------------------------------------------------------------ */
+
+.cover-page {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    page-break-after: always;
+    position: relative;
+}
+
+.logo-utbm {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+}
+
+.cover-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    margin-top: 100px;
+}
+
+.cover-subtitle {
+    font-size: 16px;
+    color: #555;
+    max-width: 80%;
+    margin-bottom: 150px;
+}
+
+.cover-authors {
+    font-size: 16px;
+    color: #777;
+    margin-top: auto;
+}
+
+
+/* ------------------------------------------------------------
+   Table des matières
+   ------------------------------------------------------------ */
+
+.entry {
+    display: grid;
+    grid-template-columns: auto max-content;
+    grid-template-areas: "chapter page";
+    align-items: end;
+    gap: 0 .25rem;
+    line-height: 25px;
+}
+
+.toc-link-container {
+    grid-area: chapter;
+    position: relative;
+    overflow: hidden;
+}
+
+.toc-link {
+    text-decoration: none;
+    color: black;
+}
+
+.toc-link-container::after {
+    position: absolute;
+    padding-left: .25ch;
+    content: " . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+    ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+    ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+    text-align: right;
+}
+
+.page {
+    grid-area: page;
+    width: 30px;
+    text-align: right;
+}

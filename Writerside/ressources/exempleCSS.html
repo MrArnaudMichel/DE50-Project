@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+  <style>
+    .article {
+      position: relative;
+      padding-bottom: 24px;
+    }
+
+
+    .bordered-element-rounded {
+      border: 1px solid #c4c4c4;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+
+    .center-text {
+      text-align: center;
+    }
+
+
+    .container {
+      max-width: 100%;
+      overflow: hidden;
+      page-break-inside: avoid;
+      display: block;
+    }
+
+
+    .control {
+      color: #19191c;
+      font-weight: 670;
+    }
+
+
+    .detached {
+      margin-block-start: 0;
+      margin-block-end: 0;
+      margin-bottom: 8px;
+    }
+
+
+    .flex {
+      display: flex;
+    }
+
+
+    .header-row {
+      background: #e6e6e6;
+    }
+
+
+    .image {
+      max-width: 100%;
+      max-height: 90vh;
+      height: auto;
+    }
+
+
+    .image-container {
+      max-width: 100vw;
+    }
+
+
+    .image-size {
+      height: auto;
+    }
+
+
+    .inline-code {
+      border-radius: 4px;
+      display: inline;
+      padding: 2px 1px;
+      font-family: JetBrains Sans,monospace;
+      background: #e6e6e6;
+    }
+
+
+    .list {
+      list-style-type: disc;
+      padding-left: 0;
+      margin-left: 15px;
+    }
+
+
+    .list-item {
+      margin-top: 6px;
+      margin-bottom: 6px;
+      margin-left: 4px;
+    }
+
+
+    .main-title {
+      padding-bottom: 24px;
+      margin-top: 0;
+      font-size: 40px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+
+
+    .mermaid {
+      page-break-inside: avoid;
+    }
+
+    /* Light theme */
+    /** Common */
+    #mermaid .label, #mermaid {font-family:"trebuchet ms",arial,sans-serif; font-size:16px;fill:#333;}#mermaid .error-icon{fill:#552222;}#mermaid .error-text{fill:#552222;stroke:#552222;}#mermaid .edge-thickness-normal{stroke-width:2px;}#mermaid .edge-thickness-thick{stroke-width:3.5px;}#mermaid .edge-pattern-solid{stroke-dasharray:0;}#mermaid .edge-pattern-dashed{stroke-dasharray:3;}#mermaid .edge-pattern-dotted{stroke-dasharray:2;}#mermaid .marker{fill:#333333;stroke:#333333;}#mermaid .marker.cross{stroke:#333333;} #mermaid {max-width: 100%;}
+    /** Flowchart */
+    #mermaid .cluster-label text{fill:#333;}#mermaid .cluster-label span{color:#333;}#mermaid .label text,#mermaid span{fill:#333;color:#333;}#mermaid .node rect,#mermaid .node circle,#mermaid .node ellipse,#mermaid .node polygon,#mermaid .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid .node .label{text-align:center;}#mermaid .node.clickable{cursor:pointer;}#mermaid .arrowheadPath{fill:#333333;}#mermaid .edgePath .path{stroke:#333333;stroke-width:2.0px;}#mermaid .flowchart-link{stroke:#333333;fill:none;}#mermaid .edgeLabel{background-color:#e8e8e8;text-align:center;}#mermaid .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#mermaid .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid .cluster text{fill:#333;}#mermaid .cluster span{color:#333;}#mermaid div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}
+    /** Sequence diagram */
+    #mermaid .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid text.actor>tspan{fill:black;stroke:none;}#mermaid .actor-line{stroke:grey;}#mermaid .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid #arrowhead path{fill:#333;stroke:#333;}#mermaid .sequenceNumber{fill:white;}#mermaid #sequencenumber{fill:#333;}#mermaid #crosshead path{fill:#333;stroke:#333;}#mermaid .messageText{fill:#333;stroke:none;}#mermaid .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid .labelText,#mermaid .labelText>tspan{fill:black;stroke:none;}#mermaid .loopText,#mermaid .loopText>tspan{fill:black;stroke:none;}#mermaid .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#mermaid .note{stroke:#aaaa33;fill:#fff5ad;}#mermaid .noteText,#mermaid .noteText>tspan{fill:black;stroke:none;}#mermaid .activation0{fill:#f4f4f4;stroke:#666;}#mermaid .activation1{fill:#f4f4f4;stroke:#666;}#mermaid .activation2{fill:#f4f4f4;stroke:#666;}#mermaid .actorPopupMenu{position:absolute;}#mermaid .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#mermaid .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid .actor-man circle,#mermaid line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}
+    /** Gantt */
+    #mermaid .exclude-range{fill:#eeeeee;}#mermaid .section{stroke:none;opacity:0.2;}#mermaid .section0{fill:rgba(102, 102, 255, 0.49);}#mermaid .section2{fill:#fff400;}#mermaid .section1,#mermaid .section3{fill:white;opacity:0.2;}#mermaid .sectionTitle0{fill:#333;}#mermaid .sectionTitle1{fill:#333;}#mermaid .sectionTitle2{fill:#333;}#mermaid .sectionTitle3{fill:#333;}#mermaid .sectionTitle{text-anchor:start;}#mermaid .grid .tick{stroke:lightgrey;opacity:0.8;shape-rendering:crispEdges;}#mermaid .grid .tick text{fill:#333;}#mermaid .grid path{stroke-width:0;}#mermaid .today{fill:none;stroke:red;stroke-width:2px;}#mermaid .task{stroke-width:2;}#mermaid .taskText{text-anchor:middle;}#mermaid .taskTextOutsideRight{fill:black;text-anchor:start;}#mermaid .taskTextOutsideLeft{fill:black;text-anchor:end;}#mermaid .task.clickable{cursor:pointer;}#mermaid .taskText.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}#mermaid .taskTextOutsideLeft.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}#mermaid .taskTextOutsideRight.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}#mermaid .taskText0,#mermaid .taskText1,#mermaid .taskText2,#mermaid .taskText3{fill:white;}#mermaid .task0,#mermaid .task1,#mermaid .task2,#mermaid .task3{fill:#8a90dd;stroke:#534fbc;}#mermaid .taskTextOutside0,#mermaid .taskTextOutside2{fill:black;}#mermaid .taskTextOutside1,#mermaid .taskTextOutside3{fill:black;}#mermaid .active0,#mermaid .active1,#mermaid .active2,#mermaid .active3{fill:#bfc7ff;stroke:#534fbc;}#mermaid .activeText0,#mermaid .activeText1,#mermaid .activeText2,#mermaid .activeText3{fill:black!important;}#mermaid .done0,#mermaid .done1,#mermaid .done2,#mermaid .done3{stroke:grey;fill:lightgrey;stroke-width:2;}#mermaid .doneText0,#mermaid .doneText1,#mermaid .doneText2,#mermaid .doneText3{fill:black!important;}#mermaid .crit0,#mermaid .crit1,#mermaid .crit2,#mermaid .crit3{stroke:#ff8888;fill:red;stroke-width:2;}#mermaid .activeCrit0,#mermaid .activeCrit1,#mermaid .activeCrit2,#mermaid .activeCrit3{stroke:#ff8888;fill:#bfc7ff;stroke-width:2;}#mermaid .doneCrit0,#mermaid .doneCrit1,#mermaid .doneCrit2,#mermaid .doneCrit3{stroke:#ff8888;fill:lightgrey;stroke-width:2;cursor:pointer;shape-rendering:crispEdges;}#mermaid .milestone{transform:rotate(45deg) scale(0.8,0.8);}#mermaid .milestoneText{font-style:italic;}#mermaid .doneCritText0,#mermaid .doneCritText1,#mermaid .doneCritText2,#mermaid .doneCritText3{fill:black!important;}#mermaid .activeCritText0,#mermaid .activeCritText1,#mermaid .activeCritText2,#mermaid .activeCritText3{fill:black!important;}#mermaid .titleText{text-anchor:middle;font-size:18px;fill:#333;}
+    /** Class diagram */
+    #mermaid g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-size:10px;}#mermaid g.classGroup text .title{font-weight:bolder;}#mermaid .nodeLabel,#mermaid .edgeLabel{color:#131300;}#mermaid .edgeLabel .label rect{fill:#ECECFF;}#mermaid .label text{fill:#131300;}#mermaid .edgeLabel .label span{background:#ECECFF;}#mermaid .classTitle{font-weight:bolder;}#mermaid .node rect,#mermaid .node circle,#mermaid .node ellipse,#mermaid .node polygon,#mermaid .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid .divider{stroke:#9370DB;stroke:1;}#mermaid g.clickable{cursor:pointer;}#mermaid g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#mermaid g.classGroup line{stroke:#9370DB;stroke-width:1;}#mermaid .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#mermaid .classLabel .label{fill:#9370DB;font-size:10px;}#mermaid .relation{stroke:#333333;stroke-width:1;fill:none;}#mermaid .dashed-line{stroke-dasharray:3;}#mermaid #compositionStart,#mermaid .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #compositionEnd,#mermaid .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #dependencyStart,#mermaid .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #dependencyStart,#mermaid .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #extensionStart,#mermaid .extension{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #extensionEnd,#mermaid .extension{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#mermaid #aggregationStart,#mermaid .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#mermaid #aggregationEnd,#mermaid .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#mermaid #lollipopStart,#mermaid .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#mermaid #lollipopEnd,#mermaid .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#mermaid .edgeTerminals{font-size:11px;}
+    /** Git graph */
+    #mermaid .commit-id,#mermaid .commit-msg{fill:lightgrey;}#mermaid .commit0{stroke:hsl(240, 100%, 46.2745098039%);fill:hsl(240, 100%, 46.2745098039%);}#mermaid .commit-highlight0{stroke:hsl(60, 100%, 3.7254901961%);fill:hsl(60, 100%, 3.7254901961%);}#mermaid .label0{fill:hsl(240, 100%, 46.2745098039%);}#mermaid .arrow0{stroke:hsl(240, 100%, 46.2745098039%);}#mermaid .branch-label1{fill:black;}#mermaid .commit1{stroke:hsl(60, 100%, 43.5294117647%);fill:hsl(60, 100%, 43.5294117647%);}#mermaid .commit-highlight1{stroke:rgb(0, 0, 160.5);fill:rgb(0, 0, 160.5);}#mermaid .label1{fill:hsl(60, 100%, 43.5294117647%);}#mermaid .arrow1{stroke:hsl(60, 100%, 43.5294117647%);}#mermaid .branch-label2{fill:black;}#mermaid .commit2{stroke:hsl(80, 100%, 46.2745098039%);fill:hsl(80, 100%, 46.2745098039%);}#mermaid .commit-highlight2{stroke:rgb(48.8333333334, 0, 146.5000000001);fill:rgb(48.8333333334, 0, 146.5000000001);}#mermaid .label2{fill:hsl(80, 100%, 46.2745098039%);}#mermaid .arrow2{stroke:hsl(80, 100%, 46.2745098039%);}#mermaid .branch-label3{fill:#ffffff;}#mermaid .commit3{stroke:hsl(210, 100%, 46.2745098039%);fill:hsl(210, 100%, 46.2745098039%);}#mermaid .commit-highlight3{stroke:rgb(146.5000000001, 73.2500000001, 0);fill:rgb(146.5000000001, 73.2500000001, 0);}#mermaid .label3{fill:hsl(210, 100%, 46.2745098039%);}#mermaid .arrow3{stroke:hsl(210, 100%, 46.2745098039%);}#mermaid .branch-label4{fill:black;}#mermaid .commit4{stroke:hsl(180, 100%, 46.2745098039%);fill:hsl(180, 100%, 46.2745098039%);}#mermaid .commit-highlight4{stroke:rgb(146.5000000001, 0, 0);fill:rgb(146.5000000001, 0, 0);}#mermaid .label4{fill:hsl(180, 100%, 46.2745098039%);}#mermaid .arrow4{stroke:hsl(180, 100%, 46.2745098039%);}#mermaid .branch-label5{fill:black;}#mermaid .commit5{stroke:hsl(150, 100%, 46.2745098039%);fill:hsl(150, 100%, 46.2745098039%);}#mermaid .commit-highlight5{stroke:rgb(146.5000000001, 0, 73.2500000001);fill:rgb(146.5000000001, 0, 73.2500000001);}#mermaid .label5{fill:hsl(150, 100%, 46.2745098039%);}#mermaid .arrow5{stroke:hsl(150, 100%, 46.2745098039%);}#mermaid .branch-label6{fill:black;}#mermaid .commit6{stroke:hsl(300, 100%, 46.2745098039%);fill:hsl(300, 100%, 46.2745098039%);}#mermaid .commit-highlight6{stroke:rgb(0, 146.5000000001, 0);fill:rgb(0, 146.5000000001, 0);}#mermaid .label6{fill:hsl(300, 100%, 46.2745098039%);}#mermaid .arrow6{stroke:hsl(300, 100%, 46.2745098039%);}#mermaid .branch-label7{fill:black;}#mermaid .commit7{stroke:hsl(0, 100%, 46.2745098039%);fill:hsl(0, 100%, 46.2745098039%);}#mermaid .commit-highlight7{stroke:rgb(0, 146.5000000001, 146.5000000001);fill:rgb(0, 146.5000000001, 146.5000000001);}#mermaid .label7{fill:hsl(0, 100%, 46.2745098039%);}#mermaid .arrow7{stroke:hsl(0, 100%, 46.2745098039%);}#mermaid .branch{stroke-width:1;stroke:#333333;stroke-dasharray:2;}#mermaid .commit-label{font-size:10px;fill:#000021;}#mermaid .commit-label-bkg{font-size:10px;fill:#ffffde;opacity:0.5;}#mermaid .tag-label{font-size:10px;fill:#131300;}#mermaid .tag-label-bkg{fill:#ECECFF;stroke:hsl(240, 60%, 86.2745098039%);}#mermaid .tag-hole{fill:#333;}#mermaid .commit-merge{stroke:#ECECFF;fill:#ECECFF;}#mermaid .commit-reverse{stroke:#ECECFF;fill:#ECECFF;stroke-width:3;}#mermaid .commit-highlight-inner{stroke:#ECECFF;fill:#ECECFF;}#mermaid .arrow{stroke-width:8;stroke-linecap:round;fill:none;}
+    #mermaid .branchLabel .label {font-size:16px;} #mermaid g.label.branch-label0 text, #mermaid g.label.branch-label3 text { fill: #eee; }
+    /** Entity relationship */
+    #mermaid .entityBox{fill:#ECECFF;stroke:#9370DB;}#mermaid .attributeBoxOdd{fill:#ffffff;stroke:#9370DB;}#mermaid .attributeBoxEven{fill:#f2f2f2;stroke:#9370DB;}#mermaid .relationshipLabelBox{fill:hsl(80, 100%, 96.2745098039%);opacity:0.7;background-color:hsl(80, 100%, 96.2745098039%);}#mermaid .relationshipLabelBox rect{opacity:0.5;}#mermaid .relationshipLine{stroke:#333333;}
+    /** Journey */
+    #mermaid .label{color:#333;}#mermaid .mouth{stroke:#666;}#mermaid line{stroke:#333;}#mermaid .legend{fill:#333;}#mermaid .label text{fill:#333;}#mermaid .label{color:#333;}#mermaid .face{fill:#FFF8DC;stroke:#999;}#mermaid .node rect,#mermaid .node circle,#mermaid .node ellipse,#mermaid .node polygon,#mermaid .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid .node .label{text-align:center;}#mermaid .node.clickable{cursor:pointer;}#mermaid .arrowheadPath{fill:#333333;}#mermaid .edgePath .path{stroke:#333333;stroke-width:1.5px;}#mermaid .flowchart-link{stroke:#333333;fill:none;}#mermaid .edgeLabel{background-color:#e8e8e8;text-align:center;}#mermaid .edgeLabel rect{opacity:0.5;}#mermaid .cluster text{fill:#333;}#mermaid div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid .task-type-0,#mermaid .section-type-0{fill:#ECECFF;}#mermaid .task-type-1,#mermaid .section-type-1{fill:#ffffde;}#mermaid .task-type-2,#mermaid .section-type-2{fill:hsl(304, 100%, 96.2745098039%);}#mermaid .task-type-3,#mermaid .section-type-3{fill:hsl(124, 100%, 93.5294117647%);}#mermaid .task-type-4,#mermaid .section-type-4{fill:hsl(176, 100%, 96.2745098039%);}#mermaid .task-type-5,#mermaid .section-type-5{fill:hsl(-4, 100%, 93.5294117647%);}#mermaid .task-type-6,#mermaid .section-type-6{fill:hsl(8, 100%, 96.2745098039%);}#mermaid .task-type-7,#mermaid .section-type-7{fill:hsl(188, 100%, 93.5294117647%);}
+    /** State diagram */
+    #mermaid defs #statediagram-barbEnd{fill:#333333;stroke:#333333;}#mermaid g.stateGroup text{fill:#9370DB;stroke:none;font-size:10px;}#mermaid g.stateGroup text{fill:#333;stroke:none;font-size:10px;}#mermaid g.stateGroup .state-title{font-weight:bolder;fill:#131300;}#mermaid g.stateGroup rect{fill:#ECECFF;stroke:#9370DB;}#mermaid g.stateGroup line{stroke:#333333;stroke-width:1;}#mermaid .transition{stroke:#333333;stroke-width:1;fill:none;}#mermaid .stateGroup .composit{fill:white;border-bottom:1px;}#mermaid .stateGroup .alt-composit{fill:#e0e0e0;border-bottom:1px;}#mermaid .state-note{stroke:#aaaa33;fill:#fff5ad;}#mermaid .state-note text{fill:black;stroke:none;font-size:10px;}#mermaid .stateLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#mermaid .edgeLabel .label rect{fill:#ECECFF;opacity:0.5;}#mermaid .edgeLabel .label text{fill:#333;}#mermaid .label div .edgeLabel{color:#333;}#mermaid .stateLabel text{fill:#131300;font-size:10px;font-weight:bold;}#mermaid .node circle.state-start{fill:#333333;stroke:#333333;}#mermaid .node .fork-join{fill:#333333;stroke:#333333;}#mermaid .node circle.state-end{fill:#9370DB;stroke:white;stroke-width:1.5;}#mermaid .end-state-inner{fill:white;stroke-width:1.5;}#mermaid .node rect{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid .node polygon{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid #statediagram-barbEnd{fill:#333333;}#mermaid .statediagram-cluster rect{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid .cluster-label,#mermaid .nodeLabel{color:#131300;}#mermaid .statediagram-cluster rect.outer{rx:5px;ry:5px;}#mermaid .statediagram-state .divider{stroke:#9370DB;}#mermaid .statediagram-state .title-state{rx:5px;ry:5px;}#mermaid .statediagram-cluster.statediagram-cluster .inner{fill:white;}#mermaid .statediagram-cluster.statediagram-cluster-alt .inner{fill:#f0f0f0;}#mermaid .statediagram-cluster .inner{rx:0;ry:0;}#mermaid .statediagram-state rect.basic{rx:5px;ry:5px;}#mermaid .statediagram-state rect.divider{stroke-dasharray:10,10;fill:#f0f0f0;}#mermaid .note-edge{stroke-dasharray:5;}#mermaid .statediagram-note rect{fill:#fff5ad;stroke:#aaaa33;stroke-width:1px;rx:0;ry:0;}#mermaid .statediagram-note rect{fill:#fff5ad;stroke:#aaaa33;stroke-width:1px;rx:0;ry:0;}#mermaid .statediagram-note text{fill:black;}#mermaid .statediagram-note .nodeLabel{color:black;}#mermaid .statediagram .edgeLabel{color:red;}#mermaid #dependencyStart,#mermaid #dependencyEnd{fill:#333333;stroke:#333333;stroke-width:1;}
+    /** Pie chart */
+    #mermaid .pieCircle{stroke:#222;stroke-width:1px;}#mermaid .pieTitleText{text-anchor:middle;font-size:25px;fill:black;}#mermaid .slice{fill:#333;font-size:17px;}#mermaid .legend text{fill:black;font-size:17px;}
+    /** Requirements */
+    #mermaid marker{fill:#333333;stroke:#333333;}#mermaid marker.cross{stroke:#333333;}#mermaid svg{font-size:16px;}#mermaid .reqBox{fill:#ECECFF;fill-opacity:100%;stroke:hsl(240, 60%, 86.2745098039%);stroke-width:hsl(240, 60%, 86.2745098039%);}#mermaid .reqTitle,#mermaid .reqLabel{fill:#131300;}#mermaid .reqLabelBox{fill:#e8e8e8;fill-opacity:100%;}#mermaid .req-title-line{stroke:hsl(240, 60%, 86.2745098039%);stroke-width:hsl(240, 60%, 86.2745098039%);}#mermaid .relationshipLine{stroke:#333333;stroke-width:1;}#mermaid .relationshipLabel{fill:black;}
+    /** C4 system */
+    #mermaid .person{stroke:calculated;fill:calculated;}
+    /** Mind map */
+    #mermaid .section-root.mindmap-node { fill: hsl(240, 100%, 50%); } #mermaid .section-root.mindmap-node text { fill: white; }
+    #mermaid .mindmap-edges .edge-depth-0 { stroke-width: 14; }
+    #mermaid .mindmap-edges .edge-depth-1 { stroke-width: 11; }
+    #mermaid .mindmap-edges .edge-depth-2 { stroke-width: 8; }
+    #mermaid .mindmap-edges .edge-depth-3 { stroke-width: 5; }
+    #mermaid .mindmap-edges .edge-depth-4 { stroke-width: 3; }
+    #mermaid .mindmap-edges .edge-depth-5 { stroke-width: 2; }
+    #mermaid .mindmap-edges .edge-depth-6 { stroke-width: 1; }
+    #mermaid .mindmap-edges .section-edge-0,  #mermaid .mindmap-node.section-0  path { fill: hsl(60, 100%, 70%); stroke: hsl(60, 100%, 70%); } #mermaid .mindmap-node.section-0  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-1,  #mermaid .mindmap-node.section-1  path { fill: hsl(170, 90%, 70%); stroke: hsl(170, 90%, 70%); } #mermaid .mindmap-node.section-1  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-2,  #mermaid .mindmap-node.section-2  path { fill: hsl(280, 90%, 70%); stroke: hsl(280, 90%, 70%); } #mermaid .mindmap-node.section-2  text { fill: white; }
+    #mermaid .mindmap-edges .section-edge-3,  #mermaid .mindmap-node.section-3  path { fill: hsl(30, 90%, 70%);  stroke: hsl(30, 90%, 70%);  } #mermaid .mindmap-node.section-3  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-4,  #mermaid .mindmap-node.section-4  path { fill: hsl(140, 90%, 70%); stroke: hsl(140, 90%, 70%); } #mermaid .mindmap-node.section-4  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-5,  #mermaid .mindmap-node.section-5  path { fill: hsl(250, 90%, 70%); stroke: hsl(250, 90%, 70%); } #mermaid .mindmap-node.section-5  text { fill: white; }
+    #mermaid .mindmap-edges .section-edge-6,  #mermaid .mindmap-node.section-6  path { fill: hsl(0, 90%, 70%);   stroke: hsl(0, 90%, 70%);   } #mermaid .mindmap-node.section-6  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-7,  #mermaid .mindmap-node.section-7  path { fill: hsl(110, 90%, 70%); stroke: hsl(110, 90%, 70%); } #mermaid .mindmap-node.section-7  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-8,  #mermaid .mindmap-node.section-8  path { fill: hsl(220, 90%, 70%); stroke: hsl(220, 90%, 70%); } #mermaid .mindmap-node.section-8  text { fill: white; }
+    #mermaid .mindmap-edges .section-edge-9,  #mermaid .mindmap-node.section-9  path { fill: hsl(330, 90%, 70%); stroke: hsl(330, 90%, 70%); } #mermaid .mindmap-node.section-9  text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-10, #mermaid .mindmap-node.section-10 path { fill: hsl(80, 90%, 70%);  stroke: hsl(80, 90%, 70%);  } #mermaid .mindmap-node.section-10 text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-11, #mermaid .mindmap-node.section-11 path { fill: hsl(190, 90%, 70%); stroke: hsl(190, 90%, 70%); } #mermaid .mindmap-node.section-11 text { fill: black; }
+    #mermaid .mindmap-edges .section-edge-12, #mermaid .mindmap-node.section-12 path { fill: hsl(300, 90%, 70%); stroke: hsl(300, 90%, 70%); } #mermaid .mindmap-node.section-12 text { fill: black; }
+    /** Timeline */
+    #mermaid .timeline text tspan { fill: #222; } #mermaid .timeline-node path { fill: #ccc; }
+
+    /* Dark theme */
+    /** Common */
+    html.theme-dark #mermaid {fill:#ccc;}html.theme-dark #mermaid .error-icon{fill:#a44141;}html.theme-dark #mermaid .error-text{fill:#ddd;stroke:#ddd;}html.theme-dark #mermaid .edge-pattern-solid{stroke-dasharray:0;}html.theme-dark #mermaid .edge-pattern-dashed{stroke-dasharray:3;}html.theme-dark #mermaid .edge-pattern-dotted{stroke-dasharray:2;}html.theme-dark #mermaid .marker{fill:lightgrey;stroke:lightgrey;}html.theme-dark #mermaid .marker.cross{stroke:lightgrey;}
+    /** Flowchart */
+    html.theme-dark #mermaid .label{color:#ccc;}html.theme-dark #mermaid .cluster-label text{fill:#F9FFFE;}html.theme-dark #mermaid .cluster-label span{color:#F9FFFE;}html.theme-dark #mermaid .label text,html.theme-dark #mermaid span{fill:#ccc;color:#ccc;}html.theme-dark #mermaid .node rect,html.theme-dark #mermaid .node circle,html.theme-dark #mermaid .node ellipse,html.theme-dark #mermaid .node polygon,html.theme-dark #mermaid .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid .node .label{text-align:center;}html.theme-dark #mermaid .node.clickable{cursor:pointer;}html.theme-dark #mermaid .arrowheadPath{fill:lightgrey;}html.theme-dark #mermaid .edgePath .path{stroke:lightgrey;stroke-width:2.0px;}html.theme-dark #mermaid .flowchart-link{stroke:lightgrey;fill:none;}html.theme-dark #mermaid .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}html.theme-dark #mermaid .edgeLabel rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}html.theme-dark #mermaid .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}html.theme-dark #mermaid .cluster text{fill:#F9FFFE;}html.theme-dark #mermaid .cluster span{color:#F9FFFE;}html.theme-dark #mermaid div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;background:hsl(20, 1.5873015873%, 12.3529411765%);border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}html.theme-dark #mermaid :root{--mermaid-}
+    /** Sequence diagram */
+    html.theme-dark #mermaid .actor{stroke:#81B1DB;fill:#1f2020;}html.theme-dark #mermaid text.actor>tspan{fill:lightgrey;stroke:none;}html.theme-dark #mermaid .actor-line{stroke:lightgrey;}html.theme-dark #mermaid .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:lightgrey;}html.theme-dark #mermaid .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:lightgrey;}html.theme-dark #mermaid #arrowhead path{fill:lightgrey;stroke:lightgrey;}html.theme-dark #mermaid .sequenceNumber{fill:black;}html.theme-dark #mermaid #sequencenumber{fill:lightgrey;}html.theme-dark #mermaid #crosshead path{fill:lightgrey;stroke:lightgrey;}html.theme-dark #mermaid .messageText{fill:lightgrey;stroke:none;}html.theme-dark #mermaid .labelBox{stroke:#81B1DB;fill:#1f2020;}html.theme-dark #mermaid .labelText,html.theme-dark #mermaid .labelText>tspan{fill:lightgrey;stroke:none;}html.theme-dark #mermaid .loopText,html.theme-dark #mermaid .loopText>tspan{fill:lightgrey;stroke:none;}html.theme-dark #mermaid .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:#81B1DB;fill:#81B1DB;}html.theme-dark #mermaid .note{stroke:hsl(180, 0%, 18.3529411765%);fill:hsl(180, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid .noteText,html.theme-dark #mermaid .noteText>tspan{fill:rgb(183.8476190475, 181.5523809523, 181.5523809523);stroke:none;}html.theme-dark #mermaid .activation0{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}html.theme-dark #mermaid .activation1{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}html.theme-dark #mermaid .activation2{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}html.theme-dark #mermaid .actorPopupMenu{position:absolute;}html.theme-dark #mermaid .actorPopupMenuPanel{position:absolute;fill:#1f2020;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}html.theme-dark #mermaid .actor-man line{stroke:#81B1DB;fill:#1f2020;}html.theme-dark #mermaid .actor-man circle,html.theme-dark #mermaid line{stroke:#81B1DB;fill:#1f2020;stroke-width:2px;}html.theme-dark #mermaid :root{--mermaid-}
+    /** Gantt */
+    html.theme-dark #mermaid .exclude-range{fill:#444;}html.theme-dark #mermaid .section{stroke:none;opacity:0.2;}html.theme-dark #mermaid .section0{fill:hsl(52.9411764706, 28.813559322%, 58.431372549%);}html.theme-dark #mermaid .section2{fill:#EAE8D9;}html.theme-dark #mermaid .section1,html.theme-dark #mermaid .section3{fill:#333;opacity:0.2;}html.theme-dark #mermaid .sectionTitle0{fill:#F9FFFE;}html.theme-dark #mermaid .sectionTitle1{fill:#F9FFFE;}html.theme-dark #mermaid .sectionTitle2{fill:#F9FFFE;}html.theme-dark #mermaid .sectionTitle3{fill:#F9FFFE;}html.theme-dark #mermaid .sectionTitle{text-anchor:start;}html.theme-dark #mermaid .grid .tick{stroke:lightgrey;opacity:0.8;shape-rendering:crispEdges;}html.theme-dark #mermaid .grid .tick text{fill:#ccc;}html.theme-dark #mermaid .grid path{stroke-width:0;}html.theme-dark #mermaid .today{fill:none;stroke:#DB5757;stroke-width:2px;}html.theme-dark #mermaid .task{stroke-width:2;}html.theme-dark #mermaid .taskText{text-anchor:middle;}html.theme-dark #mermaid .taskTextOutsideRight{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%);text-anchor:start;}html.theme-dark #mermaid .taskTextOutsideLeft{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%);text-anchor:end;}html.theme-dark #mermaid .task.clickable{cursor:pointer;}html.theme-dark #mermaid .taskText.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}html.theme-dark #mermaid .taskTextOutsideLeft.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}html.theme-dark #mermaid .taskTextOutsideRight.clickable{cursor:pointer;fill:#003163!important;font-weight:bold;}html.theme-dark #mermaid .taskText0,html.theme-dark #mermaid .taskText1,html.theme-dark #mermaid .taskText2,html.theme-dark #mermaid .taskText3{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%);}html.theme-dark #mermaid .task0,html.theme-dark #mermaid .task1,html.theme-dark #mermaid .task2,html.theme-dark #mermaid .task3{fill:hsl(180, 1.5873015873%, 35.3529411765%);stroke:#ffffff;}html.theme-dark #mermaid .taskTextOutside0,html.theme-dark #mermaid .taskTextOutside2{fill:lightgrey;}html.theme-dark #mermaid .taskTextOutside1,html.theme-dark #mermaid .taskTextOutside3{fill:lightgrey;}html.theme-dark #mermaid .active0,html.theme-dark #mermaid .active1,html.theme-dark #mermaid .active2,html.theme-dark #mermaid .active3{fill:#81B1DB;stroke:#ffffff;}html.theme-dark #mermaid .activeText0,html.theme-dark #mermaid .activeText1,html.theme-dark #mermaid .activeText2,html.theme-dark #mermaid .activeText3{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%)!important;}html.theme-dark #mermaid .done0,html.theme-dark #mermaid .done1,html.theme-dark #mermaid .done2,html.theme-dark #mermaid .done3{stroke:grey;fill:lightgrey;stroke-width:2;}html.theme-dark #mermaid .doneText0,html.theme-dark #mermaid .doneText1,html.theme-dark #mermaid .doneText2,html.theme-dark #mermaid .doneText3{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%)!important;}html.theme-dark #mermaid .crit0,html.theme-dark #mermaid .crit1,html.theme-dark #mermaid .crit2,html.theme-dark #mermaid .crit3{stroke:#E83737;fill:#E83737;stroke-width:2;}html.theme-dark #mermaid .activeCrit0,html.theme-dark #mermaid .activeCrit1,html.theme-dark #mermaid .activeCrit2,html.theme-dark #mermaid .activeCrit3{stroke:#E83737;fill:#81B1DB;stroke-width:2;}html.theme-dark #mermaid .doneCrit0,html.theme-dark #mermaid .doneCrit1,html.theme-dark #mermaid .doneCrit2,html.theme-dark #mermaid .doneCrit3{stroke:#E83737;fill:lightgrey;stroke-width:2;cursor:pointer;shape-rendering:crispEdges;}html.theme-dark #mermaid .milestone{transform:rotate(45deg) scale(0.8,0.8);}html.theme-dark #mermaid .milestoneText{font-style:italic;}html.theme-dark #mermaid .doneCritText0,html.theme-dark #mermaid .doneCritText1,html.theme-dark #mermaid .doneCritText2,html.theme-dark #mermaid .doneCritText3{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%)!important;}html.theme-dark #mermaid .activeCritText0,html.theme-dark #mermaid .activeCritText1,html.theme-dark #mermaid .activeCritText2,html.theme-dark #mermaid .activeCritText3{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%)!important;}html.theme-dark #mermaid .titleText{text-anchor:middle;fill:#ccc;}html.theme-dark #mermaid :root{--mermaid-}
+    /** Class diagram */
+    html.theme-dark #mermaid g.classGroup text{fill:#e0dfdf;stroke:none;}html.theme-dark #mermaid g.classGroup text .title{font-weight:bolder;}html.theme-dark #mermaid .nodeLabel,html.theme-dark #mermaid .edgeLabel{color:#e0dfdf;}html.theme-dark #mermaid .edgeLabel .label rect{fill:#1f2020;}html.theme-dark #mermaid .label text{fill:#e0dfdf;}html.theme-dark #mermaid .edgeLabel .label span{background:#1f2020;}html.theme-dark #mermaid .classTitle{font-weight:bolder;}html.theme-dark #mermaid .node rect,html.theme-dark #mermaid .node circle,html.theme-dark #mermaid .node ellipse,html.theme-dark #mermaid .node polygon,html.theme-dark #mermaid .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid .divider{stroke:#81B1DB;stroke:1;}html.theme-dark #mermaid g.clickable{cursor:pointer;}html.theme-dark #mermaid g.classGroup rect{fill:#1f2020;stroke:#81B1DB;}html.theme-dark #mermaid g.classGroup line{stroke:#81B1DB;stroke-width:1;}html.theme-dark #mermaid .classLabel .box{stroke:none;stroke-width:0;fill:#1f2020;opacity:0.5;}html.theme-dark #mermaid .classLabel .label{fill:#81B1DB;}html.theme-dark #mermaid .relation{stroke:lightgrey;stroke-width:1;fill:none;}html.theme-dark #mermaid .dashed-line{stroke-dasharray:3;}html.theme-dark #mermaid #compositionStart,html.theme-dark #mermaid .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #compositionEnd,html.theme-dark #mermaid .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #dependencyStart,html.theme-dark #mermaid .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #dependencyStart,html.theme-dark #mermaid .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #extensionStart,html.theme-dark #mermaid .extension{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #extensionEnd,html.theme-dark #mermaid .extension{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #aggregationStart,html.theme-dark #mermaid .aggregation{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #aggregationEnd,html.theme-dark #mermaid .aggregation{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #lollipopStart,html.theme-dark #mermaid .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid #lollipopEnd,html.theme-dark #mermaid .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}html.theme-dark #mermaid .edgeTerminals{}html.theme-dark #mermaid :root{--mermaid-}
+    /** Git graph */
+    html.theme-dark #mermaid .commit-id,html.theme-dark #mermaid .commit-msg,html.theme-dark #mermaid .branch-label{fill:lightgrey;color:lightgrey;}html.theme-dark #mermaid .branch-label0{fill:undefined;}html.theme-dark #mermaid .commit0{stroke:hsl(180, 1.5873015873%, 48.3529411765%);fill:hsl(180, 1.5873015873%, 48.3529411765%);}html.theme-dark #mermaid .commit-highlight0{stroke:rgb(133.6571428571, 129.7428571428, 129.7428571428);fill:rgb(133.6571428571, 129.7428571428, 129.7428571428);}html.theme-dark #mermaid .label0{fill:hsl(180, 1.5873015873%, 48.3529411765%);}html.theme-dark #mermaid .arrow0{stroke:hsl(180, 1.5873015873%, 48.3529411765%);}html.theme-dark #mermaid .branch-label1{fill:undefined;}html.theme-dark #mermaid .commit1{stroke:hsl(321.6393442623, 65.5913978495%, 38.2352941176%);fill:hsl(321.6393442623, 65.5913978495%, 38.2352941176%);}html.theme-dark #mermaid .commit-highlight1{stroke:rgb(93.5483870969, 221.4516129033, 139.677419355);fill:rgb(93.5483870969, 221.4516129033, 139.677419355);}html.theme-dark #mermaid .label1{fill:hsl(321.6393442623, 65.5913978495%, 38.2352941176%);}html.theme-dark #mermaid .arrow1{stroke:hsl(321.6393442623, 65.5913978495%, 38.2352941176%);}html.theme-dark #mermaid .branch-label2{fill:undefined;}html.theme-dark #mermaid .commit2{stroke:hsl(194.4, 16.5562913907%, 49.6078431373%);fill:hsl(194.4, 16.5562913907%, 49.6078431373%);}html.theme-dark #mermaid .commit-highlight2{stroke:rgb(149.4437086091, 117.6092715231, 107.5562913906);fill:rgb(149.4437086091, 117.6092715231, 107.5562913906);}html.theme-dark #mermaid .label2{fill:hsl(194.4, 16.5562913907%, 49.6078431373%);}html.theme-dark #mermaid .arrow2{stroke:hsl(194.4, 16.5562913907%, 49.6078431373%);}html.theme-dark #mermaid .branch-label3{fill:undefined;}html.theme-dark #mermaid .commit3{stroke:hsl(23.0769230769, 49.0566037736%, 40.7843137255%);fill:hsl(23.0769230769, 49.0566037736%, 40.7843137255%);}html.theme-dark #mermaid .commit-highlight3{stroke:rgb(99.9811320754, 162.7735849057, 202.0188679245);fill:rgb(99.9811320754, 162.7735849057, 202.0188679245);}html.theme-dark #mermaid .label3{fill:hsl(23.0769230769, 49.0566037736%, 40.7843137255%);}html.theme-dark #mermaid .arrow3{stroke:hsl(23.0769230769, 49.0566037736%, 40.7843137255%);}html.theme-dark #mermaid .branch-label4{fill:undefined;}html.theme-dark #mermaid .commit4{stroke:hsl(0, 83.3333333333%, 43.5294117647%);fill:hsl(0, 83.3333333333%, 43.5294117647%);}html.theme-dark #mermaid .commit-highlight4{stroke:rgb(51.5000000001, 236.5, 236.5);fill:rgb(51.5000000001, 236.5, 236.5);}html.theme-dark #mermaid .label4{fill:hsl(0, 83.3333333333%, 43.5294117647%);}html.theme-dark #mermaid .arrow4{stroke:hsl(0, 83.3333333333%, 43.5294117647%);}html.theme-dark #mermaid .branch-label5{fill:undefined;}html.theme-dark #mermaid .commit5{stroke:hsl(289.1666666667, 100%, 24.1176470588%);fill:hsl(289.1666666667, 100%, 24.1176470588%);}html.theme-dark #mermaid .commit-highlight5{stroke:rgb(154.2083333334, 255, 132.0000000001);fill:rgb(154.2083333334, 255, 132.0000000001);}html.theme-dark #mermaid .label5{fill:hsl(289.1666666667, 100%, 24.1176470588%);}html.theme-dark #mermaid .arrow5{stroke:hsl(289.1666666667, 100%, 24.1176470588%);}html.theme-dark #mermaid .branch-label6{fill:undefined;}html.theme-dark #mermaid .commit6{stroke:hsl(35.1315789474, 98.7012987013%, 40.1960784314%);fill:hsl(35.1315789474, 98.7012987013%, 40.1960784314%);}html.theme-dark #mermaid .commit-highlight6{stroke:rgb(51.331168831, 135.1948051946, 253.6688311688);fill:rgb(51.331168831, 135.1948051946, 253.6688311688);}html.theme-dark #mermaid .label6{fill:hsl(35.1315789474, 98.7012987013%, 40.1960784314%);}html.theme-dark #mermaid .arrow6{stroke:hsl(35.1315789474, 98.7012987013%, 40.1960784314%);}html.theme-dark #mermaid .branch-label7{fill:undefined;}html.theme-dark #mermaid .commit7{stroke:hsl(106.1538461538, 84.4155844156%, 35.0980392157%);fill:hsl(106.1538461538, 84.4155844156%, 35.0980392157%);}html.theme-dark #mermaid .commit-highlight7{stroke:rgb(206.1818181817, 89.948051948, 241.051948052);fill:rgb(206.1818181817, 89.948051948, 241.051948052);}html.theme-dark #mermaid .label7{fill:hsl(106.1538461538, 84.4155844156%, 35.0980392157%);}html.theme-dark #mermaid .arrow7{stroke:hsl(106.1538461538, 84.4155844156%, 35.0980392157%);}html.theme-dark #mermaid .branch{stroke-width:1;stroke:lightgrey;stroke-dasharray:2;}html.theme-dark #mermaid .commit-label{fill:rgb(183.8476190475, 181.5523809523, 181.5523809523);}html.theme-dark #mermaid .commit-label-bkg{fill:hsl(180, 1.5873015873%, 28.3529411765%);opacity:0.5;}html.theme-dark #mermaid .tag-label{fill:#e0dfdf;}html.theme-dark #mermaid .tag-label-bkg{fill:#1f2020;stroke:#cccccc;}html.theme-dark #mermaid .tag-hole{fill:#ccc;}html.theme-dark #mermaid .commit-merge{stroke:#1f2020;fill:#1f2020;}html.theme-dark #mermaid .commit-reverse{stroke:#1f2020;fill:#1f2020;stroke-width:3;}html.theme-dark #mermaid .commit-highlight-inner{stroke:#1f2020;fill:#1f2020;}html.theme-dark #mermaid .arrow{stroke-width:8;stroke-linecap:round;fill:none;}:root{--mermaid-}
+    /** Entity relationship */
+    html.theme-dark #mermaid .entityBox{fill:#1f2020;stroke:#81B1DB;}html.theme-dark #mermaid .attributeBoxOdd{fill:hsl(0, 0%, 32%);stroke:#81B1DB;}html.theme-dark #mermaid .attributeBoxEven{fill:hsl(0, 0%, 22%);stroke:#81B1DB;}html.theme-dark #mermaid .relationshipLabelBox{fill:hsl(20, 1.5873015873%, 12.3529411765%);opacity:0.7;background-color:hsl(20, 1.5873015873%, 12.3529411765%);}html.theme-dark #mermaid .relationshipLabelBox rect{opacity:0.5;}html.theme-dark #mermaid .relationshipLine{stroke:lightgrey;}html.theme-dark #mermaid :root{--mermaid-}
+    /** Journey */
+    html.theme-dark #mermaid .label{color:#ccc;}html.theme-dark #mermaid .mouth{stroke:#666;}html.theme-dark #mermaid line{stroke:#ccc;}html.theme-dark #mermaid .legend{fill:#ccc;}html.theme-dark #mermaid .label text{fill:#333;}html.theme-dark #mermaid .label{color:#ccc;}html.theme-dark #mermaid .face{fill:#FFF8DC;stroke:#999;}html.theme-dark #mermaid .node rect,html.theme-dark #mermaid .node circle,html.theme-dark #mermaid .node ellipse,html.theme-dark #mermaid .node polygon,html.theme-dark #mermaid .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid .node .label{text-align:center;}html.theme-dark #mermaid .node.clickable{cursor:pointer;}html.theme-dark #mermaid .arrowheadPath{fill:lightgrey;}html.theme-dark #mermaid .edgePath .path{stroke:lightgrey;stroke-width:1.5px;}html.theme-dark #mermaid .flowchart-link{stroke:lightgrey;fill:none;}html.theme-dark #mermaid .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}html.theme-dark #mermaid .edgeLabel rect{opacity:0.5;}html.theme-dark #mermaid .cluster text{fill:#F9FFFE;}html.theme-dark #mermaid div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;background:hsl(20, 1.5873015873%, 12.3529411765%);border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}html.theme-dark #mermaid .task-type-0,html.theme-dark #mermaid .section-type-0{fill:#1f2020;}html.theme-dark #mermaid .task-type-1,html.theme-dark #mermaid .section-type-1{fill:hsl(180, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid .task-type-2,html.theme-dark #mermaid .section-type-2{fill:hsl(244, 1.5873015873%, 12.3529411765%);}html.theme-dark #mermaid .task-type-3,html.theme-dark #mermaid .section-type-3{fill:hsl(244, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid .task-type-4,html.theme-dark #mermaid .section-type-4{fill:hsl(116, 1.5873015873%, 12.3529411765%);}html.theme-dark #mermaid .task-type-5,html.theme-dark #mermaid .section-type-5{fill:hsl(116, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid .task-type-6,html.theme-dark #mermaid .section-type-6{fill:hsl(308, 1.5873015873%, 12.3529411765%);}html.theme-dark #mermaid .task-type-7,html.theme-dark #mermaid .section-type-7{fill:hsl(308, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid :root{--mermaid-}
+    /** State diagram */
+    html.theme-dark #mermaid defs #statediagram-barbEnd{fill:lightgrey;stroke:lightgrey;}html.theme-dark #mermaid g.stateGroup text{fill:#81B1DB;stroke:none;}html.theme-dark #mermaid g.stateGroup text{fill:#ccc;stroke:none;}html.theme-dark #mermaid g.stateGroup .state-title{font-weight:bolder;fill:#e0dfdf;}html.theme-dark #mermaid g.stateGroup rect{fill:#1f2020;stroke:#81B1DB;}html.theme-dark #mermaid g.stateGroup line{stroke:lightgrey;stroke-width:1;}html.theme-dark #mermaid .transition{stroke:lightgrey;stroke-width:1;fill:none;}html.theme-dark #mermaid .stateGroup .composit{fill:#333;border-bottom:1px;}html.theme-dark #mermaid .stateGroup .alt-composit{fill:#e0e0e0;border-bottom:1px;}html.theme-dark #mermaid .state-note{stroke:hsl(180, 0%, 18.3529411765%);fill:hsl(180, 1.5873015873%, 28.3529411765%);}html.theme-dark #mermaid .state-note text{fill:rgb(183.8476190475, 181.5523809523, 181.5523809523);stroke:none;}html.theme-dark #mermaid .stateLabel .box{stroke:none;stroke-width:0;fill:#1f2020;opacity:0.5;}html.theme-dark #mermaid .edgeLabel .label rect{fill:#1f2020;opacity:0.5;}html.theme-dark #mermaid .edgeLabel .label text{fill:#ccc;}html.theme-dark #mermaid .label div .edgeLabel{color:#ccc;}html.theme-dark #mermaid .stateLabel text{fill:#e0dfdf;font-weight:bold;}html.theme-dark #mermaid .node circle.state-start{fill:#f4f4f4;stroke:#f4f4f4;}html.theme-dark #mermaid .node .fork-join{fill:#f4f4f4;stroke:#f4f4f4;}html.theme-dark #mermaid .node circle.state-end{fill:#cccccc;stroke:#333;stroke-width:1.5;}html.theme-dark #mermaid .end-state-inner{fill:#333;stroke-width:1.5;}html.theme-dark #mermaid .node rect{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid .node polygon{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid #statediagram-barbEnd{fill:lightgrey;}html.theme-dark #mermaid .statediagram-cluster rect{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}html.theme-dark #mermaid .cluster-label,html.theme-dark #mermaid .nodeLabel{color:#e0dfdf;}html.theme-dark #mermaid .statediagram-cluster rect.outer{rx:5px;ry:5px;}html.theme-dark #mermaid .statediagram-state .divider{stroke:#81B1DB;}html.theme-dark #mermaid .statediagram-state .title-state{rx:5px;ry:5px;}html.theme-dark #mermaid .statediagram-cluster.statediagram-cluster .inner{fill:#333;}html.theme-dark #mermaid .statediagram-cluster.statediagram-cluster-alt .inner{fill:#555;}html.theme-dark #mermaid .statediagram-cluster .inner{rx:0;ry:0;}html.theme-dark #mermaid .statediagram-state rect.basic{rx:5px;ry:5px;}html.theme-dark #mermaid .statediagram-state rect.divider{stroke-dasharray:10,10;fill:#555;}html.theme-dark #mermaid .note-edge{stroke-dasharray:5;}html.theme-dark #mermaid .statediagram-note rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:hsl(180, 0%, 18.3529411765%);stroke-width:1px;rx:0;ry:0;}html.theme-dark #mermaid .statediagram-note rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:hsl(180, 0%, 18.3529411765%);stroke-width:1px;rx:0;ry:0;}html.theme-dark #mermaid .statediagram-note text{fill:rgb(183.8476190475, 181.5523809523, 181.5523809523);}html.theme-dark #mermaid .statediagram-note .nodeLabel{color:rgb(183.8476190475, 181.5523809523, 181.5523809523);}html.theme-dark #mermaid .statediagram .edgeLabel{color:red;}html.theme-dark #mermaid #dependencyStart,html.theme-dark #mermaid #dependencyEnd{fill:lightgrey;stroke:lightgrey;stroke-width:1;}html.theme-dark #mermaid :root{--mermaid-}
+    /** Pie chart */
+    html.theme-dark #mermaid .pieCircle{filter: brightness(0.7);} html.theme-dark #mermaid[aria-roledescription=pie] .legend rect { filter: brightness(0.7); } html.theme-dark #mermaid .pieTitleText{text-anchor:middle;fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%);}html.theme-dark #mermaid .slice{fill:#222;}html.theme-dark #mermaid .legend text{fill:hsl(28.5714285714, 17.3553719008%, 86.2745098039%);}html.theme-dark #mermaid :root{--mermaid-}
+    /** Requirements */
+    html.theme-dark #mermaid marker{fill:lightgrey;stroke:lightgrey;}html.theme-dark #mermaid marker.cross{stroke:lightgrey;}html.theme-dark #mermaid svg{}html.theme-dark #mermaid .reqBox{fill:#1f2020;fill-opacity:100%;stroke:#cccccc;stroke-width:#cccccc;}html.theme-dark #mermaid .reqTitle,html.theme-dark #mermaid .reqLabel{fill:#e0dfdf;}html.theme-dark #mermaid .reqLabelBox{fill:hsl(180, 1.5873015873%, 28.3529411765%);fill-opacity:100%;}html.theme-dark #mermaid .req-title-line{stroke:#cccccc;stroke-width:#cccccc;}html.theme-dark #mermaid .relationshipLine{stroke:lightgrey;stroke-width:1;}html.theme-dark #mermaid .relationshipLabel{fill:lightgrey;}html.theme-dark #mermaid :root{--mermaid-}
+    /** C4 system */
+    html.theme-dark #mermaid .person{stroke:calculated;fill:calculated;} html.theme-dark #mermaid[aria-roledescription=c4] rect {stroke: #ddd;} html.theme-dark #mermaid[aria-roledescription=c4] text {fill:#eee;}
+    /** Mind map */
+    html.theme-dark #mermaid .section-root.mindmap-node { fill: #ccc; } html.theme-dark #mermaid .section-root.mindmap-node text { fill: black; }
+    html.theme-dark #mermaid .mindmap-edges path, html.theme-dark #mermaid .mindmap-node { filter: hue-rotate(180deg) invert(0.9); }
+    /** Timeline */
+    html.theme-dark #mermaid .timeline text tspan { fill: #eee; } html.theme-dark #mermaid .timeline-node path { fill: #222; }
+
+
+
+    .prompt {
+      flex-direction: row;
+      letter-spacing: .0015em;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+
+    .prompt-content {
+      padding: 15px;
+      overflow: hidden;
+      flex: 1 1 auto;
+    }
+
+
+    .prompt-content-p p {
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+
+
+    .prompt-icon {
+      flex: 0 0 auto;
+      margin-left: 15px;
+      margin-top: 15px;
+      fill: currentcolor;
+      width: 24px;
+      height: 24px;
+    }
+
+
+    .prompt-title {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 24px;
+      margin-bottom: 5px;
+      color: inherit;
+    }
+
+
+    :root {
+      width: 95%;
+      max-width: 95vw;
+      padding: 0 0 0 30px;
+    }
+
+    body {
+      font-family: JetBrains Sans,serif;
+    }
+
+    a {
+      overflow-wrap: anywhere;
+      width: 100vw;
+    }
+
+
+    @font-face {
+      font-family: JetBrains Sans;
+      src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Light.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Light.woff) format("woff");
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: JetBrains Sans;
+      src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Regular.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Regular.woff) format("woff");
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: JetBrains Sans;
+      src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-SemiBold.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-SemiBold.woff) format("woff");
+      font-weight: 600;
+      font-style: normal;
+    }
+
+
+    code {
+      display: inline;
+      word-break: break-word;
+      font-size: 15px;
+      line-height: inherit;
+      font-variant-ligatures: none;
+      font-family: JetBrains Sans,monospace;
+      white-space: pre-line;
+      overflow-wrap: break-word;
+    }
+
+    figcaption {
+      margin-top: 5px;
+    }
+
+    h1 {
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-size: 24px;
+    }
+
+    h2 {
+      padding-top: 16px;
+      padding-bottom: 8px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-size: 20px;
+    }
+
+    h3 {
+      padding-top: 8px;
+      padding-bottom: 8px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-size: 16px;
+    }
+
+    h4 {
+      padding-top: 4px;
+      padding-bottom: 8px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-size: 14px;
+    }
+
+    p {
+      padding: 4px 0;
+      border: 0;
+      line-height: 15px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      font-size: 12px;
+    }
+
+    div {
+      display: block;
+    }
+
+    table {
+      margin-top: 4px;
+      border-collapse: collapse;
+      width: 100%;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #c4c4c4;
+      padding: 0 4px;
+      text-align: left;
+    }
+
+    .no-bold {
+      font-weight: normal;
+    }
+
+    .entry {
+      display: grid;
+      grid-template-columns: auto max-content;
+      grid-template-areas: "chapter page";
+      align-items: end;
+      gap: 0 .25rem;
+      line-height: 25px;
+    }
+
+    .toc-link-container{
+      grid-area: chapter;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toc-link{
+      text-decoration: none;
+      color: black;
+    }
+
+    .toc-link-container::after {
+      position: absolute;
+      padding-left: .25ch;
+      content: " . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+      ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+      ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+      text-align: right;
+    }
+
+    .page {
+      grid-area: page;
+      width: 30px;
+      text-align: right;
+    }
+
+
+    .table-wrapper {
+      overflow: hidden;
+      box-sizing: border-box;
+      font: inherit;
+    }
+
+
+    .tip {
+      background-color: rgba(25, 25, 28, .05);
+    }
+
+
+    .topic {
+      page-break-before: always;
+    }
+
+
+    .warning {
+      background: rgba(244, 92, 74, .2);
+    }
+
+    @media print {
+      .cover-page ~ .page-header, .cover-page ~ .page-footer { display: block; }
+    }
+
+    .page-header {
+      position: fixed;
+      top: -10mm;
+      left: 0;
+      right: 0;
+      font-size: 10px;
+      color: #666;
+      border-bottom: 0.5px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .page-footer {
+      position: fixed;
+      bottom: -10mm;
+      left: 0;
+      right: 0;
+      font-size: 10px;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      border-top: 0.5px solid #eee;
+      padding-top: 5px;
+    }
+
+    /* --- Page de Garde --- */
+    .cover-page {
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      page-break-after: always;
+      position: relative;
+    }
+
+    .logo-utbm {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+    }
+
+    .cover-title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      margin-top: 100px;
+    }
+
+    .cover-subtitle {
+      font-size: 16px;
+      color: #555;
+      max-width: 80%;
+      margin-bottom: 150px;
+    }
+
+    .cover-authors {
+      font-size: 16px;
+      color: #777;
+      margin-top: auto;
+    }
+
+    .toc-link { text-decoration: none; color: black; }
+
+    @media print {
+      .cover-page ~ .page-header, .cover-page ~ .page-footer { display: block; }
+    }
+  </style>
+    <title>pdfSourceHI</title></head>
+<body>
+<div>
+  <div class="cover-page">
+    <img src="Writerside/images/Utbm.svg" alt="Logo UTBM" class="logo-utbm">
+
+    <div class="cover-title" style="padding-top: 12rem;">Cahier des charges</div>
+    <div class="cover-subtitle">
+      Définitiion des fonctions et usages pour développer un plugin rhapsody permettant de faire des SVN (Stakeholder Value Network)
+    </div>
+
+    <div class="cover-authors">
+      Arnaud Michel | Benjamin Groisne | Antoine Laurant | Hugo Charcot | Guillaume Retter
+    </div>
+  </div>
+
+  <div class="page-header">
+    DE50 - Cahier des charges - V. Hilaire
+  </div>
+
+  <div class="page-footer">
+    <span>Arnaud Michel - Benjamin Groisne - Antoine Laurant - Hugo Charcot - Guillaume Retter</span>
+    <span style="float: right;">Page <span class="page-number"></span></span>
+  </div>
+    <section class="topic">
+        <div>
+            <article class="article"><h1 class="main-title" id="-1047597021">Cahier des charges - Plugin Rhapsody
+                SVN</h1>
+                <section class="detached"><h2 id="-1047597021#1-introduction-et-contexte"
+                                              data-toc="1-introduction-et-contexte#Cahier-des-charges.md-1-introduction-et-contexte">
+                    1. Introduction et contexte</h2>
+                    <p id="-1047597021#jv7vm2_9">Ce document d&eacute;crit les sp&eacute;cifications d'un plugin pour
+                        IBM Rhapsody permettant de mod&eacute;liser des diagrammes de type <span class="control"
+                                                                                                 id="-1047597021#jv7vm2_13">Stakeholder Value Network (SVN)</span>.
+                    </p>
+                    <p id="-1047597021#jv7vm2_10">Le graphique SVN est issu des travaux de Cameron (2007) et a &eacute;t&eacute;
+                        d&eacute;montr&eacute;e dans le cadre SysML par Sease et al. (INCOSE 2018) :</p>
+                    <ul class="list" id="-1047597021#jv7vm2_11" start="1">
+                        <li class="list-item" id="-1047597021#jv7vm2_14"><p id="-1047597021#jv7vm2_16">Setting
+                            priorities: demonstrating Stakeholder Value Networks in SysML &ndash; INCOSE (<a
+                                    href="https://incose.org/resource/setting-priorities-demonstrating-stakeholder-value-networks-in-sysml">https://incose.org/resource/setting-priorities-demonstrating-stakeholder-value-networks-in-sysml</a>)
+                        </p></li>
+                        <li class="list-item" id="-1047597021#jv7vm2_15"><p id="-1047597021#jv7vm2_18">Publication
+                            ResearchGate (<a href="https://researchgate.net/publication/327071403">https://researchgate.net/publication/327071403</a>)
+                        </p></li>
+                    </ul>
+                </section>
+                <section class="detached"><h2 id="-1047597021#2-qui-s-adresse-le-plugin"
+                                              data-toc="2-qui-s-adresse-le-plugin#Cahier-des-charges.md-2-qui-s-adresse-le-plugin">
+                    2. &Agrave; qui s'adresse le plugin</h2>
+                    <section class="detached"><h3 id="-1047597021#2-1-profil-type"
+                                                  data-toc="2-1-profil-type#Cahier-des-charges.md-2-1-profil-type">2.1
+                        Profil type</h3>
+                        <p id="-1047597021#jv7vm2_25">Le plugin s'adresse &agrave; <span class="control"
+                                                                                         id="-1047597021#jv7vm2_27">toute personne amen&eacute;e &agrave; concevoir ou analyser un syst&egrave;me complexe</span>
+                            dans un contexte professionnel ou acad&eacute;mique. Il cible en priorit&eacute; les
+                            praticiens de l'ing&eacute;nierie syst&egrave;mes qui utilisent d&eacute;j&agrave; IBM
+                            Rhapsody comme outil de mod&eacute;lisation au quotidien et qui souhaitent enrichir leur d&eacute;marche
+                            avec une analyse structur&eacute;e de la valeur per&ccedil;ue par les diff&eacute;rents
+                            acteurs du syst&egrave;me.</p>
+                        <blockquote class="prompt flex bordered-element-rounded tip detached">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+                                <path d="M18.339 7a6.982 6.982 0 0 0-6.3 4 6.982 6.982 0 0 0-6.3-4H3v10h2.739a6.983 6.983 0 0 1 6.3 4 6.582 6.582 0 0 1 6-4.033h2.994L21 7z"></path>
+                            </svg>
+                            <div class="prompt-content prompt-content-p">
+                                <div class="prompt-title">Informations</div>
+                                <p>L'utilisateur <b id="-1047597021#jv7vm2_28">N'a pas besoin d'&ecirc;tre expert des
+                                    graphiques SVN pour utiliser le plugin</b>. Une connaissance de base de SysML et de
+                                    Rhapsody est suffisante pour d&eacute;marrer.</p></div>
+                        </blockquote>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#2-2-contexte-d-utilisation"
+                                                  data-toc="2-2-contexte-d-utilisation#Cahier-des-charges.md-2-2-contexte-d-utilisation">
+                        2.2 Contexte d'utilisation</h3>
+                        <p id="-1047597021#jv7vm2_29">Le plugin est con&ccedil;u pour &ecirc;tre utilis&eacute; <span
+                                class="control" id="-1047597021#jv7vm2_31">en phase amont d'un projet</span>, lors de la
+                            d&eacute;finition de l'architecture syst&egrave;me. C'est &agrave; ce stade que les choix
+                            structurants sont faits et que disposer d'une vision claire et quantifi&eacute;e des priorit&eacute;s
+                            du syst&egrave;me apporte le plus de valeur.</p>
+                        <p id="-1047597021#jv7vm2_30">Il s'int&egrave;gre naturellement dans une d&eacute;marche <span
+                                class="control" id="-1047597021#jv7vm2_32">MBSE</span> (Model-Based Systems
+                            Engineering), o&ugrave; toutes les d&eacute;cisions d'architecture sont port&eacute;es par
+                            le mod&egrave;le.</p></section>
+                    <section class="detached"><h3 id="-1047597021#2-3-objectifs-poursuivis-par-l-utilisateur"
+                                                  data-toc="2-3-objectifs-poursuivis-par-l-utilisateur#Cahier-des-charges.md-2-3-objectifs-poursuivis-par-l-utilisateur">
+                        2.3 Objectifs poursuivis par l'utilisateur</h3>
+                        <ul class="list" id="-1047597021#jv7vm2_33" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_34"><p id="-1047597021#jv7vm2_39">Avoir une
+                                vision globale et structur&eacute;e du syst&egrave;me qu'il con&ccedil;oit ou
+                                analyse</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_35"><p id="-1047597021#jv7vm2_40">Prioriser les
+                                orientations de conception de mani&egrave;re objective et justifiable</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_36"><p id="-1047597021#jv7vm2_41">D&eacute;tecter
+                                en amont les conflits potentiels entre les diff&eacute;rents objectifs du
+                                syst&egrave;me</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_37"><p id="-1047597021#jv7vm2_42">Gagner du
+                                temps sur les calculs d'analyse en les automatisant</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_38"><p id="-1047597021#jv7vm2_43">Disposer de r&eacute;sultats
+                                directement int&eacute;gr&eacute;s dans le mod&egrave;le Rhapsody, sans ressaisie</p>
+                            </li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#2-4-attentes-vis-vis-du-plugin"
+                                                  data-toc="2-4-attentes-vis-vis-du-plugin#Cahier-des-charges.md-2-4-attentes-vis-vis-du-plugin">
+                        2.4 Attentes vis-&agrave;-vis du plugin</h3>
+                        <ul class="list" id="-1047597021#jv7vm2_44" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_45"><p id="-1047597021#jv7vm2_50">Prise en main
+                                rapide, sans formation approfondie sur les SVN</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_46"><p id="-1047597021#jv7vm2_51">Interface et
+                                ergonomie coh&eacute;rentes avec Rhapsody</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_47"><p id="-1047597021#jv7vm2_52">Calculs
+                                automatiques et r&eacute;sultats lisibles directement dans le mod&egrave;le</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_48"><p id="-1047597021#jv7vm2_53">Visualisation
+                                intuitive avec mise en &eacute;vidence des &eacute;l&eacute;ments prioritaires</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_49"><p id="-1047597021#jv7vm2_54">Tra&ccedil;abilit&eacute;
+                                des r&eacute;sultats vers les autres &eacute;l&eacute;ments du mod&egrave;le (exigences,
+                                fonctions)</p></li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#2-5-niveau-de-comp-tence-requis"
+                                                  data-toc="2-5-niveau-de-comp-tence-requis#Cahier-des-charges.md-2-5-niveau-de-comp-tence-requis">
+                        2.5 Niveau de comp&eacute;tence requis</h3>
+                        <div class="table-wrapper detached">
+                            <table id="-1047597021#jv7vm2_55">
+                                <tr class="header-row" id="-1047597021#jv7vm2_57">
+                                    <th id="-1047597021#jv7vm2_62"><p>Domaine</p></th>
+                                    <th id="-1047597021#jv7vm2_63"><p>Niveau requis</p></th>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_58">
+                                    <td id="-1047597021#jv7vm2_64"><p>SysML</p></td>
+                                    <td id="-1047597021#jv7vm2_65"><p>Interm&eacute;diaire</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_59">
+                                    <td id="-1047597021#jv7vm2_66"><p>IBM Rhapsody</p></td>
+                                    <td id="-1047597021#jv7vm2_67"><p>Interm&eacute;diaire</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_60">
+                                    <td id="-1047597021#jv7vm2_68"><p>Graphiques SVN</p></td>
+                                    <td id="-1047597021#jv7vm2_69"><p>Aucun pr&eacute;requis</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_61">
+                                    <td id="-1047597021#jv7vm2_70"><p>Scripting / d&eacute;veloppement</p></td>
+                                    <td id="-1047597021#jv7vm2_71"><p>Non requis</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </section>
+                </section>
+                <section class="detached"><h2 id="-1047597021#3-objectifs-du-diagramme-svn"
+                                              data-toc="3-objectifs-du-diagramme-svn#Cahier-des-charges.md-3-objectifs-du-diagramme-svn">
+                    3. Objectifs du diagramme SVN</h2>
+                    <section class="detached"><h3 id="-1047597021#3-1-mod-liser-la-structure-de-valeur-d-un-syst-me"
+                                                  data-toc="3-1-mod-liser-la-structure-de-valeur-d-un-syst-me#Cahier-des-charges.md-3-1-mod-liser-la-structure-de-valeur-d-un-syst-me">
+                        3.1 Mod&eacute;liser la structure de valeur d'un syst&egrave;me</h3>
+                        <p id="-1047597021#jv7vm2_75">Le diagramme permet de repr&eacute;senter graphiquement un syst&egrave;me
+                            et l'ensemble des acteurs qui gravitent autour de lui. Chaque relation entre un acteur et le
+                            syst&egrave;me, ou entre deux acteurs, est mod&eacute;lis&eacute;e comme un
+                            <span class="control" id="-1047597021#jv7vm2_76">flux de valeur orient&eacute; et pond&eacute;r&eacute;</span>.
+                            L'ensemble de ces flux forme un r&eacute;seau qui refl&egrave;te la r&eacute;alit&eacute;
+                            des &eacute;changes et des d&eacute;pendances du syst&egrave;me.</p></section>
+                    <section class="detached"><h3 id="-1047597021#3-2-quantifier-l-influence-des-acteurs"
+                                                  data-toc="3-2-quantifier-l-influence-des-acteurs#Cahier-des-charges.md-3-2-quantifier-l-influence-des-acteurs">
+                        3.2 Quantifier l'influence des acteurs</h3>
+                        <p id="-1047597021#jv7vm2_77">Sur la base du r&eacute;seau mod&eacute;lis&eacute;, le diagramme
+                            permet de calculer automatiquement <span class="control" id="-1047597021#jv7vm2_78">l'importance relative de chaque acteur</span>.
+                            Ce calcul repose sur les fomrules relatives aux SVN (Cameron, 2007) et les &eacute;quations
+                            formalis&eacute;es dans la recherche INCOSE 2018. Il produit un classement objectif qui
+                            pourra servir de support dans tout type de d&eacute;marche de d&eacute;veloppement.</p>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#3-3-informer-les-choix-d-architecture"
+                                                  data-toc="3-3-informer-les-choix-d-architecture#Cahier-des-charges.md-3-3-informer-les-choix-d-architecture">
+                        3.3 Informer les choix d'architecture</h3>
+                        <p id="-1047597021#jv7vm2_79">Les r&eacute;sultats issus du diagramme SVN ont vocation &agrave;
+                            se propager dans le reste du mod&egrave;le syst&egrave;me. Ils permettent de hi&eacute;rarchiser
+                            les exigences, de pond&eacute;rer les objectifs syst&egrave;me et d'identifier les conflits
+                            potentiels entre fonctions, en donnant &agrave; l'architecte une <span class="control"
+                                                                                                   id="-1047597021#jv7vm2_82">base quantitative pour arbitrer ses trade-offs</span>.
+                        </p>
+                        <blockquote class="prompt flex bordered-element-rounded tip detached">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+                                <path d="M18.339 7a6.982 6.982 0 0 0-6.3 4 6.982 6.982 0 0 0-6.3-4H3v10h2.739a6.983 6.983 0 0 1 6.3 4 6.582 6.582 0 0 1 6-4.033h2.994L21 7z"></path>
+                            </svg>
+                            <div class="prompt-content prompt-content-p">
+                                <div class="prompt-title">R&eacute;sum&eacute;</div>
+                                <p>Le diagramme SVN poursuit trois objectifs compl&eacute;mentaires : </p>
+                                <ul class="list" id="-1047597021#jv7vm2_83" start="1">
+                                    <li class="list-item" id="-1047597021#jv7vm2_85"><p id="-1047597021#jv7vm2_88">Repr&eacute;senter
+                                        graphiquement les flux de valeur entre les acteurs d'un syst&egrave;me</p></li>
+                                    <li class="list-item" id="-1047597021#jv7vm2_86"><p id="-1047597021#jv7vm2_89">
+                                        Calculer automatiquement l'importance relative de chaque acteur</p></li>
+                                    <li class="list-item" id="-1047597021#jv7vm2_87"><p id="-1047597021#jv7vm2_90">
+                                        Propager ces r&eacute;sultats dans le mod&egrave;le syst&egrave;me pour informer
+                                        les choix d'architecture et arbitrer les trade-offs.</p></li>
+                                </ul>
+                                <p id="-1047597021#jv7vm2_84"><span class="control" id="-1047597021#jv7vm2_91">Ces trois axes sont les points centraux ajout&eacute;s par ce plugin.</span>
+                                </p></div>
+                        </blockquote>
+                    </section>
+                </section>
+                <section class="detached"><h2 id="-1047597021#4-fonctions-du-plugin"
+                                              data-toc="4-fonctions-du-plugin#Cahier-des-charges.md-4-fonctions-du-plugin">
+                    4. Fonctions du plugin</h2>
+                    <section class="detached"><h3 id="-1047597021#4-1-gestion-des-l-ments-du-graphe"
+                                                  data-toc="4-1-gestion-des-l-ments-du-graphe#Cahier-des-charges.md-4-1-gestion-des-l-ments-du-graphe">
+                        4.1 Gestion des &eacute;l&eacute;ments du graphe</h3>
+                        <section class="detached"><h4
+                                id="-1047597021#4-1-1-liste-des-l-ments-disponibles-et-dessinables"
+                                data-toc="4-1-1-liste-des-l-ments-disponibles-et-dessinables#Cahier-des-charges.md-4-1-1-liste-des-l-ments-disponibles-et-dessinables">
+                            4.1.1 Liste des &eacute;l&eacute;ments disponibles et dessinables</h4>
+                            <ul class="list" id="-1047597021#jv7vm2_97" start="1">
+                                <li class="list-item" id="-1047597021#jv7vm2_98"><p id="-1047597021#jv7vm2_101">
+                                    Stakeholder</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_99"><p id="-1047597021#jv7vm2_102">Syst&egrave;me</p>
+                                </li>
+                                <li class="list-item" id="-1047597021#jv7vm2_100"><p id="-1047597021#jv7vm2_103">
+                                    Arcs</p></li>
+                            </ul>
+                        </section>
+                        <section class="detached"><h4 id="-1047597021#4-1-2-fonctions-possibles-sur-ces-l-ments"
+                                                      data-toc="4-1-2-fonctions-possibles-sur-ces-l-ments#Cahier-des-charges.md-4-1-2-fonctions-possibles-sur-ces-l-ments">
+                            4.1.2 Fonctions possibles sur ces &eacute;l&eacute;ments</h4>
+                            <ul class="list" id="-1047597021#jv7vm2_104" start="1">
+                                <li class="list-item" id="-1047597021#jv7vm2_106"><p id="-1047597021#jv7vm2_109">Ajouter
+                                    et supprimer des &eacute;l&eacute;ments sur le graphe</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_107"><p id="-1047597021#jv7vm2_110">
+                                    Modifier les propri&eacute;t&eacute;s d'un &eacute;l&eacute;ment existant :</p>
+                                    <ul class="list" id="-1047597021#jv7vm2_111" start="1">
+                                        <li class="list-item" id="-1047597021#jv7vm2_112"><p
+                                                id="-1047597021#jv7vm2_116">nom</p></li>
+                                        <li class="list-item" id="-1047597021#jv7vm2_113"><p
+                                                id="-1047597021#jv7vm2_117">description</p></li>
+                                        <li class="list-item" id="-1047597021#jv7vm2_114"><p
+                                                id="-1047597021#jv7vm2_118">pond&eacute;ration (arcs)</p></li>
+                                        <li class="list-item" id="-1047597021#jv7vm2_115"><p
+                                                id="-1047597021#jv7vm2_119">couleur (en fonction de l'&eacute;l&eacute;ment)</p>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="list-item" id="-1047597021#jv7vm2_108"><p id="-1047597021#jv7vm2_120">Changer
+                                    d'&eacute;chelle dans l'hypergraphe</p></li>
+                            </ul>
+                            <blockquote class="prompt flex bordered-element-rounded warning detached">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+                                    <path d="M12.946 3.552L21.52 18.4c.424.735.33 1.6-.519 1.6H3.855c-.85 0-1.817-.865-1.392-1.6l8.573-14.848a1.103 1.103 0 0 1 1.91 0zm.545 12.948a1.5 1.5 0 1 0-1.5 1.5 1.5 1.5 0 0 0 1.5-1.5zM13 8h-2v5h2z"></path>
+                                </svg>
+                                <div class="prompt-content prompt-content-p">
+                                    <div class="prompt-title">Attention</div>
+                                    <p><b id="-1047597021#jv7vm2_121">Un SVN est un hypergraphe</b>. Il est donc
+                                        possible de red&eacute;finir &agrave; l'int&eacute;rieur d'un stakeholder un SVN
+                                        qui sera consid&eacute;r&eacute; comme une seule entit&eacute; dans le graphe
+                                        parent.</p></div>
+                            </blockquote>
+                        </section>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#4-2-calcul-et-classement-des-acteurs"
+                                                  data-toc="4-2-calcul-et-classement-des-acteurs#Cahier-des-charges.md-4-2-calcul-et-classement-des-acteurs">
+                        4.2 Calcul et classement des acteurs</h3>
+                        <div class="detached mermaid" id="-1047597021#jv7vm2_122">
+                            <div>
+                                <mjx-container class="MathJax" jax="SVG" display="true">
+                                    <svg style="vertical-align: -2.316ex;" xmlns="http://www.w3.org/2000/svg"
+                                         width="19.623ex" height="5.951ex" role="img" focusable="false"
+                                         viewBox="0 -1606.9 8673.3 2630.6">
+                                        <g stroke="currentColor" fill="currentColor" stroke-width="0"
+                                           transform="scale(1,-1)">
+                                            <g data-mml-node="math">
+                                                <g data-mml-node="TeXAtom" data-mjx-texclass="ORD">
+                                                    <g data-mml-node="mover">
+                                                        <g data-mml-node="mi">
+                                                            <path data-c="1D43C"
+                                                                  d="M43 1Q26 1 26 10Q26 12 29 24Q34 43 39 45Q42 46 54 46H60Q120 46 136 53Q137 53 138 54Q143 56 149 77T198 273Q210 318 216 344Q286 624 286 626Q284 630 284 631Q274 637 213 637H193Q184 643 189 662Q193 677 195 680T209 683H213Q285 681 359 681Q481 681 487 683H497Q504 676 504 672T501 655T494 639Q491 637 471 637Q440 637 407 634Q393 631 388 623Q381 609 337 432Q326 385 315 341Q245 65 245 59Q245 52 255 50T307 46H339Q345 38 345 37T342 19Q338 6 332 0H316Q279 2 179 2Q143 2 113 2T65 2T43 1Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mo"
+                                                           transform="translate(379,239) translate(-250 0)">
+                                                            <path data-c="2D9"
+                                                                  d="M190 609Q190 637 208 653T252 669Q275 667 292 652T309 609Q309 579 292 564T250 549Q225 549 208 564T190 609Z"></path>
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                                <g data-mml-node="mo" transform="translate(504,0)">
+                                                    <path data-c="28"
+                                                          d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path>
+                                                </g>
+                                                <g data-mml-node="mi" transform="translate(893,0)">
+                                                    <path data-c="1D460"
+                                                          d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path>
+                                                </g>
+                                                <g data-mml-node="msub" transform="translate(1362,0)">
+                                                    <g data-mml-node="mi">
+                                                        <path data-c="210E"
+                                                              d="M137 683Q138 683 209 688T282 694Q294 694 294 685Q294 674 258 534Q220 386 220 383Q220 381 227 388Q288 442 357 442Q411 442 444 415T478 336Q478 285 440 178T402 50Q403 36 407 31T422 26Q450 26 474 56T513 138Q516 149 519 151T535 153Q555 153 555 145Q555 144 551 130Q535 71 500 33Q466 -10 419 -10H414Q367 -10 346 17T325 74Q325 90 361 192T398 345Q398 404 354 404H349Q266 404 205 306L198 293L164 158Q132 28 127 16Q114 -11 83 -11Q69 -11 59 -2T48 16Q48 30 121 320L195 616Q195 629 188 632T149 637H128Q122 643 122 645T124 664Q129 683 137 683Z"></path>
+                                                    </g>
+                                                    <g data-mml-node="mi" transform="translate(609,-150) scale(0.707)">
+                                                        <path data-c="1D456"
+                                                              d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path>
+                                                    </g>
+                                                </g>
+                                                <g data-mml-node="mo" transform="translate(2265,0)">
+                                                    <path data-c="29"
+                                                          d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path>
+                                                </g>
+                                                <g data-mml-node="mo" transform="translate(2931.7,0)">
+                                                    <path data-c="3D"
+                                                          d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path>
+                                                </g>
+                                                <g data-mml-node="mfrac" transform="translate(3987.5,0)">
+                                                    <g data-mml-node="mrow" transform="translate(220,856.9)">
+                                                        <g data-mml-node="munder">
+                                                            <g data-mml-node="mo">
+                                                                <path data-c="2211"
+                                                                      d="M61 748Q64 750 489 750H913L954 640Q965 609 976 579T993 533T999 516H979L959 517Q936 579 886 621T777 682Q724 700 655 705T436 710H319Q183 710 183 709Q186 706 348 484T511 259Q517 250 513 244L490 216Q466 188 420 134T330 27L149 -187Q149 -188 362 -188Q388 -188 436 -188T506 -189Q679 -189 778 -162T936 -43Q946 -27 959 6H999L913 -249L489 -250Q65 -250 62 -248Q56 -246 56 -239Q56 -234 118 -161Q186 -81 245 -11L428 206Q428 207 242 462L57 717L56 728Q56 744 61 748Z"></path>
+                                                            </g>
+                                                            <g data-mml-node="TeXAtom"
+                                                               transform="translate(1089,-285.4) scale(0.707)"
+                                                               data-mjx-texclass="ORD">
+                                                                <g data-mml-node="mi">
+                                                                    <path data-c="1D459"
+                                                                          d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path>
+                                                                </g>
+                                                                <g data-mml-node="mo" transform="translate(298,0)">
+                                                                    <path data-c="2208"
+                                                                          d="M84 250Q84 372 166 450T360 539Q361 539 377 539T419 540T469 540H568Q583 532 583 520Q583 511 570 501L466 500Q355 499 329 494Q280 482 242 458T183 409T147 354T129 306T124 272V270H568Q583 262 583 250T568 230H124V228Q124 207 134 177T167 112T231 48T328 7Q355 1 466 0H570Q583 -10 583 -20Q583 -32 568 -40H471Q464 -40 446 -40T417 -41Q262 -41 172 45Q84 127 84 250Z"></path>
+                                                                </g>
+                                                                <g data-mml-node="msub" transform="translate(965,0)">
+                                                                    <g data-mml-node="mi">
+                                                                        <path data-c="1D43F"
+                                                                              d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path>
+                                                                    </g>
+                                                                    <g data-mml-node="mi"
+                                                                       transform="translate(714,-150) scale(0.707)">
+                                                                        <path data-c="1D456"
+                                                                              d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path>
+                                                                    </g>
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                        <g data-mml-node="mi" transform="translate(2700.8,0)">
+                                                            <path data-c="1D460"
+                                                                  d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mo" transform="translate(3169.8,0)">
+                                                            <path data-c="28"
+                                                                  d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mi" transform="translate(3558.8,0)">
+                                                            <path data-c="1D459"
+                                                                  d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mo" transform="translate(3856.8,0)">
+                                                            <path data-c="29"
+                                                                  d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path>
+                                                        </g>
+                                                    </g>
+                                                    <g data-mml-node="mrow" transform="translate(335.6,-710)">
+                                                        <g data-mml-node="munder">
+                                                            <g data-mml-node="mo">
+                                                                <path data-c="2211"
+                                                                      d="M61 748Q64 750 489 750H913L954 640Q965 609 976 579T993 533T999 516H979L959 517Q936 579 886 621T777 682Q724 700 655 705T436 710H319Q183 710 183 709Q186 706 348 484T511 259Q517 250 513 244L490 216Q466 188 420 134T330 27L149 -187Q149 -188 362 -188Q388 -188 436 -188T506 -189Q679 -189 778 -162T936 -43Q946 -27 959 6H999L913 -249L489 -250Q65 -250 62 -248Q56 -246 56 -239Q56 -234 118 -161Q186 -81 245 -11L428 206Q428 207 242 462L57 717L56 728Q56 744 61 748Z"></path>
+                                                            </g>
+                                                            <g data-mml-node="TeXAtom"
+                                                               transform="translate(1089,-285.4) scale(0.707)"
+                                                               data-mjx-texclass="ORD">
+                                                                <g data-mml-node="mi">
+                                                                    <path data-c="1D459"
+                                                                          d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path>
+                                                                </g>
+                                                                <g data-mml-node="mo" transform="translate(298,0)">
+                                                                    <path data-c="2208"
+                                                                          d="M84 250Q84 372 166 450T360 539Q361 539 377 539T419 540T469 540H568Q583 532 583 520Q583 511 570 501L466 500Q355 499 329 494Q280 482 242 458T183 409T147 354T129 306T124 272V270H568Q583 262 583 250T568 230H124V228Q124 207 134 177T167 112T231 48T328 7Q355 1 466 0H570Q583 -10 583 -20Q583 -32 568 -40H471Q464 -40 446 -40T417 -41Q262 -41 172 45Q84 127 84 250Z"></path>
+                                                                </g>
+                                                                <g data-mml-node="mi" transform="translate(965,0)">
+                                                                    <path data-c="1D43F"
+                                                                          d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path>
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                        <g data-mml-node="mi" transform="translate(2469.6,0)">
+                                                            <path data-c="1D460"
+                                                                  d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mo" transform="translate(2938.6,0)">
+                                                            <path data-c="28"
+                                                                  d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mi" transform="translate(3327.6,0)">
+                                                            <path data-c="1D459"
+                                                                  d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path>
+                                                        </g>
+                                                        <g data-mml-node="mo" transform="translate(3625.6,0)">
+                                                            <path data-c="29"
+                                                                  d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path>
+                                                        </g>
+                                                    </g>
+                                                    <rect width="4445.8" height="60" x="120" y="220"></rect>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </mjx-container>
+                            </div>
+                        </div>
+                        <ul class="list" id="-1047597021#jv7vm2_123" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_125"><p id="-1047597021#jv7vm2_131">Calculer
+                                automatiquement les scores de <span class="control" id="-1047597021#jv7vm2_132">Value Path</span>
+                                et <span class="control" id="-1047597021#jv7vm2_133">Value Loop</span> &agrave; partir
+                                des pond&eacute;rations saisies</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_126"><p id="-1047597021#jv7vm2_134">Classer les
+                                acteurs par ordre d'importance selon l'&eacute;quation de priorisation (Cameron,
+                                Equation 2)</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_127"><p id="-1047597021#jv7vm2_135">Mettre
+                                &agrave; jour le classement dynamiquement &agrave; chaque modification du graphe</p>
+                            </li>
+                            <li class="list-item" id="-1047597021#jv7vm2_128"><p id="-1047597021#jv7vm2_136">Mettre
+                                &agrave; jour dynamiquement le style des &eacute;l&eacute;ments graphiques (couleur,
+                                graisse de la police, etc.)</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_129"><p id="-1047597021#jv7vm2_137">Filtrer
+                                l'affichage pour ne montrer qu'un sous-ensemble d'acteurs ou de relations</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_130"><p id="-1047597021#jv7vm2_138">Afficher ou
+                                masquer les pond&eacute;rations des arcs selon le niveau de d&eacute;tail souhait&eacute;</p>
+                            </li>
+                        </ul>
+                        <blockquote class="prompt flex bordered-element-rounded tip detached">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+                                <path d="M18.339 7a6.982 6.982 0 0 0-6.3 4 6.982 6.982 0 0 0-6.3-4H3v10h2.739a6.983 6.983 0 0 1 6.3 4 6.582 6.582 0 0 1 6-4.033h2.994L21 7z"></path>
+                            </svg>
+                            <div class="prompt-content prompt-content-p">
+                                <div class="prompt-title">Information</div>
+                                <p>L'un des apports majeurs du plugin est d'automatiser les calculs d&eacute;finis par
+                                    les SVN, qui sont fastidieux &agrave; r&eacute;aliser manuellement. L'utilisateur
+                                    saisit les donn&eacute;es, le plugin produit ensuite le classement sans intervention
+                                    suppl&eacute;mentaire. Ce classement pourra &ecirc;tre affich&eacute; directement
+                                    depuis l'interface utilisateur</p></div>
+                        </blockquote>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#4-3-visualisation-et-code-couleur"
+                                                  data-toc="4-3-visualisation-et-code-couleur#Cahier-des-charges.md-4-3-visualisation-et-code-couleur">
+                        4.3 Visualisation et code couleur</h3>
+                        <ul class="list" id="-1047597021#jv7vm2_139" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_141"><p id="-1047597021#jv7vm2_143">Mettre en
+                                &eacute;vidence les <span class="control" id="-1047597021#jv7vm2_144">Value Loops</span>
+                                lors de la s&eacute;lection d'un acteur</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_142"><p id="-1047597021#jv7vm2_145">
+                                Afficher/cacher des &eacute;l&eacute;ments pour permettre &agrave; l'utilisateur de se
+                                concentrer sur le reste du graphe</p></li>
+                        </ul>
+                    </section>
+                </section>
+                <section class="detached"><h2 id="-1047597021#5-mod-lisation-des-l-ments"
+                                              data-toc="5-mod-lisation-des-l-ments#Cahier-des-charges.md-5-mod-lisation-des-l-ments">
+                    5. Mod&eacute;lisation des &eacute;l&eacute;ments</h2>
+                    <section class="detached"><h3 id="-1047597021#5-1-mod-lisation-d-un-stakeholder"
+                                                  data-toc="5-1-mod-lisation-d-un-stakeholder#Cahier-des-charges.md-5-1-mod-lisation-d-un-stakeholder">
+                        5.1 Mod&eacute;lisation d'un Stakeholder</h3>
+                        <div class="table-wrapper detached">
+                            <table id="-1047597021#jv7vm2_150">
+                                <tr class="header-row" id="-1047597021#jv7vm2_153">
+                                    <th id="-1047597021#jv7vm2_159"><p>Attribut</p></th>
+                                    <th id="-1047597021#jv7vm2_160"><p>Type</p></th>
+                                    <th id="-1047597021#jv7vm2_161"><p>Description</p></th>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_154">
+                                    <td id="-1047597021#jv7vm2_162"><p>nom</p></td>
+                                    <td id="-1047597021#jv7vm2_163"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_164"><p>Nom de la partie prenante</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_155">
+                                    <td id="-1047597021#jv7vm2_165"><p>desc</p></td>
+                                    <td id="-1047597021#jv7vm2_166"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_167"><p>Description</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_156">
+                                    <td id="-1047597021#jv7vm2_168"><p>type</p></td>
+                                    <td id="-1047597021#jv7vm2_169"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_170"><p>Cat&eacute;gorie de la partie prenante</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_157">
+                                    <td id="-1047597021#jv7vm2_171"><p>color</p></td>
+                                    <td id="-1047597021#jv7vm2_172"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_173"><p>Couleur d'affichage</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_158">
+                                    <td id="-1047597021#jv7vm2_174"><p>importance</p></td>
+                                    <td id="-1047597021#jv7vm2_175"><p>Float</p></td>
+                                    <td id="-1047597021#jv7vm2_176"><p>Calcul&eacute; : <span class="inline-code"
+                                                                                              id="-1047597021#jv7vm2_177">Supply_Importance &times; Benefits_Requirements</span>
+                                    </p></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <p id="-1047597021#jv7vm2_151"><span class="control" id="-1047597021#jv7vm2_178">Comportements attendus :</span>
+                        </p>
+                        <ul class="list" id="-1047597021#jv7vm2_152" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_179"><p id="-1047597021#jv7vm2_181">Cr&eacute;er
+                                des arcs depuis un stakeholder</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_180"><p id="-1047597021#jv7vm2_182">Un
+                                stakeholder peut lui-m&ecirc;me &ecirc;tre un Stakeholder Value Network
+                                imbriqu&eacute;</p></li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#5-2-mod-lisation-du-system"
+                                                  data-toc="5-2-mod-lisation-du-system#Cahier-des-charges.md-5-2-mod-lisation-du-system">
+                        5.2 Mod&eacute;lisation du System</h3>
+                        <div class="table-wrapper detached">
+                            <table id="-1047597021#jv7vm2_183">
+                                <tr class="header-row" id="-1047597021#jv7vm2_186">
+                                    <th id="-1047597021#jv7vm2_189"><p>Attribut</p></th>
+                                    <th id="-1047597021#jv7vm2_190"><p>Type</p></th>
+                                    <th id="-1047597021#jv7vm2_191"><p>Description</p></th>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_187">
+                                    <td id="-1047597021#jv7vm2_192"><p>name</p></td>
+                                    <td id="-1047597021#jv7vm2_193"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_194"><p>Nom du syst&egrave;me</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_188">
+                                    <td id="-1047597021#jv7vm2_195"><p>color</p></td>
+                                    <td id="-1047597021#jv7vm2_196"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_197"><p>Couleur d'affichage</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <p id="-1047597021#jv7vm2_184"><span class="control" id="-1047597021#jv7vm2_198">Comportements attendus :</span>
+                        </p>
+                        <ul class="list" id="-1047597021#jv7vm2_185" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_199"><p id="-1047597021#jv7vm2_202">&Eacute;crire
+                                sa description</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_200"><p id="-1047597021#jv7vm2_203">D&eacute;finir
+                                son design visuel</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_201"><p id="-1047597021#jv7vm2_204">Cr&eacute;er
+                                des arcs depuis le syst&egrave;me</p></li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#5-3-mod-lisation-d-un-arc"
+                                                  data-toc="5-3-mod-lisation-d-un-arc#Cahier-des-charges.md-5-3-mod-lisation-d-un-arc">
+                        5.3 Mod&eacute;lisation d'un Arc</h3>
+                        <div class="table-wrapper detached">
+                            <table id="-1047597021#jv7vm2_205">
+                                <tr class="header-row" id="-1047597021#jv7vm2_208">
+                                    <th id="-1047597021#jv7vm2_217"><p>Attribut</p></th>
+                                    <th id="-1047597021#jv7vm2_218"><p>Type</p></th>
+                                    <th id="-1047597021#jv7vm2_219"><p>Description</p></th>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_209">
+                                    <td id="-1047597021#jv7vm2_220"><p>name</p></td>
+                                    <td id="-1047597021#jv7vm2_221"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_222"><p>Nom de l'arc</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_210">
+                                    <td id="-1047597021#jv7vm2_223"><p>desc</p></td>
+                                    <td id="-1047597021#jv7vm2_224"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_225"><p>Description</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_211">
+                                    <td id="-1047597021#jv7vm2_226"><p>type</p></td>
+                                    <td id="-1047597021#jv7vm2_227"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_228"><p>Type de relation</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_212">
+                                    <td id="-1047597021#jv7vm2_229"><p>value</p></td>
+                                    <td id="-1047597021#jv7vm2_230"><p>Float</p></td>
+                                    <td id="-1047597021#jv7vm2_231"><p>Pond&eacute;ration (score de la Value Path)</p>
+                                    </td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_213">
+                                    <td id="-1047597021#jv7vm2_232"><p>input</p></td>
+                                    <td id="-1047597021#jv7vm2_233"><p>StakeHolder</p></td>
+                                    <td id="-1047597021#jv7vm2_234"><p>N&oelig;ud source</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_214">
+                                    <td id="-1047597021#jv7vm2_235"><p>output</p></td>
+                                    <td id="-1047597021#jv7vm2_236"><p>StakeHolder</p></td>
+                                    <td id="-1047597021#jv7vm2_237"><p>N&oelig;ud cible</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_215">
+                                    <td id="-1047597021#jv7vm2_238"><p>color</p></td>
+                                    <td id="-1047597021#jv7vm2_239"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_240"><p>Couleur d'affichage</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_216">
+                                    <td id="-1047597021#jv7vm2_241"><p>form</p></td>
+                                    <td id="-1047597021#jv7vm2_242"><p>String</p></td>
+                                    <td id="-1047597021#jv7vm2_243"><p>Forme graphique</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <p id="-1047597021#jv7vm2_206"><span class="control" id="-1047597021#jv7vm2_244">Comportements attendus :</span>
+                        </p>
+                        <ul class="list" id="-1047597021#jv7vm2_207" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_245"><p id="-1047597021#jv7vm2_250">&Eacute;crire
+                                la pond&eacute;ration de l'arc</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_246"><p id="-1047597021#jv7vm2_251">D&eacute;finir
+                                sa forme graphique</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_247"><p id="-1047597021#jv7vm2_252">&Eacute;crire
+                                sa description</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_248"><p id="-1047597021#jv7vm2_253">Associer un
+                                arc &agrave; un bloc (Stakeholder ou System)</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_249"><p id="-1047597021#jv7vm2_254">D&eacute;finir
+                                sa couleur</p></li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#5-4-diagramme-global"
+                                                  data-toc="5-4-diagramme-global#Cahier-des-charges.md-5-4-diagramme-global">
+                        5.4 Diagramme global</h3>
+                        <div class="container">
+                            <figure class="image-container"><img class="center image image-size"
+                                                                 id="-1047597021#jv7vm2_255" alt="Diagramme plugin"
+                                                                 title="Diagramme plugin"
+                                                                 src="/home/antoine/IdeaProjects/DE50/Cahier_des_charges/Writerside/images/diagramme.png"
+                                                                 width="4616" height="5355">
+                                <figcaption class="center-text">Diagramme plugin</figcaption>
+                            </figure>
+                        </div>
+                    </section>
+                </section>
+                <section class="detached"><h2 id="-1047597021#6-sp-cifications-techniques"
+                                              data-toc="6-sp-cifications-techniques#Cahier-des-charges.md-6-sp-cifications-techniques">
+                    6. Sp&eacute;cifications techniques</h2>
+                    <section class="detached"><h3 id="-1047597021#6-1-approche-technique-g-n-rale"
+                                                  data-toc="6-1-approche-technique-g-n-rale#Cahier-des-charges.md-6-1-approche-technique-g-n-rale">
+                        6.1 Approche technique g&eacute;n&eacute;rale</h3>
+                        <p id="-1047597021#jv7vm2_260">Le plugin est d&eacute;velopp&eacute; comme une <span
+                                class="control" id="-1047597021#jv7vm2_263">extension des profils BDD</span> (Block
+                            Definition Diagram) <span class="control" id="-1047597021#jv7vm2_264">et IBD</span>
+                            (Internal Block Diagram) d&eacute;j&agrave; pr&eacute;sents dans Rhapsody. Il ne cr&eacute;e
+                            pas un nouveau type de diagramme from scratch, mais enrichit les diagrammes existants avec
+                            les concepts propres aux graphique SVN.</p>
+                        <p id="-1047597021#jv7vm2_261">Cette approche garantit :</p>
+                        <ul class="list" id="-1047597021#jv7vm2_262" start="1">
+                            <li class="list-item" id="-1047597021#jv7vm2_265"><p id="-1047597021#jv7vm2_268">La
+                                compatibilit&eacute; avec les mod&egrave;les Rhapsody existants</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_266"><p id="-1047597021#jv7vm2_269">La coh&eacute;rence
+                                visuelle et comportementale avec l'environnement natif</p></li>
+                            <li class="list-item" id="-1047597021#jv7vm2_267"><p id="-1047597021#jv7vm2_270">Une courbe
+                                d'apprentissage r&eacute;duite pour l'utilisateur</p></li>
+                        </ul>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#6-2-langage-et-api"
+                                                  data-toc="6-2-langage-et-api#Cahier-des-charges.md-6-2-langage-et-api">
+                        6.2 Langage et API</h3>
+                        <p id="-1047597021#jv7vm2_271">Le plugin est d&eacute;velopp&eacute; en <span class="control"
+                                                                                                      id="-1047597021#jv7vm2_273">Java</span>
+                            via l'API officielle d'IBM Rhapsody.</p>
+                        <div class="table-wrapper detached">
+                            <table id="-1047597021#jv7vm2_272">
+                                <tr class="header-row" id="-1047597021#jv7vm2_274">
+                                    <th id="-1047597021#jv7vm2_279"><p>Composant</p></th>
+                                    <th id="-1047597021#jv7vm2_280"><p>Choix technique</p></th>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_275">
+                                    <td id="-1047597021#jv7vm2_281"><p>Langage de d&eacute;veloppement</p></td>
+                                    <td id="-1047597021#jv7vm2_282"><p>Java</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_276">
+                                    <td id="-1047597021#jv7vm2_283"><p>Version Java</p></td>
+                                    <td id="-1047597021#jv7vm2_284"><p>1.8</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_277">
+                                    <td id="-1047597021#jv7vm2_285"><p>Interface d'int&eacute;gration</p></td>
+                                    <td id="-1047597021#jv7vm2_286"><p>Rhapsody Open API</p></td>
+                                </tr>
+                                <tr class="" id="-1047597021#jv7vm2_278">
+                                    <td id="-1047597021#jv7vm2_287"><p>Type d'extension</p></td>
+                                    <td id="-1047597021#jv7vm2_288"><p>Plugin Rhapsody (.jar)</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </section>
+                    <section class="detached"><h3 id="-1047597021#6-3-extension-des-profils-bdd-et-ibd"
+                                                  data-toc="6-3-extension-des-profils-bdd-et-ibd#Cahier-des-charges.md-6-3-extension-des-profils-bdd-et-ibd">
+                        6.3 Extension des profils BDD et IBD</h3>
+                        <section class="detached"><h4 id="-1047597021#bdd-block-definition-diagram"
+                                                      data-toc="bdd-block-definition-diagram#Cahier-des-charges.md-bdd-block-definition-diagram">
+                            BDD (Block Definition Diagram)</h4>
+                            <p id="-1047597021#jv7vm2_291">Le BDD est &eacute;tendu pour supporter la mod&eacute;lisation
+                                du graphe SVN :</p>
+                            <ul class="list" id="-1047597021#jv7vm2_292" start="1">
+                                <li class="list-item" id="-1047597021#jv7vm2_293"><p id="-1047597021#jv7vm2_296">Ajout
+                                    du st&eacute;r&eacute;otype <span class="inline-code" id="-1047597021#jv7vm2_297">&laquo;stakeholder&raquo;</span>
+                                    applicable aux blocs SysML</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_294"><p id="-1047597021#jv7vm2_298">Ajout
+                                    du st&eacute;r&eacute;otype <span class="inline-code" id="-1047597021#jv7vm2_299">&laquo;svnSystem&raquo;</span>
+                                    pour identifier le syst&egrave;me central de l'analyse</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_295"><p id="-1047597021#jv7vm2_300">Ajout
+                                    du st&eacute;r&eacute;otype <span class="inline-code" id="-1047597021#jv7vm2_302">&laquo;valueArc&raquo;</span>
+                                    applicable aux associations, portant les tag values :</p>
+                                    <ul class="list" id="-1047597021#jv7vm2_301" start="1">
+                                        <li class="list-item" id="-1047597021#jv7vm2_303"><p
+                                                id="-1047597021#jv7vm2_305"><span class="inline-code"
+                                                                                  id="-1047597021#jv7vm2_306">benefitRanking</span>:
+                                            <span class="inline-code" id="-1047597021#jv7vm2_307">MIGHT_BE</span>/<span
+                                                    class="inline-code"
+                                                    id="-1047597021#jv7vm2_308">SHOULD_BE</span>/<span
+                                                    class="inline-code" id="-1047597021#jv7vm2_309">MUST_BE</span></p>
+                                        </li>
+                                        <li class="list-item" id="-1047597021#jv7vm2_304"><p
+                                                id="-1047597021#jv7vm2_310"><span class="inline-code"
+                                                                                  id="-1047597021#jv7vm2_311">supplyImportance</span>:
+                                            <span class="inline-code" id="-1047597021#jv7vm2_312">LOW</span>/<span
+                                                    class="inline-code" id="-1047597021#jv7vm2_313">MEDIUM</span>/<span
+                                                    class="inline-code" id="-1047597021#jv7vm2_314">HIGH</span></p></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </section>
+                        <section class="detached"><h4 id="-1047597021#ibd-internal-block-diagram"
+                                                      data-toc="ibd-internal-block-diagram#Cahier-des-charges.md-ibd-internal-block-diagram">
+                            IBD (Internal Block Diagram)</h4>
+                            <p id="-1047597021#jv7vm2_315">L'IBD est &eacute;tendu pour repr&eacute;senter les flux de
+                                valeur entre instances :</p>
+                            <ul class="list" id="-1047597021#jv7vm2_316" start="1">
+                                <li class="list-item" id="-1047597021#jv7vm2_317"><p id="-1047597021#jv7vm2_320">
+                                    Visualisation des flux orient&eacute;s entre ports des blocs stakeholders</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_318"><p id="-1047597021#jv7vm2_321">
+                                    Affichage des pond&eacute;rations sur les connecteurs</p></li>
+                                <li class="list-item" id="-1047597021#jv7vm2_319"><p id="-1047597021#jv7vm2_322">Mise en
+                                    &eacute;vidence des Value Loops sur s&eacute;lection d'un &eacute;l&eacute;ment</p>
+                                </li>
+                            </ul>
+                        </section>
+                    </section>
+                </section>
+            </article>
+        </div>
+    </section>
+</div>
+</body>
+</html>

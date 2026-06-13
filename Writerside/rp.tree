@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="rp"
+                 name="Rapport projet"
+                 start-page="00-introduction.md">
+
+    <toc-element topic="00-introduction.md"/>
+
+    <toc-element topic="partie-rapport.md">
+        <toc-element topic="A-theorie-svn.md"/>
+        <toc-element topic="B-planification.md"/>
+        <toc-element topic="C-conception-architecture.md"/>
+        <toc-element topic="D-tests-validation.md"/>
+    </toc-element>
+
+    <toc-element topic="partie-specification.md">
+        <toc-element topic="01-description-generale.md"/>
+        <toc-element topic="02-besoins-fonctionnels.md"/>
+        <toc-element topic="03-structures-donnees.md"/>
+        <toc-element topic="04-interfaces-externes.md"/>
+        <toc-element topic="05-avancement-projet.md"/>
+    </toc-element>
+
+    <toc-element topic="X-references.md"/>
+    <toc-element topic="Y-index-glossaire.md"/>
+    <toc-element topic="Z-annexes.md"/>
+</instance-profile>

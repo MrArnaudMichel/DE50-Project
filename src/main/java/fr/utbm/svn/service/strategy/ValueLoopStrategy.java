@@ -35,13 +35,14 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             loop.setScore(1);
             for (double s : loop.getArcScores()) loop.setScore(loop.getScore() * s);
             totalLoopScore += loop.getScore();
-            logger.log("Loop " + loop.getNodes() + " score=" + loop.getScore());
+            logger.log("Loop " + loop.getNodes().values() + " score=" + loop.getScore());
         }
+        logger.log("Total Loop Score : " + String.format("%.4f", totalLoopScore));
 
         for (Stakeholder sh : stakeholders) {
             double sumLoopsContaining = 0;
             for (ValueLoop loop : loops) {
-                if (loop.getNodes().contains(sh.getGUID())) {
+                if (loop.getNodes().containsKey(sh.getGUID())) {
                     sumLoopsContaining += loop.getScore();
                 }
             }
@@ -90,8 +91,8 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
         List<ValueArc> startingArcs = graph.getOrDefault(systemGUID, Collections.emptyList());
         for (ValueArc startArc : startingArcs) {
-            List<String> pathNodes = new ArrayList<>();
-            pathNodes.add(system.getName()); // start node
+            Map<String, String> pathNodes = new HashMap<>();
+            pathNodes.put(systemGUID, system.getName()); // start node
             
             List<Double> pathScores = new ArrayList<>();
             pathScores.add(startArc.getScore());
@@ -110,14 +111,14 @@ public class ValueLoopStrategy implements ICalculationStrategy {
     }
 
     private void dfs(IRPModelElement current, IRPModelElement target, Map<String, List<ValueArc>> graph,
-                     List<String> pathNodes, List<Double> pathScores, Set<String> visited,
+                     Map<String, String> pathNodes, List<Double> pathScores, Set<String> visited,
                      List<ValueLoop> result) {
         String currentGUID = current.getGUID();
         String currentName = current.getName();
         String targetGUID = target.getGUID();
         if (currentGUID.equals(targetGUID)) {
-            List<String> loopNodes = new ArrayList<>(pathNodes);
-            loopNodes.add(target.getName());
+            Map<String, String> loopNodes = new HashMap<>(pathNodes);
+            loopNodes.put(targetGUID, target.getName());
             List<Double> loopScores = new ArrayList<>(pathScores);
             result.add(new ValueLoop(loopNodes, loopScores));
             return;
@@ -129,7 +130,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
 
         // Visiter le nœud
         visited.add(currentGUID);
-        pathNodes.add(currentName);
+        pathNodes.put(currentGUID, currentName);
 
         List<ValueArc> outgoingArcs = graph.getOrDefault(currentGUID, Collections.emptyList());
         for (ValueArc arc : outgoingArcs) {

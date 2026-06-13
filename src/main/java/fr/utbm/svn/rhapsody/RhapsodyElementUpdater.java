@@ -59,8 +59,9 @@ public class RhapsodyElementUpdater {
     public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
         StringBuilder detail = new StringBuilder();
+        assert loops != null;
         for (ValueLoop loop : loops) {
-            detail.append(loop.getNodes().toString())
+            detail.append(loop.getNodes().values())
                     .append("=")
                     .append(String.format("%.4f", loop.getScore()))
                     .append("; ");

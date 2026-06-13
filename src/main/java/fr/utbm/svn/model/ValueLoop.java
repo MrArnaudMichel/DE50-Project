@@ -1,15 +1,16 @@
 package fr.utbm.svn.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class ValueLoop {
-    final List<String> nodes;
+    final Map<String, String> nodes;
     final List<Double> arcScores;
     double score;
 
-    public ValueLoop(List<String> n, List<Double> s) { nodes = n; arcScores = s; }
+    public ValueLoop(Map<String, String> n, List<Double> s) { nodes = n; arcScores = s; }
 
-    public List<String> getNodes() {
+    public Map<String, String> getNodes() {
         return nodes;
     }
 

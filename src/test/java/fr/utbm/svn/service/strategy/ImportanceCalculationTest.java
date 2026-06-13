@@ -13,10 +13,13 @@ import static org.junit.Assert.*;
  * without any Rhapsody dependency, using simple structures.
  *
  * Tested algorithm:
- * 1. Build a directed graph (dependent → dependsOn) with scores
+ * 1. Build a directed graph (dependent -> dependsOn) with scores keyed by GUID
  * 2. Find all cycles (value loops) passing through the "System" node
  * 3. Score of each loop = product of its arc scores
- * 4. Importance of a stakeholder = sum of the scores of loops containing it / totalLoopScore
+ * 4. Importance of a stakeholder = sum of scores of loops containing it / totalLoopScore
+ *
+ * Note: nodes in a loop are stored as Map<String, String> (GUID -> Name),
+ * matching the actual ValueLoop class in fr.utbm.svn.model.
  */
 public class ImportanceCalculationTest {
 
@@ -24,67 +27,75 @@ public class ImportanceCalculationTest {
 
     // --- Simplified data structures ---
 
-    public static class ArcEdge {
-        final String target;
+    static class ArcEdge {
+        final String targetGuid;  // GUID of the  node
+        final String targetName;  // display name of the node
         final double score;
-        ArcEdge(String t, double s) { target = t; score = s; }
+        ArcEdge(String guid, String name, double s) { targetGuid = guid; targetName = name; score = s; }
     }
 
-    public static class LocalValueLoop {
-        final List<String> nodes;
+    static class LocalValueLoop {
+        final Map<String, String> nodes;  // GUID -> Name
         final List<Double> arcScores;
         double score;
-        LocalValueLoop(List<String> n, List<Double> s) { nodes = n; arcScores = s; }
+        LocalValueLoop(Map<String, String> n, List<Double> s) { nodes = n; arcScores = s; }
     }
 
-    // --- Reproduction of the loop detection logic (DFS) ---
+    /**
+     * Finds all loops starting and ending at systemGuid.
+     * The graph maps a node GUID to its outgoing ArcEdge list.
+     */
+    private static List<LocalValueLoop> findValueLoops(String systemGuid, String systemName,
+                                                       Map<String, List<ArcEdge>> graph) {
+        List<LocalValueLoop> result = new ArrayList<>();
+        if (!graph.containsKey(systemGuid)) return result;
 
-    private static List<LocalValueLoop> findValueLoops(String systemName,
-                                                   Map<String, List<ArcEdge>> graph) {
-        List<LocalValueLoop> result = new ArrayList<LocalValueLoop>();
-        if (!graph.containsKey(systemName)) return result;
+        for (ArcEdge startArc : graph.get(systemGuid)) {
+            Map<String, String> pathNodes = new LinkedHashMap<>();
+            pathNodes.put(systemGuid, systemName);
+            List<Double> pathScores = new ArrayList<>();
+            pathScores.add(startArc.score);
+            Set<String> visited = new HashSet<>();
+            visited.add(systemGuid);
 
-        Deque<Object[]> stack = new ArrayDeque<Object[]>();
-        stack.push(new Object[]{systemName, new ArrayList<String>(),
-                new ArrayList<Double>(), new HashSet<String>()});
-
-        while (!stack.isEmpty()) {
-            Object[] state = stack.pop();
-            String current = (String) state[0];
-            @SuppressWarnings("unchecked") List<String> path = (List<String>) state[1];
-            @SuppressWarnings("unchecked") List<Double> scores = (List<Double>) state[2];
-            @SuppressWarnings("unchecked") Set<String> visited = (Set<String>) state[3];
-
-            List<ArcEdge> neighbors = graph.getOrDefault(current, Collections.emptyList());
-            for (ArcEdge edge : neighbors) {
-                String next = edge.target;
-
-                if (next.equals(systemName) && !path.isEmpty()) {
-                    List<String> loopNodes = new ArrayList<>(path);
-                    loopNodes.add(systemName);
-                    List<Double> loopScores = new ArrayList<>(scores);
-                    loopScores.add(edge.score);
-                    LocalValueLoop valLoop = new LocalValueLoop(loopNodes, loopScores);
-                    result.add(valLoop);
-                    continue;
-                }
-                if (visited.contains(next)) continue;
-
-                Set<String> newVisited = new HashSet<>(visited);
-                newVisited.add(next);
-                List<String> newPath = new ArrayList<>(path);
-                newPath.add(next);
-                List<Double> newScores = new ArrayList<>(scores);
-                newScores.add(edge.score);
-                stack.push(new Object[]{next, newPath, newScores, newVisited});
-            }
+            dfs(startArc.targetGuid, startArc.targetName, systemGuid, systemName,
+                graph, pathNodes, pathScores, visited, result);
         }
         return result;
     }
 
-    // --- Calculation of importance scores ---
+    private static void dfs(String currentGuid, String currentName,
+                             String targetGuid, String targetName,
+                             Map<String, List<ArcEdge>> graph,
+                             Map<String, String> pathNodes,
+                             List<Double> pathScores,
+                             Set<String> visited,
+                             List<LocalValueLoop> result) {
+        if (currentGuid.equals(targetGuid)) {
+            // Loop closed: record it
+            Map<String, String> loopNodes = new LinkedHashMap<>(pathNodes);
+            loopNodes.put(targetGuid, targetName);
+            result.add(new LocalValueLoop(loopNodes, new ArrayList<>(pathScores)));
+            return;
+        }
 
-    private Map<String, Double> computeImportances(List<String> stakeholderNames,
+        if (visited.contains(currentGuid)) return;
+
+        visited.add(currentGuid);
+        pathNodes.put(currentGuid, currentName);
+
+        for (ArcEdge arc : graph.getOrDefault(currentGuid, Collections.emptyList())) {
+            pathScores.add(arc.score);
+            dfs(arc.targetGuid, arc.targetName, targetGuid, targetName,
+                graph, pathNodes, pathScores, visited, result);
+            pathScores.remove(pathScores.size() - 1);  // backtrack
+        }
+
+        pathNodes.remove(currentGuid);
+        visited.remove(currentGuid);
+    }
+
+    private Map<String, Double> computeImportances(List<String> stakeholderGuids,
                                                     List<LocalValueLoop> loops) {
         double totalLoopScore = 0;
         for (LocalValueLoop loop : loops) {
@@ -94,145 +105,140 @@ public class ImportanceCalculationTest {
         }
 
         Map<String, Double> result = new LinkedHashMap<>();
-        for (String sh : stakeholderNames) {
-            double sumLoopsContaining = 0;
+        for (String guid : stakeholderGuids) {
+            double sum = 0;
             for (LocalValueLoop loop : loops) {
-                if (loop.nodes.contains(sh)) {
-                    sumLoopsContaining += loop.score;
+                if (loop.nodes.containsKey(guid)) {
+                    sum += loop.score;
                 }
             }
-            double importance = (totalLoopScore > 0) ? sumLoopsContaining / totalLoopScore : 0;
-            result.put(sh, importance);
+            result.put(guid, (totalLoopScore > 0) ? sum / totalLoopScore : 0);
         }
         return result;
     }
 
-    // ==========================================================================
-    // Tests
-    // ==========================================================================
-
     /**
-     * Simple case: a single loop System → A → System
-     * Arcs: System→A (0.5), A→System (0.8)
+     * Simple case: a single loop System -> A -> System
+     * Arcs: System-> A (0.5), A ->System (0.8)
      * Loop score = 0.5 * 0.8 = 0.4
-     * Importance of A = 0.4 / 0.4 = 1.0
+     * Importance of A = 0.4/0.4 = 1.0
      */
     @Test
     public void singleLoop_oneStakeholder() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        graph.put("System", Arrays.asList(new ArcEdge("A", 0.5)));
-        graph.put("A", Arrays.asList(new ArcEdge("System", 0.8)));
+        graph.put("guid-S", Arrays.asList(new ArcEdge("guid-A", "A", 0.5)));
+        graph.put("guid-A", Arrays.asList(new ArcEdge("guid-S", "System", 0.8)));
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
         assertEquals(1, loops.size());
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A"), loops);
+                Arrays.asList("guid-A"), loops);
 
-        assertEquals(1.0, importances.get("A"), DELTA);
+        assertEquals(1.0, importances.get("guid-A"), DELTA);
     }
 
     /**
      * Two loops with two stakeholders:
-     * Loop 1: System → A → System (arcs 0.5, 0.8) → score = 0.40
-     * Loop 2: System → B → System (arcs 0.3, 0.4) → score = 0.12
+     * Loop 1: System -> A -> System (arcs 0.5, 0.8) -> score = 0.40
+     * Loop 2: System -> B -> System (arcs 0.3, 0.4) -> score = 0.12
      * Total = 0.52
-     * Importance of A = 0.40 / 0.52 ≈ 0.7692
-     * Importance of B = 0.12 / 0.52 ≈ 0.2308
+     * Importance of A = 0.40 / 0.52 ~ 0.7692
+     * Importance of B = 0.12 / 0.52 ~ 0.2308
      */
     @Test
     public void twoLoops_twoStakeholders() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        graph.put("System", Arrays.asList(
-                new ArcEdge("A", 0.5),
-                new ArcEdge("B", 0.3)));
-        graph.put("A", Arrays.asList(new ArcEdge("System", 0.8)));
-        graph.put("B", Arrays.asList(new ArcEdge("System", 0.4)));
+        graph.put("guid-S", Arrays.asList(
+                new ArcEdge("guid-A", "A", 0.5),
+                new ArcEdge("guid-B", "B", 0.3)));
+        graph.put("guid-A", Arrays.asList(new ArcEdge("guid-S", "System", 0.8)));
+        graph.put("guid-B", Arrays.asList(new ArcEdge("guid-S", "System", 0.4)));
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
         assertEquals(2, loops.size());
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A", "B"), loops);
+                Arrays.asList("guid-A", "guid-B"), loops);
 
-        assertEquals(0.7692, importances.get("A"), DELTA);
-        assertEquals(0.2308, importances.get("B"), DELTA);
+        assertEquals(0.7692, importances.get("guid-A"), DELTA);
+        assertEquals(0.2308, importances.get("guid-B"), DELTA);
     }
 
     /**
      * No loop: the graph does not return to the system.
-     * System → A (no return)
+     * System -> A (no return)
      * Importance of A = 0
      */
     @Test
     public void noLoop_zeroImportance() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        graph.put("System", Arrays.asList(new ArcEdge("A", 0.5)));
-        // A has no outgoing arc → no loop
+        graph.put("guid-S", Arrays.asList(new ArcEdge("guid-A", "A", 0.5)));
+        // A has no outgoing arc -> no loop
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
         assertTrue(loops.isEmpty());
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A"), loops);
+                Arrays.asList("guid-A"), loops);
 
-        assertEquals(0.0, importances.get("A"), DELTA);
+        assertEquals(0.0, importances.get("guid-A"), DELTA);
     }
 
     /**
-     * Loop with 3 nodes: System → A → B → System
+     * Loop with 3 nodes: System -> A -> B -> System
      * Arcs: 0.5, 0.8, 0.4
      * Score = 0.5 * 0.8 * 0.4 = 0.16
-     * Both A and B are in the loop → importance = 1.0 each
+     * Both A and B are in the loop -> importance = 1.0 each
      */
     @Test
     public void loopWithThreeNodes() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        graph.put("System", Arrays.asList(new ArcEdge("A", 0.5)));
-        graph.put("A", Arrays.asList(new ArcEdge("B", 0.8)));
-        graph.put("B", Arrays.asList(new ArcEdge("System", 0.4)));
+        graph.put("guid-S", Arrays.asList(new ArcEdge("guid-A", "A", 0.5)));
+        graph.put("guid-A", Arrays.asList(new ArcEdge("guid-B", "B", 0.8)));
+        graph.put("guid-B", Arrays.asList(new ArcEdge("guid-S", "System", 0.4)));
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
         assertEquals(1, loops.size());
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A", "B"), loops);
+                Arrays.asList("guid-A", "guid-B"), loops);
 
-        assertEquals(1.0, importances.get("A"), DELTA);
-        assertEquals(1.0, importances.get("B"), DELTA);
+        assertEquals(1.0, importances.get("guid-A"), DELTA);
+        assertEquals(1.0, importances.get("guid-B"), DELTA);
     }
 
     /**
-     * Stakeholder not in any loop → importance = 0
+     * Stakeholder not in any loop -> importance = 0
      */
     @Test
     public void stakeholderNotInLoop() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
-        graph.put("System", Arrays.asList(new ArcEdge("A", 0.5)));
-        graph.put("A", Arrays.asList(new ArcEdge("System", 0.8)));
+        graph.put("guid-S", Arrays.asList(new ArcEdge("guid-A", "A", 0.5)));
+        graph.put("guid-A", Arrays.asList(new ArcEdge("guid-S", "System", 0.8)));
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A", "C"), loops);
+                Arrays.asList("guid-A", "guid-C"), loops);
 
-        assertEquals(1.0, importances.get("A"), DELTA);
-        assertEquals(0.0, importances.get("C"), DELTA);
+        assertEquals(1.0, importances.get("guid-A"), DELTA);
+        assertEquals(0.0, importances.get("guid-C"), DELTA);
     }
 
     /**
-     * Empty graph → no loop → importance = 0
+     * Empty graph -> no loop -> importance = 0
      */
     @Test
     public void emptyGraph() {
         Map<String, List<ArcEdge>> graph = new HashMap<>();
 
-        List<LocalValueLoop> loops = findValueLoops("System", graph);
+        List<LocalValueLoop> loops = findValueLoops("guid-S", "System", graph);
         assertTrue(loops.isEmpty());
 
         Map<String, Double> importances = computeImportances(
-                Arrays.asList("A"), loops);
+                Arrays.asList("guid-A"), loops);
 
-        assertEquals(0.0, importances.get("A"), DELTA);
+        assertEquals(0.0, importances.get("guid-A"), DELTA);
     }
 }

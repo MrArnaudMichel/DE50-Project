@@ -6,6 +6,9 @@ import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.SVNSystem;
 import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
+import fr.utbm.svn.model.ValueLoop;
+
+import java.util.List;
 
 import static fr.utbm.svn.rhapsody.RhapsodyWrapper.setOrCreateTag;
 
@@ -53,8 +56,16 @@ public class RhapsodyElementUpdater {
         }
     }
 
-    public static void updateSystemTags(SVNSystem system, double totalLoopScore) {
+    public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
+        StringBuilder detail = new StringBuilder();
+        for (ValueLoop loop : loops) {
+            detail.append(loop.getNodes().toString())
+                    .append("=")
+                    .append(String.format("%.4f", loop.getScore()))
+                    .append("; ");
+        }
+        setOrCreateTag(system.getSystem(), "loopDetails", detail.toString());
     }
 
     public static void updateStakeholderImportance(Stakeholder sh, double score) {

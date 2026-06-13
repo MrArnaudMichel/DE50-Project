@@ -52,7 +52,8 @@ public class CalculationService implements ICalculationService {
         }
 
         scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
-        if (system != null) RhapsodyElementUpdater.updateSystemTags(system, system.getTotalLoopScore());
+        if (system != null)
+            RhapsodyElementUpdater.updateSystemTags(system, system.getLoops(), system.getTotalLoopScore());
     }
 
     // -------------------------------------------------------------------------
@@ -81,6 +82,7 @@ public class CalculationService implements ICalculationService {
             if (el instanceof IRPDependency
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
                 result.add(new ValueArc((IRPDependency) el));
+                logger.log("ValueArc found : " + el.getName());
             }
         }
         return result;
@@ -88,7 +90,7 @@ public class CalculationService implements ICalculationService {
 
     private SVNSystem findSystem(IRPDiagram diagram) {;
         IRPCollection descendants = diagram.getElementsInDiagram();
-        for (int i = 1; i <= descendants.getCount(); i++) {
+        for (int i = 1; i <= Objects.requireNonNull(descendants).getCount(); i++) {
             IRPModelElement el = (IRPModelElement) descendants.getItem(i);
             if (el instanceof IRPClass
                     && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {

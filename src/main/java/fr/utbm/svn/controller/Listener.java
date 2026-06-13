@@ -17,6 +17,11 @@ public class Listener extends RPApplicationListener {
     private final Logger logger = Logger.getInstance();
     private final ICalculationService calculationService;
 
+    private volatile boolean isProcessing = false;
+    private final java.util.concurrent.ScheduledExecutorService scheduler =
+            java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
+    private java.util.concurrent.ScheduledFuture<?> pendingRecalc;
+
     public Listener(IRPApplication app, IRPProject project, ICalculationService calculationService){
         this.app = app;
         this.project = project;
@@ -56,6 +61,22 @@ public class Listener extends RPApplicationListener {
         return diagram;
     }
 
+    private void scheduleRecalculation(IRPDiagram diagram) {
+        if (pendingRecalc != null && !pendingRecalc.isDone()) {
+            pendingRecalc.cancel(false);
+        }
+        pendingRecalc = scheduler.schedule(() -> {
+            try {
+                project.setNotifyPluginOnElementsChanged(0);
+                calculationService.calculateImportance(this.project, diagram);
+            } catch (Exception e) {
+                logger.error("Debounced recalculation failed: " + e.getMessage());
+            } finally {
+                project.setNotifyPluginOnElementsChanged(1);
+            }
+        }, 300, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+
     @Override
     public boolean afterAddElement(IRPModelElement irpModelElement) {
         if (!ValueArc.isValueArc(irpModelElement)) {
@@ -70,7 +91,7 @@ public class Listener extends RPApplicationListener {
             // Stop notifications to avoid initializations of onElementsChanged
             project.setNotifyPluginOnElementsChanged(0);
             RhapsodyElementUpdater.updateArcLabel(arc, project);
-            calculationService.calculateImportance(this.project, diagram);
+            this.scheduleRecalculation(diagram);
 
         } catch (Exception e) {
             logger.error("Error in afterAddElement: " + e.getMessage());
@@ -83,6 +104,11 @@ public class Listener extends RPApplicationListener {
 
     @Override
     public boolean onElementsChanged(String GUIDs) {
+        if (isProcessing) {
+            logger.log("Already processing, skipping re-entrant call.");
+            return false;
+        }
+        isProcessing = true;
         if (GUIDs == null || GUIDs.trim().isEmpty()) return false;
 
         String[] guidArray = GUIDs.split(",");
@@ -102,12 +128,16 @@ public class Listener extends RPApplicationListener {
 
                 if (element instanceof IRPTag) {
                     String tagName = element.getName();
-                    IRPDiagram diagram = this.getSVNDiagrams(element.getOwner());
+                    IRPModelElement owner = element.getOwner();
+                    if (owner == null) {
+                        elementHasBeenDeleted = true;
+                        continue;
+                    }
+                    IRPDiagram diagram = this.getSVNDiagrams(owner);
                     if (!SVNConstants.TAG_BENEFIT_RANKING.equals(tagName)
                             && !SVNConstants.TAG_SUPPLY_IMPORTANCE.equals(tagName)) {
                         continue;
                     }
-                    IRPModelElement owner = element.getOwner();
                     if (ValueArc.isValueArc(owner)) {
                         logger.log("Tag '" + tagName + "' modified on arc: " + owner.getName());
                         try {
@@ -115,7 +145,7 @@ public class Listener extends RPApplicationListener {
                             project.setNotifyPluginOnElementsChanged(0);
 
                             RhapsodyElementUpdater.updateArcLabel(new ValueArc((IRPDependency) owner), project);
-                            calculationService.calculateImportance(this.project, diagram);
+                            this.scheduleRecalculation(diagram);
 
                         } finally {
                             project.setNotifyPluginOnElementsChanged(1);
@@ -132,15 +162,17 @@ public class Listener extends RPApplicationListener {
                 IRPDiagram diagram = app.getDiagramOfSelectedElement();
                 try {
                     project.setNotifyPluginOnElementsChanged(0);
-                    calculationService.calculateImportance(this.project, diagram);
-
+                    this.scheduleRecalculation(diagram);
                 } finally {
                     project.setNotifyPluginOnElementsChanged(1);
                 }
             }
 
         } catch (Exception e) {
-            logger.error("Error on onElementsChanged : " + e.getMessage());
+            logger.error("onElementsChanged : " + e.getMessage());
+        }
+        finally {
+            isProcessing = false;
         }
 
         return false;

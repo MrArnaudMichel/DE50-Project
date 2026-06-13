@@ -14,6 +14,8 @@ import fr.utbm.svn.service.strategy.ValueLoopStrategy;
 
 import java.util.*;
 
+import static fr.utbm.svn.rhapsody.RhapsodyWrapper.*;
+
 public class CalculationService implements ICalculationService {
     private final Logger logger = Logger.getInstance();
 
@@ -27,74 +29,25 @@ public class CalculationService implements ICalculationService {
                     "no element selected, or selection lost. Calculation skipped.");
             return;
         }
-
         logger.log("Starting importance calculation.");
-        List<Stakeholder> stakeholders = findStakeholders(diagram);
-        if (stakeholders.isEmpty()) {
-            logger.log("No stakeholders found.");
-            return;
-        }
-
-        List<ValueArc> valueArcs = findValueArcs(diagram);
-        if (valueArcs.isEmpty()) { logger.log("No arcs, can't calculate."); return; }
 
         SVNSystem system = findSystem(diagram);
+        List<Stakeholder> stakeholders = findStakeholders(diagram);
+        List<ValueArc> valueArcs = findValueArcs(diagram);
 
-        Map<Stakeholder, Double> scores = Collections.emptyMap();
-
-        if (system != null) {
+        if (system != null && !stakeholders.isEmpty() && !valueArcs.isEmpty()) {
             logger.log("SVNSystem : " + system.getName());
-            scores = new ValueLoopStrategy(system).computeScores(stakeholders, valueArcs);
-        }
+            Map<Stakeholder, Double> scores = new ValueLoopStrategy(system).computeScores(stakeholders, valueArcs);
 
-        if (scores.isEmpty()) {
-            scores = fallBackStrategy.computeScores(stakeholders, valueArcs);
-        }
-
-        scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
-        if (system != null) RhapsodyElementUpdater.updateSystemTags(system, system.getTotalLoopScore());
-    }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private List<Stakeholder> findStakeholders(IRPDiagram diagram) {
-        List<Stakeholder> result = new ArrayList<>();
-        IRPCollection descendants = diagram.getElementsInDiagram();
-        for (int i = 1; i <= descendants.getCount(); i++) {
-            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPActor
-                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
-                result.add(new Stakeholder((IRPActor) el));
-                logger.log("Stakeholder found : " + el.getName());
+            if (scores.isEmpty()) {
+                scores = fallBackStrategy.computeScores(stakeholders, valueArcs);
             }
+            scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
         }
-        return result;
+
+        if (system != null)
+            RhapsodyElementUpdater.updateSystemTags(system, system.getLoops(), system.getTotalLoopScore(), valueArcs);
     }
 
-    private List<ValueArc> findValueArcs(IRPDiagram diagram) {
-        List<ValueArc> result = new ArrayList<>();
-        IRPCollection descendants = diagram.getElementsInDiagram();
-        for (int i = 1; i <= descendants.getCount(); i++) {
-            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPDependency
-                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
-                result.add(new ValueArc((IRPDependency) el));
-            }
-        }
-        return result;
-    }
 
-    private SVNSystem findSystem(IRPDiagram diagram) {;
-        IRPCollection descendants = diagram.getElementsInDiagram();
-        for (int i = 1; i <= descendants.getCount(); i++) {
-            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
-            if (el instanceof IRPClass
-                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
-                return new SVNSystem((IRPClass) el);
-            }
-        }
-        return null;
-    }
 }

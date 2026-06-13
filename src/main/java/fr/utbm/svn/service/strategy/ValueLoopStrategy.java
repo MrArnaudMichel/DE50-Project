@@ -22,7 +22,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
     public Map<Stakeholder, Double> computeScores(List<Stakeholder> stakeholders, List<ValueArc> valueArcs) {
         Map<String, List<ValueArc>> graph = this.buildGraph(valueArcs);
 
-        List<ValueLoop> loops = findValueLoops(system.getGUID(), graph);
+        List<ValueLoop> loops = findValueLoops(system, graph);
         logger.log("Value loops found : " + loops.size());
 
         if (loops.isEmpty()) {
@@ -35,13 +35,14 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             loop.setScore(1);
             for (double s : loop.getArcScores()) loop.setScore(loop.getScore() * s);
             totalLoopScore += loop.getScore();
-            logger.log("Loop " + loop.getNodes() + " score=" + loop.getScore());
+            logger.log("Loop " + loop.getNodes().values() + " score=" + loop.getScore());
         }
+        logger.log("Total Loop Score : " + String.format("%.4f", totalLoopScore));
 
         for (Stakeholder sh : stakeholders) {
             double sumLoopsContaining = 0;
             for (ValueLoop loop : loops) {
-                if (loop.getNodes().contains(sh.getGUID())) {
+                if (loop.getNodes().containsKey(sh.getGUID())) {
                     sumLoopsContaining += loop.getScore();
                 }
             }
@@ -58,6 +59,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
         }
 
         system.setTotalLoopScore(totalLoopScore);
+        system.setLoops(loops);
         logger.log("Calcul finished. " + stakeholders.size() + " actors updated.");
 
         return scores;
@@ -81,46 +83,78 @@ public class ValueLoopStrategy implements ICalculationStrategy {
         return graph;
     }
 
-    private List<ValueLoop> findValueLoops(String systemName,
-                                           Map<String, List<ValueArc>> graph) {
+    private List<ValueLoop> findValueLoops(SVNSystem system, Map<String, List<ValueArc>> graph) {
         List<ValueLoop> result = new ArrayList<>();
-        if (!graph.containsKey(systemName)) return result;
+        String systemGUID = system.getGUID();
+        
+        if (!graph.containsKey(systemGUID)) return result;
 
-        Deque<SearchState> stack = new ArrayDeque<>();
-        stack.push(new SearchState(systemName, new ArrayList<>(),
-                new ArrayList<>(), new HashSet<>()));
+        List<ValueArc> startingArcs = graph.getOrDefault(systemGUID, Collections.emptyList());
+        for (ValueArc startArc : startingArcs) {
+            Map<String, String> pathNodes = new HashMap<>();
+            pathNodes.put(systemGUID, system.getName()); // start node
+            
+            List<Double> pathScores = new ArrayList<>();
+            pathScores.add(startArc.getScore());
 
-        while (!stack.isEmpty()) {
-            SearchState state = stack.pop();
+            List<ValueArc> pathArcs = new ArrayList<>();
+            pathArcs.add(startArc);
+            
+            Set<String> visited = new HashSet<>();
+            visited.add(systemGUID);
 
-            List<ValueArc> neighbors = graph.getOrDefault(state.getCurrent(), Collections.emptyList());
-            for (ValueArc edge : neighbors) {
-                IRPModelElement dependent = edge.getDependent();
-                dependent = dependent instanceof IRPPort ? (dependent).getOwner() : dependent;
-                String next = dependent.getGUID();
-
-                if (next.equals(systemName) && !state.getPath().isEmpty()) {
-                    List<String> loopNode = new ArrayList<>(state.getPath());
-                    loopNode.add(systemName);
-                    List<Double> loopScores = new ArrayList<>(state.getScores());
-                    loopScores.add(edge.getScore());
-                    ValueLoop loop = new ValueLoop(loopNode, loopScores);
-                    result.add(loop);
-                    continue;
-                }
-
-                if (state.getVisited().contains(next)) continue;
-
-                Set<String> newVisited = new HashSet<>(state.getVisited());
-                newVisited.add(next);
-                List<String> newPath = new ArrayList<>(state.getPath());
-                newPath.add(next);
-                List<Double> newScores = new ArrayList<>(state.getScores());
-                newScores.add(edge.getScore());
-
-                stack.push(new SearchState(next, newPath, newScores, newVisited));
+            IRPModelElement nextActor = startArc.getDependsOn();
+            nextActor = nextActor instanceof IRPPort ? nextActor.getOwner() : nextActor;
+            
+            if (nextActor != null) {
+                dfs(nextActor, system.getSystem(), graph, pathNodes, pathScores, pathArcs, visited, result);
             }
         }
         return result;
+    }
+
+    private void dfs(IRPModelElement current, IRPModelElement target, Map<String, List<ValueArc>> graph,
+                     Map<String, String> pathNodes, List<Double> pathScores, List<ValueArc> pathArcs, 
+                     Set<String> visited, List<ValueLoop> result) {
+        String currentGUID = current.getGUID();
+        String currentName = current.getName();
+        String targetGUID = target.getGUID();
+        
+        if (currentGUID.equals(targetGUID)) {
+            Map<String, String> loopNodes = new LinkedHashMap<>(pathNodes); // LinkedHashMap to preserve order if needed
+            loopNodes.put(targetGUID, target.getName());
+            List<Double> loopScores = new ArrayList<>(pathScores);
+            List<ValueArc> loopArcs = new ArrayList<>(pathArcs);
+            result.add(new ValueLoop(loopNodes, loopScores, loopArcs));
+            return;
+        }
+
+        if (visited.contains(currentGUID)) {
+            return;
+        }
+
+        // Visiter le nœud
+        visited.add(currentGUID);
+        pathNodes.put(currentGUID, currentName);
+
+        List<ValueArc> outgoingArcs = graph.getOrDefault(currentGUID, Collections.emptyList());
+        for (ValueArc arc : outgoingArcs) {
+            IRPModelElement nextActor = arc.getDependsOn();
+            nextActor = nextActor instanceof IRPPort ? nextActor.getOwner() : nextActor;
+            
+            if (nextActor != null) {
+                pathScores.add(arc.getScore());
+                pathArcs.add(arc);
+                
+                dfs(nextActor, target, graph, pathNodes, pathScores, pathArcs, visited, result);
+                
+                pathScores.remove(pathScores.size() - 1); // Backtrack
+                pathArcs.remove(pathArcs.size() - 1);
+            }
+        }
+
+        // Backtrack
+        pathNodes.remove(currentGUID);
+        visited.remove(currentGUID);
     }
 }

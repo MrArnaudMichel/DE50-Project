@@ -6,6 +6,9 @@ import fr.utbm.svn.constants.SVNConstants;
 import fr.utbm.svn.model.SVNSystem;
 import fr.utbm.svn.model.Stakeholder;
 import fr.utbm.svn.model.ValueArc;
+import fr.utbm.svn.model.ValueLoop;
+
+import java.util.List;
 
 import static fr.utbm.svn.rhapsody.RhapsodyWrapper.setOrCreateTag;
 
@@ -53,8 +56,69 @@ public class RhapsodyElementUpdater {
         }
     }
 
-    public static void updateSystemTags(SVNSystem system, double totalLoopScore) {
+    public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore, List<ValueArc> allArcs) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
+
+        int i = 1;
+        while (true) {
+            try {
+                IRPTag oldTag = system.getSystem().getTag("Loop_" + i);
+                if (oldTag != null) {
+                    oldTag.deleteFromProject();
+                    i++;
+                } else {
+                    break;
+                }
+            } catch (Exception e) { break; }
+        }
+
+        try {
+            IRPTag loopDetails = system.getSystem().getTag("loopDetails");
+            if (loopDetails != null) loopDetails.deleteFromProject();
+        } catch (Exception ignored) {}
+
+        if (loops == null || loops.isEmpty()) {
+            try {
+                IRPTag mostImportant = system.getSystem().getTag("mostImportantVL");
+                if (mostImportant != null) mostImportant.deleteFromProject();
+            } catch (Exception ignored) {}
+            for (ValueArc arc : allArcs) {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.removeStereotype(arc.getDependency(), "bestValueArc");
+            }
+            return;
+        }
+
+        loops.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
+
+        ValueLoop bestLoop = loops.get(0);
+        
+        for (int j = 0; j < loops.size(); j++) {
+            ValueLoop loop = loops.get(j);
+            String tagName = "Loop_" + (j + 1);
+            String value = String.format("%.4f", loop.getScore()) + " : " + loop.getNodes().values();
+            setOrCreateTag(system.getSystem(), tagName, value);
+            
+            if (j == 0) {
+                setOrCreateTag(system.getSystem(), "mostImportantVL", tagName);
+            }
+        }
+
+        List<ValueArc> bestArcs = bestLoop.getArcs();
+        for (ValueArc arc : allArcs) {
+            boolean isBest = false;
+            for (ValueArc bestArc : bestArcs) {
+                if (arc.getGUID().equals(bestArc.getGUID())) {
+                    isBest = true;
+                    break;
+                }
+            }
+            
+            if (isBest) {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.addStereotype(arc.getDependency(), "bestValueArc");
+            } else {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.removeStereotype(arc.getDependency(), "bestValueArc");
+            }
+        }
     }
 
     public static void updateStakeholderImportance(Stakeholder sh, double score) {

@@ -2,6 +2,14 @@ package fr.utbm.svn.rhapsody;
 
 import com.telelogic.rhapsody.core.*;
 import fr.utbm.svn.Logger;
+import fr.utbm.svn.constants.SVNConstants;
+import fr.utbm.svn.model.SVNSystem;
+import fr.utbm.svn.model.Stakeholder;
+import fr.utbm.svn.model.ValueArc;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class RhapsodyWrapper {
 
@@ -14,6 +22,31 @@ public class RhapsodyWrapper {
             if (st.getName().equals(stereotypeName)) return true;
         }
         return false;
+    }
+
+    public static void addStereotype(IRPModelElement el, String stereotypeName) {
+        try {
+            if (!hasStereotype(el, stereotypeName)) {
+                el.addStereotype(stereotypeName, el.getMetaClass());
+            }
+        } catch (Exception e) {
+            Logger.getInstance().error("addStereotype " + stereotypeName + " : " + e.getMessage());
+        }
+    }
+
+    public static void removeStereotype(IRPModelElement el, String stereotypeName) {
+        try {
+            IRPCollection stereotypes = el.getStereotypes();
+            for (int i = 1; i <= stereotypes.getCount(); i++) {
+                IRPModelElement st = (IRPModelElement) stereotypes.getItem(i);
+                if (st.getName().equals(stereotypeName)) {
+                    el.removeStereotype((IRPStereotype) st);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Logger.getInstance().error("removeStereotype " + stereotypeName + " : " + e.getMessage());
+        }
     }
 
     public static void initTagIfAbsent(IRPModelElement el, String tagName, String defaultValue) {
@@ -56,5 +89,47 @@ public class RhapsodyWrapper {
         } catch (Exception e) {
             Logger.getInstance().error("setOrCreateTag " + tagName + " : " + e.getMessage());
         }
+    }
+
+    public static List<Stakeholder> findStakeholders(IRPDiagram diagram) {
+        final Logger logger = Logger.getInstance();
+        List<Stakeholder> result = new ArrayList<>();
+        IRPCollection descendants = diagram.getElementsInDiagram();
+        for (int i = 1; i <= descendants.getCount(); i++) {
+            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
+            if (el instanceof IRPActor
+                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_STAKEHOLDER)) {
+                result.add(new Stakeholder((IRPActor) el));
+                logger.log("Stakeholder found : " + el.getName());
+            }
+        }
+        return result;
+    }
+
+    public static List<ValueArc> findValueArcs(IRPDiagram diagram) {
+        final Logger logger = Logger.getInstance();
+        List<ValueArc> result = new ArrayList<>();
+        IRPCollection descendants = diagram.getElementsInDiagram();
+        for (int i = 1; i <= descendants.getCount(); i++) {
+            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
+            if (el instanceof IRPDependency
+                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_VALUE_ARC)) {
+                result.add(new ValueArc((IRPDependency) el));
+                logger.log("ValueArc found : " + el.getName());
+            }
+        }
+        return result;
+    }
+
+    public static SVNSystem findSystem(IRPDiagram diagram) {;
+        IRPCollection descendants = diagram.getElementsInDiagram();
+        for (int i = 1; i <= Objects.requireNonNull(descendants).getCount(); i++) {
+            IRPModelElement el = (IRPModelElement) descendants.getItem(i);
+            if (el instanceof IRPClass
+                    && RhapsodyWrapper.hasStereotype(el, SVNConstants.STEREOTYPE_SYSTEM)) {
+                return new SVNSystem((IRPClass) el);
+            }
+        }
+        return null;
     }
 }

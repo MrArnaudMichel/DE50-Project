@@ -2,16 +2,40 @@
 
 Ce chapitre constitue un mini-audit du plugin RhapsodySVN. Il évalue le niveau de maturité du projet sur cinq axes : qualité du code, maintenabilité, robustesse, sécurité et limitations connues.
 
+---
+
+## Historique du développement
+
+L'historique git révèle cinq phases de développement successives :
+
+```mermaid
+flowchart LR
+    P1["① Initialisation<br/>Mise en place du projet<br/>structure Maven, DLL, profil SVN"]
+    P2["② Premières fonctionnalités<br/>Création du profil, stéréotypes,<br/>édition des tags, calcul d'importance"]
+    P3["③ Architecture réactive<br/>Listener, calcul dynamique,<br/>suppression des commandes manuelles"]
+    P4["④ Refactorisation<br/>Pattern Strategy, Logger,<br/>modèles wrappers, nettoyage"]
+    P5["⑤ Stabilisation<br/>Corrections de bugs,<br/>tests unitaires, nettoyage"]
+
+    P1 --> P2 --> P3 --> P4 --> P5
+```
+
+| Phase | Commits clés |
+|---|---|
+| **① Initialisation** | `core: creating java project`, `a02aefe relative dll path config`, `feat: implement SVN profile creation` |
+| **② Premières fonctionnalités** | `can edit Tags from ARC and stakeholder`, `feat: implement SVN profile configuration and importance calculation`, `feat: add properties to stereotypes` |
+| **③ Architecture réactive** | `feat: add tags values views on elements, and dynamic calculation`, `refactor: add elements deletion handling on onElementsChanged trigger`, `chore: delete main commands` |
+| **④ Refactorisation** | `feat: start extracting calculation strategies to Strategy Classes`, `refactor: move static methods from SVNConstant to RhapsodyWrapper`, `chore: move UpdateElement class to rhapsody package` |
+| **⑤ Stabilisation** | `fix: diagram was null when changing arc values`, `fix: add calculation over with IRPPort`, `test: add unit test with Junit`, `chore: French comments and logs messages cleaned` |
+
 ## Qualité du code
 
 Le code est actuellement **en cours de refactorisation**. La version initiale du projet reposait sur des commandes manuelles déclenchées depuis le menu Rhapsody (`chore: delete main commands`) ; l'architecture a depuis évolué vers un modèle réactif piloté par un `Listener`, ce qui constitue une amélioration significative de la conception.
 
-Les responsabilités sont bien séparées entre les différentes classes : le `Listener` gère la réception des événements Rhapsody, le `CalculationService` orchestre le calcul, les stratégies (`ValueLoopStrategy`, `ArcSumStrategy`) encapsulent les algorithmes, et `UpdateElementService` centralise l'écriture des résultats dans le modèle. Cette répartition applique le **principe de responsabilité unique**.
+Les responsabilités sont bien séparées entre les différentes classes : le `Listener` gère la réception des événements Rhapsody, le `CalculationService` orchestre le calcul, les stratégies (`ValueLoopStrategy`, `ArcSumStrategy`) encapsulent les algorithmes, et `RhapsodyElementUpdater` centralise l'écriture des résultats dans le modèle. Cette répartition applique le **principe de responsabilité unique**.
 
 Le **pattern Strategy** est correctement utilisé pour rendre les algorithmes de calcul interchangeables sans modifier le code appelant. Les classes modèles (`Stakeholder`, `ValueArc`, `SVNSystem`) encapsulent proprement les interfaces Rhapsody et exposent une API cohérente.
 
-[//]: # (TODO: vérifier le rapport et le code)
-Un point d'attention subsiste : certaines descriptions dans le rapport (sections UC) font encore référence à des classes de l'ancienne architecture (`ProfileService`, `DiagramService`) qui n'existent plus dans le code actuel, témoignant de la refactorisation en cours.
+L'architecture est désormais stabilisée : les sections UC du rapport ont été mises à jour pour refléter les classes actuelles (`RhapsodyElementUpdater` à la place de l'ancien `UpdateElementService`).
 
 ---
 
@@ -30,9 +54,16 @@ La documentation du code est **prévue mais pas encore complète** : les comment
 
 ## Robustesse et fiabilité
 
-La robustesse du plugin **n'a pas fait l'objet de tests poussés** (tests unitaires ou d'intégration). L'évaluation repose uniquement sur des observations lors du développement et des tests manuels en situation normale.
+Le projet dispose désormais d'une **suite de tests JUnit** couvrant les parties algorithmiques critiques :
 
-Dans ces conditions, **aucun comportement indésirable n'a été constaté** lors de l'utilisation du plugin : le calcul se déclenche correctement en réponse aux modifications du modèle, les scores sont mis à jour de manière cohérente, et le plugin ne provoque pas d'instabilité dans Rhapsody.
+| Classe de test | Ce qui est couvert |
+|---|---|
+| `SearchStateTest` | Logique de l'état de recherche DFS (value loops) |
+| `ValueArcScoreTest` | Matrice de scores INCOSE (BenefitRanking × SupplyImportance) |
+| `ValueLoopTest` | Calcul du score d'un value loop (produit des arcs) |
+| `ImportanceCalculationTest` | Calcul d'importance end-to-end (équations Cameron) |
+
+Ces tests couvrent la couche algorithmique pure (modèles et stratégies) sans dépendance à l'API Rhapsody, ce qui les rend exécutables en dehors de l'environnement IBM. La couche d'intégration (interaction avec Rhapsody via `IRPApplication`) reste non testée automatiquement : elle est validée uniquement par tests manuels.
 
 Les principaux mécanismes de protection en place sont :
 - Les opérations API Rhapsody sont systématiquement encadrées par des blocs `try/catch` avec log d'erreur, évitant toute exception non gérée susceptible de planter Rhapsody.
@@ -58,6 +89,5 @@ Les valeurs de tags reçues depuis le modèle sont traitées défensivement : to
 |---|---|
 | **Couplage à Rhapsody 9.0** | Le JAR `rhapsody.jar` est spécifique à cette version. Une migration vers une version ultérieure de Rhapsody nécessiterait de revalider l'ensemble des appels API. |
 | **Windows uniquement** | La DLL native `rhapsody.dll` requise par l'API Java COM n'existe que pour Windows. Le plugin ne peut pas être exécuté sur Linux ou macOS. |
-| **Absence de tests automatisés** | Aucun test unitaire ni test d'intégration n'est en place. La robustesse du plugin repose uniquement sur des tests manuels, ce qui augmente le risque de régression lors d'évolutions futures. |
+| **Couverture de tests partielle** | Les tests JUnit couvrent la logique algorithmique, mais la couche d'intégration Rhapsody (`Listener`, `RhapsodyWrapper`, `RhapsodyElementUpdater`) reste non couverte — l'API Rhapsody ne peut pas être mockée sans une vraie instance IBM. |
 | **Usage de `IRPDependency` au lieu de constructs SysML** | Les arcs `«valuearc»` sont modélisés comme des `IRPDependency` (dépendance UML générique) plutôt que comme des `IRPConnector` ou des associations de blocs SysML. Cela s'éloigne de la sémantique IBD/BDD attendue pour un diagramme SVN correct en SysML. |
-| **Refactorisation en cours** | Certaines parties du code (notamment les descriptions de UC dans le rapport) font encore référence à l'ancienne architecture. Une harmonisation complète reste à finaliser. |

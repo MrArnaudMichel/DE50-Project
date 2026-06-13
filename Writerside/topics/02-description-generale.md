@@ -49,10 +49,10 @@ Le code est organisé selon une architecture en couches :
 |---------------------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
 | Point d'entrée            | `SVNPlugin`, `Main`(permet de lancer le programme sans Rhapsody) | Initialisation du plugin, connexion à Rhapsody                                                        |
 | Contrôleur réactif        | `Listener`                                                       | Écoute les événements Rhapsody (`afterAddElement`, `onElementsChanged`) et orchestre les mises à jour |
-| Services (logique métier) | `CalculationService`, `UpdateElementService`                     | Calcul d'importance SVN et écriture des résultats dans le modèle                                      |
+| Services (logique métier) | `CalculationService`                                             | Calcul d'importance SVN, orchestration des stratégies                                                 |
 | Stratégies de calcul      | `ValueLoopStrategy`, `ArcSumStrategy`                            | Algorithmes interchangeables (pattern Strategy)                                                       |
 | Modèles                   | `Stakeholder`, `ValueArc`, `SVNSystem`, `ValueLoop`              | Wrappers des interfaces Rhapsody                                                                      |
-| Wrapper Rhapsody          | `RhapsodyWrapper`                                                | Accès bas niveau à l'API Rhapsody                                                                     |
+| Wrapper Rhapsody          | `RhapsodyWrapper`, `RhapsodyElementUpdater`                      | Accès bas niveau à l'API Rhapsody et écriture des résultats dans le modèle                            |
 | Constantes                | `SVNConstants`                                                   | Centralisation des noms de stéréotypes et de tags                                                     |
 
 Le plugin adopte une architecture **réactive** : il ne repose pas sur des commandes manuelles déclenchées par l'utilisateur, mais sur un `Listener` enregistré auprès de Rhapsody qui réagit automatiquement aux modifications du modèle. Lorsqu'un arc `«valuearc»` est ajouté, qu'un de ses tags (`benefitRanking`, `supplyImportance`) est modifié, ou qu'un élément est supprimé, le `Listener` déclenche aussitôt le recalcul des scores d'importance et la mise à jour des labels dans le diagramme — sans intervention de l'utilisateur.
@@ -70,7 +70,7 @@ Ce plugin s'adresse principalement à des **ingénieurs systèmes** (professionn
 | Compétences informatiques | Intermédiaires à avancées (capable d'utiliser un outil de modélisation professionnel)                                            |
 
 >L'utilisateur n'a pas besoin de connaître Java ni l'API Rhapsody pour utiliser le plugin : toutes les interactions
->passent par le menu graphique de Rhapsody ou par des boîtes de dialogue Swing générées par le plugin.
+>passent par le menu graphique de Rhapsody et par le panneau de propriétés natif de Rhapsody.
 {style=tip}
 
 ## Les contraintes principales de développement
@@ -102,7 +102,7 @@ Lors du développement du plugin, les hypothèses suivantes ont été formulées
 | Un package `Default` existe dans le projet Rhapsody                                   | Les commandes de création et de nettoyage ne trouvent pas leur cible                                                |
 | La commande `SVN Configure` a été exécutée avant toute autre                          | Les stéréotypes et tags nécessaires (`«stakeholder»`, `«valuearc»`, `importanceScore`, etc.) sont absents du modèle |
 | Des éléments `«stakeholder»`, `«system»` et `«valuearc»` ont été créés dans le modèle | `SVNCalculateCommand` ne trouve aucun nœud à traiter et ne produit aucun résultat                                   |
-| L'arc `«valuearc»` cible est sélectionné graphiquement dans Rhapsody                  | `SVNEditArcCommand` et `SVNArcColorCommand` ne peuvent pas identifier l'élément à modifier                          |
+| Un arc `«valuearc»` est créé ou modifié dans un diagramme SVN                         | Le `Listener` ne trouve pas le diagramme correspondant et le recalcul est ignoré                                    |
 
 [//]: # (TODO: vérifier véracité de la fonctionnalité de fallback)
 En cas de modèle sans nœud `«system»`, le plugin bascule automatiquement sur un **calcul simplifié par somme des arcs** (fallback implémenté dans `CalculationService`), ce qui constitue la principale solution de repli fonctionnelle.

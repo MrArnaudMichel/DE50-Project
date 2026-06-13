@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr" class="reveal-full-page"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Plugin RhapsodySVN — DE50 P26</title>
+
+	<link rel="stylesheet" href="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/reset.css">
+	<link rel="stylesheet" href="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/reveal.css">
+	<link rel="stylesheet" href="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/gnome-blue.css">
+	<link rel="stylesheet" href="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/monokai.css">
+
+	<style>
+		/* ── Layout ── */
+		.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; font-size: 0.75em; }
+		.two-col ul { font-size: 1em; }
+
+		/* ── Highlight bar ── */
+		.highlight-bar { border-left: 3px solid #3584e4; padding: 8px 14px; background: #eaf2fd; border-radius: 0 4px 4px 0; margin: 0.4em 0; font-size: 0.8em; line-height: 1.5; color: #1c1c1e; }
+
+		/* ── Pill tags ── */
+		.pill { display: inline-block; border: 1px solid #62a0ea; border-radius: 3px; padding: 2px 8px; font-size: 0.55em; color: #1a5fb4; font-weight: 600; margin: 2px; background: #eaf2fd; }
+
+		/* ── Stats ── */
+		.stats-row { display: flex; gap: 16px; justify-content: center; margin: 0.8em 0; flex-wrap: wrap; }
+		.stat-box { background: #eaf2fd; border: 1px solid #99c1f1; border-radius: 6px; padding: 12px 20px; text-align: center; min-width: 90px; }
+		.stat-val { font-size: 1.6em; font-weight: 800; color: #1c71d8; line-height: 1; }
+		.stat-lbl { font-size: 0.45em; color: #1a5fb4; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+		/* ── INCOSE matrix ── */
+		.incose-matrix { border-collapse: collapse; width: 100%; font-size: 0.6em; }
+		.incose-matrix th { padding: 6px 10px; font-weight: 700; }
+		.incose-matrix td { padding: 7px 10px; text-align: center; font-weight: 700; border: 1px solid #99c1f1 !important; }
+		.score-low  { background: #c8e6c9 !important; color: #1b5e20 !important; }
+		.score-med  { background: #ffe0b2 !important; color: #e65100 !important; }
+		.score-high { background: #ffcdd2 !important; color: #b71c1c !important; }
+
+		/* ── UC table ── */
+		.uc-table { border-collapse: collapse; width: 100%; font-size: 0.52em; }
+		.uc-table th { padding: 7px 10px; font-weight: 700; text-align: left; }
+		.uc-table td { padding: 6px 10px; border-bottom: 1px solid #99c1f1 !important; vertical-align: top; }
+		.uc-table tr:nth-child(even) td { background: rgba(153,193,241,0.15); }
+		.badge-sprint { display: inline-block; font-size: 0.85em; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+		.bs2 { background: #dce8fb; color: #1c71d8; }
+		.bs3 { background: #c5d9f7; color: #1a5fb4; }
+		.badge-must   { background: #ffcdd2; color: #b71c1c; font-size: 0.8em; padding: 1px 5px; border-radius: 2px; font-weight: 700; }
+		.badge-should { background: #ffe0b2; color: #e65100; font-size: 0.8em; padding: 1px 5px; border-radius: 2px; font-weight: 700; }
+
+		/* ── Design patterns table ── */
+		.dp-table { border-collapse: collapse; width: 100%; font-size: 0.55em; }
+		.dp-table th { padding: 7px 10px; font-weight: 700; text-align: left; }
+		.dp-table td { padding: 7px 10px; border-bottom: 1px solid #99c1f1 !important; vertical-align: top; }
+		.dp-table tr:nth-child(even) td { background: rgba(153,193,241,0.15); }
+
+		/* ── Inline code ── */
+		code { background: #eaf2fd !important; padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
+
+		/* ── Equation block ── */
+		.eq-block { background: #eaf2fd; border-radius: 6px; padding: 12px 20px; text-align: center; font-size: 0.75em; color: #1c1c1e; margin: 0.6em 0; border: 1px solid #99c1f1; }
+
+		/* ── Diagram placeholder ── */
+		.diagram-ref { border: 2px dashed #62a0ea; background: #eaf2fd; border-radius: 6px; padding: 18px 24px; text-align: center; margin: 0.8em auto; max-width: 88%; }
+		.diagram-ref-title { font-weight: 700; color: #1c71d8; font-size: 0.8em; margin-bottom: 0.4em; font-family: 'Ubuntu', sans-serif; }
+		.diagram-ref-desc { font-size: 0.62em; color: #1c1c1e; margin: 0.3em 0 0.5em; line-height: 1.5; }
+		.diagram-ref-file { color: #1a5fb4; font-size: 0.6em; font-family: monospace; background: white; padding: 3px 10px; border-radius: 3px; border: 1px solid #99c1f1; display: inline-block; }
+
+		/* ── Gantt CSS ── */
+		.gantt-wrap { width: 100%; font-size: 0.48em; }
+		.gantt-axis { display: flex; margin-left: 28%; position: relative; height: 18px; margin-bottom: 3px; }
+		.gantt-axis span { position: absolute; color: #1a5fb4; font-size: 1em; transform: translateX(-50%); font-weight: 600; }
+		.gantt-sprint-hdr { display: flex; margin-left: 28%; margin-bottom: 3px; }
+		.gantt-sprint-hdr div { text-align: center; font-weight: 700; color: #1c71d8; font-size: 1em; padding: 2px 0; border-top: 2px solid; }
+		.gantt-s1-hdr { border-color: #62a0ea !important; background: #f0f6fe; width: 33.3%; }
+		.gantt-s2-hdr { border-color: #3584e4 !important; background: #e8f0fe; width: 33.4%; }
+		.gantt-s3-hdr { border-color: #1c71d8 !important; background: #dde8f8; width: 33.3%; }
+		.gantt-row { display: flex; align-items: center; margin: 2px 0; }
+		.gantt-lbl { width: 28%; text-align: right; padding-right: 8px; color: #1c1c1e; font-size: 1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		.gantt-track { flex: 1; position: relative; height: 14px; background: rgba(153,193,241,0.18); border-radius: 2px; overflow: visible; }
+		.gantt-bar { position: absolute; height: 100%; border-radius: 2px; }
+		.gb-s1 { background: #62a0ea; }
+		.gb-s2 { background: #3584e4; }
+		.gb-s3 { background: #1c71d8; }
+		.gb-crit { background: #e63946; }
+		.gantt-ms { position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg); width: 10px; height: 10px; background: white; border: 2px solid #1a5fb4; z-index: 3; }
+		.gantt-legend { display: flex; gap: 14px; justify-content: center; margin-top: 8px; font-size: 1em; flex-wrap: wrap; color: #1c1c1e; }
+		.gantt-legend-dot { display: inline-block; width: 12px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: 3px; }
+
+    .katex-display {
+				margin: 0 0 !important;
+		}
+	</style>
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style><link rel="stylesheet" href="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/katex.min.css"><script type="text/javascript" src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/katex.min.js"></script><script type="text/javascript" src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/auto-render.min.js"></script></head>
+<body style="transition: transform 0.8s; --slide-width: 960px; --slide-height: 700px; --slide-scale: 1.1643428571428571;" class="reveal-viewport">
+<div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready overview" role="application" data-transition-speed="default" data-background-transition="fade" style="cursor: none;">
+<div class="slides" style="width: 960px; height: 700px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(1.16434) scale(0.2) translateX(-4120px) translateY(0px);">
+
+<!-- ============================================================ -->
+<!-- SECTION 0 : PAGE DE TITRE                                   -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" hidden="" aria-hidden="true" class="stack past" data-index-h="0">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="0" data-index-v="0">
+		<h1 style="font-size: 1.6em;">Plugin RhapsodySVN</h1>
+		<h3 style="color: #1a5fb4;">Modelisation de Stakeholder Value Networks dans IBM Rhapsody</h3>
+		<p>
+			DE50 — Vincent Hilaire — UTBM
+		</p>
+		<p style="margin-top: 0.8em; font-size: 0.75em; color: #1a5fb4;">
+			Hugo Charcot &nbsp;·&nbsp; Benjamin Groisne &nbsp;·&nbsp; Antoine Laurant
+			&nbsp;·&nbsp; Arnaud Michel &nbsp;·&nbsp; Guillaume Retter
+		</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="0" data-index-v="1">
+		<h2>Table des matieres</h2>
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-size: 0.72em; text-align: left; max-width: 700px; margin: 0.8em auto;">
+			<div class="highlight-bar">1. Introduction et contexte</div>
+			<div class="highlight-bar">2. Environnement et utilisateurs</div>
+			<div class="highlight-bar">3. Organisation du projet</div>
+			<div class="highlight-bar">4. Objectifs du diagramme SVN</div>
+			<div class="highlight-bar">5. Fonctions du plugin</div>
+			<div class="highlight-bar">6. Modelisation des elements</div>
+			<div class="highlight-bar">7. Specifications techniques et robustesse</div>
+			<div class="highlight-bar">8. Conclusion</div>
+		</div>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1 : INTRODUCTION ET CONTEXTE                        -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(1030px, 0px, 0px);" hidden="" aria-hidden="true" class="stack past" data-index-h="1">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="1" data-index-v="0">
+		<h2>1. Introduction et contexte</h2>
+		<p>Le probleme, les sources et l'objectif du projet</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="1" data-index-v="1">
+		<h3>Contexte : IBM Rhapsody et les SVN</h3>
+		<div class="two-col">
+			<div>
+				<p style="font-weight: 700; color: #1c71d8; margin-bottom: 0.4em;">IBM Rhapsody</p>
+				<ul>
+					<li>Environnement MBSE de reference industrielle</li>
+					<li>Modelisation SysML / UML professionnelle</li>
+					<li>Aucun support natif des Stakeholder Value Networks</li>
+				</ul>
+			</div>
+			<div>
+				<p style="font-weight: 700; color: #1c71d8; margin-bottom: 0.4em;">Le probleme actuel</p>
+				<ul>
+					<li>Calculs SVN effectues manuellement, hors outil</li>
+					<li>Aucune mise a jour automatique lors d'une modification</li>
+					<li>Risque d'erreurs et de perte de temps</li>
+				</ul>
+			</div>
+		</div>
+		<div class="highlight-bar" style="margin-top: 1em;">
+			Besoin : une integration native SVN dans Rhapsody, sans ressaisie, avec calcul automatique
+		</div>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="1" data-index-v="2">
+		<h3>Qu'est-ce qu'un SVN ?</h3>
+		<p style="font-size: 0.7em; margin-bottom: 0.5em;">
+			Un <strong>Stakeholder Value Network</strong> est un graphe oriente pondere
+			modelisant les flux de valeur entre un systeme et ses parties prenantes.
+		</p>
+		<img src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/svn-example.png" alt="Exemple de diagramme SVN">
+<!--		<div class="diagram-ref">-->
+<!--			<div class="diagram-ref-title">Exemple de graphe SVN</div>-->
+<!--			<div class="diagram-ref-desc">-->
+<!--				Pilote (0.78) &rarr; Systeme &rarr; Mainteneur (0.54)<br>-->
+<!--				Regulateur (0.42) &rarr; Systeme &rarr; Operateur (0.21)-->
+<!--			</div>-->
+<!--			<div class="diagram-ref-file">diagrams/01-svn-example.mmd</div>-->
+<!--		</div>-->
+		<p style="font-size: 0.5em; color: #1a5fb4; margin-top: 0.4em;">
+			Concept : Cameron (2007) &nbsp;|&nbsp; Application SysML : Sease et al., INCOSE 2018
+		</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="1" data-index-v="3">
+		<h3>Positionnement de la solution</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>Critere</th>
+					<th>Sans plugin</th>
+					<th>Avec RhapsodySVN</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Modelisation SVN</td>
+					<td>Outil externe, deconnecte</td>
+					<td>Natif dans Rhapsody</td>
+				</tr>
+				<tr>
+					<td>Calcul des scores</td>
+					<td>Manuel, source d'erreurs</td>
+					<td>Automatique (Cameron Eq. 2)</td>
+				</tr>
+				<tr>
+					<td>Mise a jour</td>
+					<td>Ressaisie complete</td>
+					<td>Dynamique (event-driven)</td>
+				</tr>
+				<tr>
+					<td>Visualisation</td>
+					<td>Aucune priorisation visuelle</td>
+					<td>Colorisation par rang automatique</td>
+				</tr>
+				<tr>
+					<td>Integration modele</td>
+					<td>Copie manuelle des resultats</td>
+					<td>Tag values dans le modele SysML</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 3080px, 0px);" data-index-h="1" data-index-v="4">
+		<h3>Objectif general du projet</h3>
+		<p>Developper un <strong>plugin Java pour IBM Rhapsody 9.0</strong> permettant de :</p>
+		<ul>
+			<li>Modeliser graphiquement un Stakeholder Value Network dans l'environnement Rhapsody natif</li>
+			<li>Calculer automatiquement l'importance relative de chaque acteur (Cameron 2007)</li>
+			<li>Propager les resultats dans le modele SysML pour informer les choix d'architecture</li>
+		</ul>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 : ENVIRONNEMENT ET UTILISATEURS                   -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(2060px, 0px, 0px);" hidden="" aria-hidden="true" class="stack past" data-index-h="2">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="2" data-index-v="0">
+		<h2>2. Environnement, contexte et utilisateurs</h2>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="2" data-index-v="1">
+		<h3>Profil et contexte d'utilisation</h3>
+		<div class="two-col">
+			<div>
+				<p>Profil utilisateur cible</p>
+				<ul>
+					<li>Praticien de l'ingenierie systemes utilisant Rhapsody au quotidien</li>
+					<li>Concepteur ou analyste de systemes complexes</li>
+					<li>Aucune expertise SVN prealable requise</li>
+				</ul>
+			</div>
+			<div>
+				<p>Phase d'utilisation</p>
+				<ul>
+					<li>Phase <strong>amont</strong> du projet : definition de l'architecture systeme</li>
+					<li>Demarche MBSE ou toutes les decisions s'appuient sur le modele</li>
+					<li>Avant la definition des exigences detaillees</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="2" data-index-v="2">
+		<h3>Objectifs poursuivis par l'utilisateur</h3>
+		<ul>
+			<li>Obtenir une <strong>vision structuree</strong> des relations de valeur entre acteurs et systeme</li>
+			<li>Prioriser les orientations de conception de facon <strong>objective et quantifiee</strong></li>
+			<li>Detecter en amont les conflits potentiels entre fonctions ou exigences contradictoires</li>
+			<li>Disposer de resultats directement integres dans le modele SysML, sans ressaisie</li>
+		</ul>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="2" data-index-v="3">
+		<h3>Niveau de competence requis</h3>
+		<table>
+			<thead>
+				<tr><th>Domaine</th><th>Niveau requis</th><th>Remarque</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>IBM Rhapsody</td><td>Intermediaire</td><td>Navigation, diagrammes BDD/IBD</td></tr>
+				<tr><td>SysML</td><td>Intermediaire</td><td>Blocs, stereotypes, tag values</td></tr>
+				<tr><td>SVN / valeur percue</td><td>Aucun prerequis</td><td>Pris en charge par le plugin</td></tr>
+				<tr><td>Developpement / scripting</td><td>Non requis</td><td>Interface graphique uniquement</td></tr>
+			</tbody>
+		</table>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 : ORGANISATION DU PROJET                          -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(3090px, 0px, 0px);" class="stack past" data-index-h="3" data-previous-indexv="4" hidden="" aria-hidden="true">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" hidden="" aria-hidden="true" class="past" data-index-h="3" data-index-v="0">
+		<h2>3. Organisation du projet</h2>
+		<ul>
+			<li>
+				Méthodologie <strong>Agile</strong>
+			</li>
+			<li>
+				3 sprints de 3 semaines
+			</li>
+			<li>
+				14 avril au 16 juin 2026
+			</li>
+		</ul>
+	</section>
+
+	<section class="past" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="3" data-index-v="1" hidden="" aria-hidden="true">
+		<h3>Methodologie Scrum</h3>
+		<div class="two-col">
+			<div>
+				<ul>
+					<li>3 sprints de <strong>3 semaines</strong> chacun</li>
+					<li>Sprint planning + retrospective encadrant chaque sprint</li>
+					<li>Backlog fait sur <a href="https://clickup.com/">Clickup</a></li>
+				</ul>
+			</div>
+			<div>
+				<table style="font-size: 0.85em;">
+					<thead><tr><th>Eleve</th><th>Role</th></tr></thead>
+					<tbody>
+						<tr><td>Product Owner</td><td>Guillaume Retter</td></tr>
+						<tr><td>Scrum Master</td><td>Arnaud Michel</td></tr>
+						<tr>
+							<td style="vertical-align: top;">
+								Développeurs
+							</td>
+							<td>
+							<ul style="list-style: none; padding-left: 0; margin: 0;">
+								<li>Hugo Chacrot</li>
+								<li>Benjamin Groisne</li>
+								<li>Antoine Laurant</li>
+							</ul>
+						</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<section class="past" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="3" data-index-v="2" hidden="" aria-hidden="true">
+		<h3>Diagramme de Gantt — Simplifié</h3>
+		<div class="gantt-wrap">
+			<div class="gantt-axis">
+				<span style="left:0">14 avr</span>
+				<span style="left:33.3%">5 mai</span>
+				<span style="left:66.7%">26 mai</span>
+				<span style="left:100%">16 juin</span>
+			</div>
+			<div class="gantt-sprint-hdr">
+				<div class="gantt-s1-hdr">Sprint 1</div>
+				<div class="gantt-s2-hdr">Sprint 2</div>
+				<div class="gantt-s3-hdr">Sprint 3</div>
+			</div>
+
+			<div class="gantt-row">
+				<div class="gantt-lbl">Bibliographie API</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s1" style="left:0;width:20.6%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">CdC + User Stories</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s1" style="left:0;width:15.9%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Plugin Java</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s1" style="left:11.1%;width:20.6%"></div>
+				</div>
+			</div>
+
+			<div class="gantt-row">
+				<div class="gantt-lbl">SVNProfile via Java</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s2" style="left:33.3%;width:31.7%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">UC1 a UC4 (v1)</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s2" style="left:33.3%;width:31.7%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Cameron + DFS</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s2" style="left:44.4%;width:20.6%"></div>
+					<div class="gantt-ms" style="left:65.1%"></div>
+				</div>
+			</div>
+
+			<div class="gantt-row">
+				<div class="gantt-lbl">Refacto (profil UI)</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-crit" style="left:66.7%;width:19%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">UC1-UC7 (profil UI)</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s3" style="left:66.7%;width:25.4%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Listener + Strategy</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s3" style="left:76.2%;width:14.3%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Rapport</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s3" style="left:66.7%;width:27%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Slides</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s3" style="left:77.8%;width:22.2%"></div>
+				</div>
+			</div>
+			<div class="gantt-row">
+				<div class="gantt-lbl">Video</div>
+				<div class="gantt-track">
+					<div class="gantt-bar gb-s3" style="left:88.9%;width:11.1%"></div>
+					<div class="gantt-ms" style="left:100%"></div>
+				</div>
+			</div>
+
+			<p style="text-align:center;color:#1a5fb4;font-size:0.9em;margin:5px 0 3px;">
+				Jalons : <strong>Conseil prof / Pivot architectural</strong> 25 mai &nbsp;·&nbsp; <strong>Rendu final</strong> 16 juin
+			</p>
+			<div class="gantt-legend">
+				<span><span class="gantt-legend-dot" style="background:#62a0ea;"></span>Sprint 1</span>
+				<span><span class="gantt-legend-dot" style="background:#3584e4;"></span>Sprint 2</span>
+				<span><span class="gantt-legend-dot" style="background:#1c71d8;"></span>Sprint 3</span>
+				<span><span class="gantt-legend-dot" style="background:#e63946;"></span>Tache critique / refacto</span>
+				<span><span class="gantt-legend-dot" style="background:white;border:2px solid #1a5fb4;"></span>Jalon</span>
+			</div>
+		</div>
+	</section>
+
+	<section class="past" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="3" data-index-v="3" hidden="" aria-hidden="true">
+		<h3>Sprint 1 — Exploration de l'API et premieres tentatives</h3>
+		<table style="font-size: 0.6em;">
+			<thead><tr><th>Phase</th><th>Activite</th><th>Resultat</th></tr></thead>
+			<tbody>
+				<tr>
+					<td>Semaines 1–2</td>
+					<td>Recherche bibliographique, etude API Rhapsody, redaction CdC et User Stories</td>
+					<td>Bases conceptuelles posees</td>
+				</tr>
+				<tr>
+					<td>Semaines 2–3</td>
+					<td>Spike technique : tentative de creation du plugin entierement via code Java</td>
+					<td>Limitations API identifiees — creation de nouveaux types de diagrammes impossible depuis Java seul</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="" style="top: 0px; display: block; transform: translate3d(0px, 3080px, 0px);" data-index-h="3" data-index-v="4" aria-hidden="true">
+		<h3>Sprint 2 — Premiere implementation et pivot architectural</h3>
+		<table style="font-size: 0.58em;">
+			<thead><tr><th>Tache</th><th>Description</th><th>Statut</th></tr></thead>
+			<tbody>
+				<tr><td><strong>SVNProfile (Java)</strong></td><td>Creation programmatique des stereotypes, enumerations et tag values via l'API Java</td><td>Livré (v1)</td></tr>
+				<tr><td><strong>UC1 — Config</strong></td><td>Initialisation du profil SVN dans le projet courant</td><td>Livré (v1)</td></tr>
+				<tr><td><strong>UC2 — Create Arc</strong></td><td>Creation d'un arc de valeur (IRPDependency) entre deux elements</td><td>Livré (v1)</td></tr>
+				<tr><td><strong>UC3 — Edit Arc</strong></td><td>Edition BenefitRanking et SupplyImportance</td><td>Livré (v1)</td></tr>
+				<tr><td><strong>UC4 — Calcul</strong></td><td>Detection DFS des boucles de valeur + calcul</td><td>Livré (v1)</td></tr>
+				<tr><td><strong>Conseil professeur</strong></td><td>Retour en fin de sprint : creer le profil depuis l'interface Rhapsody, pas via Java — compatibilite et maintenabilite meilleures</td><td>Pivot decide</td></tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 3850px, 0px);" hidden="" data-index-h="3" data-index-v="5">
+		<h3>Sprint 3 — Refacto majeure, event-driven et livraison</h3>
+		<table style="font-size: 0.58em;">
+			<thead><tr><th>Tache</th><th>Description</th><th>Statut</th></tr></thead>
+			<tbody>
+				<tr><td><strong>Refacto majeure</strong></td><td>Suppression de la creation programmatique du profil — integration avec le profil cree depuis l'UI Rhapsody</td><td>Livré</td></tr>
+				<tr><td><strong>UC1–UC5, UC7, UC8</strong></td><td>Reimplementation sur la base du profil Rhapsody UI (stereotypes, tag values, enums)</td><td>Livré</td></tr>
+				<tr><td><strong>Listener</strong></td><td>Architecture evenementielle — recalcul automatique a chaque modification du modele</td><td>Livré</td></tr>
+				<tr><td><strong>Strategy pattern</strong></td><td>ValueLoopStrategy (Cameron) + ArcSumStrategy (fallback sans noeud systeme)</td><td>Livré</td></tr>
+				<tr><td><strong>Tests unitaires</strong></td><td>Couverture model (Stakeholder, SVNSystem, ValueArc) + services de calcul</td><td>Livré</td></tr>
+				<tr><td><strong>Livrables</strong></td><td>Rapport, presentation, video 3 min</td><td>Livré</td></tr>
+			</tbody>
+		</table>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4 : OBJECTIFS DU DIAGRAMME SVN                      -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(4120px, 0px, 0px);" class="stack present" data-index-h="4" data-previous-indexv="1">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="4" data-index-v="0" class="present">
+		<h2>4. Objectifs du diagramme SVN</h2>
+		<p>Les trois axes fonctionnels et la theorie sous-jacente</p>
+	</section>
+
+	<section class="future" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="4" data-index-v="1" hidden="" aria-hidden="true">
+		<h3>Trois axes fonctionnels</h3>
+		<table>
+			<thead>
+				<tr><th>Axe</th><th>Objectif</th><th>Resultat</th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><strong>1. Modeliser</strong></td>
+					<td>Representer graphiquement les arcs de valeur entre acteurs et systeme</td>
+					<td>Graphe oriente pondere integre dans Rhapsody</td>
+				</tr>
+				<tr>
+					<td><strong>2. Quantifier</strong></td>
+					<td>Calculer automatiquement l'importance relative de chaque acteur</td>
+					<td>Classement objectif (score 0–1) par stakeholder</td>
+				</tr>
+				<tr>
+					<td><strong>3. Informer</strong></td>
+					<td>Propager les resultats dans le modele systeme</td>
+					<td>Base quantitative pour les trade-offs d'architecture</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="4" data-index-v="2" hidden="" aria-hidden="true">
+		<h3>Matrice de scoring — INCOSE 2018</h3>
+		<p style="font-size: 0.6em; margin-bottom: 0.5em;">
+			<code>Score d'arc = BenefitRanking x SupplyImportance</code> (Sease et al., INCOSE 2018, Figure 3)
+		</p>
+		<table class="incose-matrix">
+			<thead>
+				<tr>
+					<th style="background: #f8f9fa; color: #1c1c1e;">Supply \ Benefit</th>
+					<th>MIGHT_BE</th>
+					<th>SHOULD_BE</th>
+					<th>MUST_BE</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th style="background: #eaf2fd; color: #1a5fb4; font-weight: 700;">LOW</th>
+					<td class="score-low">0.10</td>
+					<td class="score-low">0.20</td>
+					<td class="score-med">0.35</td>
+				</tr>
+				<tr>
+					<th style="background: #eaf2fd; color: #1a5fb4; font-weight: 700;">MEDIUM</th>
+					<td class="score-low">0.20</td>
+					<td class="score-med">0.35</td>
+					<td class="score-high">0.65</td>
+				</tr>
+				<tr>
+					<th style="background: #eaf2fd; color: #1a5fb4; font-weight: 700;">HIGH</th>
+					<td class="score-med">0.35</td>
+					<td class="score-high">0.65</td>
+					<td class="score-high">0.95</td>
+				</tr>
+			</tbody>
+		</table>
+		<p style="font-size: 0.5em; color: #1a5fb4; margin-top: 0.6em;">
+			MIGHT_BE et LOW sont les valeurs par défaults des value arcs (0.10)
+		</p>
+	</section>
+
+	<section class="future" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="4" data-index-v="3" hidden="" aria-hidden="true">
+		<h3>Algorithme de calcul — Cameron (2007)</h3>
+		<p style="font-size: 0.65em; margin-bottom: 0.5em;">
+			Detection des boucles par DFS depuis le noeud <code>system</code>, puis calcul de l'importance :
+		</p>
+		<div class="eq-block">
+			<strong>Score d'une boucle L :</strong><br>
+			<span><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>score</mtext><mo stretchy="false">(</mo><mi>L</mi><mo stretchy="false">)</mo><mo>=</mo><munder><mo>∏</mo><mi>i</mi></munder><mtext>score</mtext><mo stretchy="false">(</mo><msub><mtext>arc</mtext><mi>i</mi></msub><mo stretchy="false">)</mo><mspace width="1em"></mspace><mtext>pour&nbsp;chaque&nbsp;arc&nbsp;de&nbsp;la&nbsp;boucle</mtext></mrow><annotation encoding="application/x-tex"> \text{score}(L) = \prod_{i} \text{score}(\text{arc}_i) \quad \text{pour chaque arc de la boucle} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 2.3277em; vertical-align: -1.2777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.05em;"><span class="" style="top: -1.8723em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="" style="top: -3.05em;"><span class="pstrut" style="height: 3.05em;"></span><span class=""><span class="mop op-symbol large-op">∏</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.2777em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord"><span class="mord text"><span class="mord">arc</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3117em;"><span class="" style="top: -2.55em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right: 1em;"></span><span class="mord text"><span class="mord">pour&nbsp;chaque&nbsp;arc&nbsp;de&nbsp;la&nbsp;boucle</span></span></span></span></span></span></span>
+		</div>
+		<div class="eq-block" style="margin-top: 0.4em;">
+			<strong>Importance d'un stakeholder S — Equation 2 (Cameron) :</strong><br>
+			<span><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>importance</mtext><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mrow><mi>L</mi><mo>∋</mo><mi>S</mi></mrow></munder><mtext>score</mtext><mo stretchy="false">(</mo><mi>L</mi><mo stretchy="false">)</mo></mrow><mrow><munder><mo>∑</mo><mi>L</mi></munder><mtext>score</mtext><mo stretchy="false">(</mo><mi>L</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \text{importance}(S) = \frac{\sum_{L \ni S} \text{score}(L)}{\sum_{L} \text{score}(L)} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord text"><span class="mord">importance</span></span><span class="mopen">(</span><span style="margin-right: 0.0576em;" class="mord mathnormal">S</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 2.4528em; vertical-align: -0.9857em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.4671em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position: relative; top: 0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.1786em;"><span class="" style="top: -2.4003em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.2997em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mclose">)</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.7171em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position: relative; top: 0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.1786em;"><span class="" style="top: -2.4003em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="mrel mtight">∋</span><span style="margin-right: 0.0576em;" class="mord mathnormal mtight">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.3271em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.9857em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span>
+		</div>
+		<ul style="font-size: 0.6em; margin-top: 0.6em;">
+			<li>Resultat normalise entre 0 et 1</li>
+			<li>Si aucun noeud <code>system</code> : strategie de secours ArcSumStrategy (somme des arcs normalisee)</li>
+			<li>Ecrit dans la tag value <code>importanceScore</code> de chaque stakeholder</li>
+		</ul>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5 : FONCTIONS DU PLUGIN                             -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(5150px, 0px, 0px);" hidden="" aria-hidden="true" class="stack future" data-index-h="5">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="5" data-index-v="0">
+		<h2>5. Fonctions du plugin</h2>
+		<p>7 use cases implementes — du cadrage a la visualisation</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="5" data-index-v="1">
+		<h3>Les 7 Use Cases — Vue d'ensemble</h3>
+		<table class="uc-table">
+			<thead>
+				<tr>
+					<th>UC</th>
+					<th>Commande</th>
+					<th>Description</th>
+					<th>Priorite</th>
+					<th>Sprint</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><strong>UC1</strong></td>
+					<td><code>SVN Configure</code></td>
+					<td>Initialisation du SVNProfile (stereotypes, enums, tag values)</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs2">S2</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC2</strong></td>
+					<td><code>SVN Create Arc</code></td>
+					<td>Creation d'un arc de valeur (IRPDependency stereotypee)</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs2">S2</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC3</strong></td>
+					<td><code>SVN Edit Arc</code></td>
+					<td>Edition BenefitRanking / SupplyImportance via dialogue Swing</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs2">S2</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC4</strong></td>
+					<td><code>SVN Calculate</code></td>
+					<td>Calcul scores Cameron — DFS + Equation 2 — mise a jour tag values</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs2">S2</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC5</strong></td>
+					<td><code>SVN Colorize</code></td>
+					<td>Colorisation automatique rouge / orange / jaune par rang</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs3">S3</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC7</strong></td>
+					<td><code>SVN Update Arc Labels</code></td>
+					<td>Affichage des scores de ponderation comme etiquettes sur les arcs</td>
+					<td><span class="badge-should">SHOULD</span></td>
+					<td><span class="badge-sprint bs3">S3</span></td>
+				</tr>
+				<tr>
+					<td><strong>UC8</strong></td>
+					<td><code>SVN Clean</code></td>
+					<td>Suppression complete du profil SVN et reinitialisation du modele</td>
+					<td><span class="badge-must">MUST</span></td>
+					<td><span class="badge-sprint bs3">S3</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="5" data-index-v="2">
+		<h3>Flux d'utilisation — De la configuration a la visualisation</h3>
+		<img src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/uc-flow.png" alt="Flux d'utilisation du plugin SVN" style="width: 100%; max-width: 800px; margin-top: 1em;">
+<!--		<div class="diagram-ref">-->
+<!--			<div class="diagram-ref-title">Flux des use cases</div>-->
+<!--			<div class="diagram-ref-desc">-->
+<!--				UC1 Configure &rarr; UC2 Create Arc &rarr; UC3 Edit Arc &rarr; UC4 Calculate &rarr; UC5 Colorize / UC7 Arc Labels<br>-->
+<!--				UC1 &rarr; UC8 Clean-->
+<!--			</div>-->
+<!--			<div class="diagram-ref-file">diagrams/03-uc-flow.mmd</div>-->
+<!--		</div>-->
+		<p style="font-size: 0.55em; color: #1a5fb4; margin-top: 0.4em;">
+			UC1 est un prealable obligatoire — UC4 est declenche automatiquement par le Listener (Sprint 3)
+		</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="5" data-index-v="3">
+		<h3>Architecture event-driven — La valeur cle</h3>
+		<div class="two-col">
+			<div>
+				<p style="color: #c62828; font-size: 0.85em; font-weight: 700; margin-bottom: 0.4em;">Avant Sprint 3</p>
+				<ul style="font-size: 0.85em;">
+					<li>Recalcul declenche manuellement par l'utilisateur</li>
+					<li>Risque d'oubli de mise a jour apres modification</li>
+					<li>Visualisation non synchronisee</li>
+				</ul>
+			</div>
+			<div>
+				<p style="color: #2e7d32; font-size: 0.85em; font-weight: 700; margin-bottom: 0.4em;">Apres Sprint 3 (Listener)</p>
+				<ul style="font-size: 0.85em;">
+					<li>Tout ajout / suppression / modification dans le modele declenche automatiquement le recalcul</li>
+					<li>Colorisation et etiquettes mises a jour en temps reel</li>
+					<li>Aucune action supplementaire requise de l'utilisateur</li>
+				</ul>
+			</div>
+		</div>
+		<div class="highlight-bar" style="margin-top: 0.8em;">
+			Le Listener ecoute les evenements <code>afterAddElement</code> et <code>onElementsChanged</code> de l'API Rhapsody
+		</div>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6 : MODELISATION DES ELEMENTS                       -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(6180px, 0px, 0px);" hidden="" aria-hidden="true" class="stack future" data-index-h="6">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="6" data-index-v="0">
+		<h2>6. Modelisation des elements</h2>
+		<p>Structure du profil SVNProfile, entites du modele et attributs</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="6" data-index-v="1">
+		<h3>Profil SVNProfile — Extension du modele Rhapsody</h3>
+		<table style="font-size: 0.6em;">
+			<thead>
+				<tr><th>Element SVNProfile</th><th>Type</th><th>Applique sur</th><th>Role</th></tr>
+			</thead>
+			<tbody>
+				<tr><td><code>«stakeholder»</code></td><td>Stereotype</td><td>Actor (IRPActor)</td><td>Identifie une partie prenante</td></tr>
+				<tr><td><code>«system»</code></td><td>Stereotype</td><td>Class (IRPClass)</td><td>Noeud central du SVN</td></tr>
+				<tr><td><code>«valueArc»</code></td><td>Stereotype</td><td>Dependency (IRPDependency)</td><td>Arc de valeur pondere</td></tr>
+				<tr><td><code>importanceScore</code></td><td>Tag value (Float)</td><td>stakeholder</td><td>Score calcule — Cameron Eq.2</td></tr>
+				<tr><td><code>benefitRanking</code></td><td>Tag value (Enum)</td><td>valueArc</td><td>MIGHT_BE / SHOULD_BE / MUST_BE</td></tr>
+				<tr><td><code>supplyImportance</code></td><td>Tag value (Enum)</td><td>valueArc</td><td>LOW / MEDIUM / HIGH</td></tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="6" data-index-v="2">
+		<h3>Diagramme de classes — Modele de donnees SVN</h3>
+		<img src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/class-uml.png" alt="Diagramme de classes du modele de donnees SVN" style="width: 100%; max-width: 800px; margin-top: 1em;">
+<!--		<div class="diagram-ref">-->
+<!--			<div class="diagram-ref-title">Modele de donnees SVN</div>-->
+<!--			<div class="diagram-ref-desc">-->
+<!--				Stakeholder &mdash; SVNSystem &mdash; ValueArc &mdash; BenefitRanking (enum) &mdash; SupplyImportance (enum)<br>-->
+<!--				Stakeholder 0..* &rarr; ValueArc &nbsp;|&nbsp; SVNSystem 1 &rarr; ValueArc-->
+<!--			</div>-->
+<!--			<div class="diagram-ref-file">diagrams/04-class-diagram.mmd</div>-->
+<!--		</div>-->
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="6" data-index-v="3">
+		<h3>Attributs de l'arc de valeur (IRPDependency)</h3>
+		<table style="font-size: 0.6em;">
+			<thead>
+				<tr><th>Attribut</th><th>Type</th><th>Description</th><th>Defaut</th></tr>
+			</thead>
+			<tbody>
+				<tr><td><code>benefitRanking</code></td><td>BenefitRanking</td><td>Niveau de benefice attendu par le stakeholder</td><td>MIGHT_BE</td></tr>
+				<tr><td><code>supplyImportance</code></td><td>SupplyImportance</td><td>Importance de la fourniture du systeme</td><td>LOW</td></tr>
+				<tr><td><code>score</code></td><td>Float</td><td>Score calcule apres execution de UC4</td><td>0.10</td></tr>
+				<tr><td>source</td><td>Stakeholder | SVNSystem</td><td>Noeud source de l'arc</td><td>—</td></tr>
+				<tr><td>target</td><td>Stakeholder | SVNSystem</td><td>Noeud cible de l'arc</td><td>—</td></tr>
+			</tbody>
+		</table>
+		<p style="font-size: 0.55em; color: #1a5fb4; margin-top: 0.4em;">
+			L'arc est modele comme un <strong>IRPDependency</strong> dans Rhapsody — solution la plus compatible avec le profil BDD
+		</p>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7 : SPECIFICATIONS TECHNIQUES                        -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(7210px, 0px, 0px);" hidden="" aria-hidden="true" class="stack future" data-index-h="7">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="7" data-index-v="0">
+		<h2>7. Specifications techniques et robustesse</h2>
+		<p>Architecture, design patterns, stack technique et tests</p>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="7" data-index-v="1">
+		<h3>Architecture du plugin</h3>
+		<img src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/architecture.png" alt="Architecture du plugin SVN" style="max-height: 620px; margin-top: 0;">
+<!--		<div class="diagram-ref">-->
+<!--			<div class="diagram-ref-title">Architecture interne du plugin RhapsodySVN</div>-->
+<!--			<div class="diagram-ref-desc">-->
+<!--				SVNPlugin (RPUserPlugin) &rarr; Listener (RPApplicationPlugin) &rarr; CalculationService<br>-->
+<!--				&rarr; ICalculationStrategy &rarr; ValueLoopStrategy (Cameron) | ArcSumStrategy (fallback)<br>-->
+<!--				&rarr; UpdateElementService &rarr; RhapsodyWrapper &rarr; Modele Rhapsody-->
+<!--			</div>-->
+<!--			<div class="diagram-ref-file">diagrams/05-architecture.mmd</div>-->
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 1540px, 0px);" data-index-h="7" data-index-v="2">
+		<h3>Design patterns mis en oeuvre</h3>
+		<table class="dp-table">
+			<thead>
+				<tr><th>Pattern</th><th>Classe principale</th><th>Role dans le plugin</th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><strong>Singleton</strong></td>
+					<td><code>Logger</code></td>
+					<td>Instance unique du logger ; acces uniforme depuis tous les composants</td>
+				</tr>
+				<tr>
+					<td><strong>Strategy</strong></td>
+					<td><code>ICalculationStrategy</code></td>
+					<td>Interchangeabilite des algorithmes de calcul (ValueLoopStrategy / ArcSumStrategy) sans modifier le code appelant</td>
+				</tr>
+				<tr>
+					<td><strong>Observer</strong></td>
+					<td><code>Listener</code></td>
+					<td>Souscription aux evenements Rhapsody (<code>afterAddElement</code>, <code>onElementsChanged</code>) — mise a jour automatique du modele</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 2310px, 0px);" data-index-h="7" data-index-v="3">
+		<h3>Stack technique</h3>
+		<div class="two-col">
+			<table style="font-size: 0.75em;">
+				<thead><tr><th>Composant</th><th>Choix</th></tr></thead>
+				<tbody>
+					<tr><td>Langage</td><td>Java 8 (JDK 1.8)</td></tr>
+					<tr><td>Environnement cible</td><td>IBM Rhapsody 9.0</td></tr>
+					<tr><td>OS supporte</td><td>Windows (DLL native)</td></tr>
+					<tr><td>Build</td><td>Maven 3.x</td></tr>
+					<tr><td>Livrable</td><td>JAR (plugin Rhapsody) + code source</td></tr>
+					<tr><td>API Rhapsody</td><td>rhapsody.jar (local)</td></tr>
+				</tbody>
+			</table>
+			<div>
+				<p style="font-weight: 700; color: #1c71d8; font-size: 0.85em; margin-bottom: 0.4em;">Extension du profil BDD</p>
+				<ul style="font-size: 0.8em;">
+					<li>Enrichissement des diagrammes BDD / IBD existants</li>
+					<li>Nouveau type de diagramme étendant le profil BDD</li>
+					<li>Compatibilite totale avec les modeles existants</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 3080px, 0px);" data-index-h="7" data-index-v="4">
+		<h3>Tests et robustesse</h3>
+		<div class="two-col">
+			<div>
+				<p style="font-weight: 700; color: #1c71d8; font-size: 0.85em; margin-bottom: 0.4em;">Couverture des tests unitaires</p>
+				<ul style="font-size: 0.8em;">
+					<li>Entites modele : <code>Stakeholder</code>, <code>SVNSystem</code>, <code>ValueArc</code></li>
+					<li>Services de calcul : <code>ValueLoopStrategy</code>, <code>ArcSumStrategy</code></li>
+					<li>Cas limites : modele vide, stakeholder isole, graphe sans systeme</li>
+				</ul>
+			</div>
+			<div>
+				<p style="font-weight: 700; color: #1c71d8; font-size: 0.85em; margin-bottom: 0.4em;">Gestion des erreurs</p>
+				<ul style="font-size: 0.8em;">
+					<li>Aucun <code>NullPointerException</code> non gere ne remonte a Rhapsody</li>
+					<li>Diagramme non-SVN : ignore silencieusement par le Listener</li>
+					<li>Profil absent : message d'erreur explicite a l'utilisateur</li>
+					<li>Element non selectionne : commande annulee proprement</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+</section>
+
+<!-- ============================================================ -->
+<!-- CONCLUSION                                                   -->
+<!-- ============================================================ -->
+<section style="top: 0px; display: block; transform: translate3d(8240px, 0px, 0px);" hidden="" aria-hidden="true" class="stack future" data-index-h="8">
+	<section style="top: 0px; display: block; transform: translate3d(0px, 0px, 0px);" data-index-h="8" data-index-v="0">
+		<h2 style="font-size: 1.6em; margin-bottom: 0.4em;">Merci pour votre attention</h2>
+		<p style="font-size: 1.1em; color: #1c71d8; font-weight: 700; margin-bottom: 1.2em;">Questions ?</p>
+		<div style="border-top: 2px solid #3584e4; padding-top: 1em; margin-top: 0.6em;">
+			<p style="font-size: 0.65em; color: #1a5fb4; margin-bottom: 0.4em;">
+				Hugo Charcot &nbsp;·&nbsp; Benjamin Groisne &nbsp;·&nbsp; Antoine Laurant
+				&nbsp;·&nbsp; Arnaud Michel &nbsp;·&nbsp; Guillaume Retter
+			</p>
+			<p style="font-size: 0.58em; color: #62a0ea;">
+				DE50 — Encadrant : Vincent Hilaire &nbsp;·&nbsp; UTBM — P26
+			</p>
+		</div>
+	</section>
+
+	<section class="future" aria-hidden="true" style="top: 0px; display: block; transform: translate3d(0px, 770px, 0px);" data-index-h="8" data-index-v="1">
+		<h2>Bibliographie</h2>
+		<div style="text-align: left; max-width: 820px; margin: 0 auto; font-size: 0.62em; line-height: 2;">
+			<div class="highlight-bar">Cameron, B. (2007). <em>Stakeholder Value Networks</em>. INCOSE.</div>
+			<div class="highlight-bar">Sease, C. et al. (2018). <em>Setting priorities: demonstrating Stakeholder Value Networks in SysML</em>. INCOSE International Symposium.</div>
+			<div class="highlight-bar">IBM (2023). <em>IBM Engineering Systems Design Rhapsody 9.0 — Open API Reference</em>. IBM Documentation.</div>
+			<div class="highlight-bar">Schwaber, K. &amp; Sutherland, J. (2020). <em>The Scrum Guide</em>.</div>
+			<div class="highlight-bar">Wiegers, K. &amp; Beatty, J. (2013). <em>Software Requirements</em> (3rd ed.). Microsoft Press.</div>
+		</div>
+	</section>
+</section>
+
+<div class="backgrounds"><div class="slide-background stack past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack past" style="display: block; transform: translate3d(1030px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 3080px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack past" style="display: block; transform: translate3d(2060px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack past" style="display: block; transform: translate3d(3090px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 3080px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 3850px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack present" style="display: block; transform: translate3d(4120px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: block; transform: translate3d(5150px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: block; transform: translate3d(6180px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: block; transform: translate3d(7210px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 1540px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 2310px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: block; transform: translate3d(0px, 3080px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: block; transform: translate3d(8240px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background past" style="display: block; transform: translate3d(0px, 0px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background present" style="display: block; transform: translate3d(0px, 770px, 0px);" data-loaded="true"><div class="slide-background-content"></div></div></div></div></div>
+<div class="slide-number" style="display: none;"></div><aside class="controls" style="display: block;" data-controls-layout="bottom-right" data-controls-back-arrows="faded"><button class="navigate-left enabled" aria-label="previous slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down enabled" aria-label="below slide"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0.485714);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);" class="aria-status" aria-live="polite" aria-atomic="true">4. Objectifs du diagramme SVN Les trois axes fonctionnels et la theorie sous-jacente </div></div>
+
+<script src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/reveal.js"></script>
+<script src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/notes.js"></script>
+<script src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/highlight.js"></script>
+<script src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/math.js"></script>
+<script src="Plugin%20RhapsodySVN%20%E2%80%94%20DE50%20P26_fichiers/zoom.js"></script>
+
+<script>
+
+
+	Reveal.initialize({
+		hash: true,
+		controls: true,
+		progress: true,
+		center: true,
+		transition: 'slide',
+		math: {
+			mathjax: 'https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js', // not needed for KaTeX but harmless
+			config: 'TeX-AMS_HTML-full',
+			TeX: { Macros: {} }
+		},
+		plugins: [ RevealNotes, RevealHighlight, RevealMath.KaTeX, RevealZoom ]
+	});
+</script>
+
+
+
+</body></html>

@@ -1,5 +1,8 @@
 # 5. Avancement du projet
 
+> **Note** : partie à modifier
+{style=warning}
+
 Ce chapitre constitue un mini-audit du plugin RhapsodySVN. Il évalue le niveau de maturité du projet sur cinq axes : qualité du code, maintenabilité, robustesse, sécurité et limitations connues.
 
 ---

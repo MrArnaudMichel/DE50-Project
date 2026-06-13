@@ -46,9 +46,9 @@ Chaque arc `«valuearc»` reçoit un score numérique déterminé par la combina
 
 | `supplyImportance` ↓ \ `benefitRanking` → | `MIGHT_BE` | `SHOULD_BE` | `MUST_BE` |
 |---|---|---|---|
-| `HIGH` | 0.35 | 0.65 | 0.95 |
-| `MEDIUM` | 0.20 | 0.35 | 0.65 |
-| `LOW` | 0.10 | 0.20 | 0.35 |
+| `HIGH` | 0.30 | 0.50 | 0.95 |
+| `MEDIUM` | 0.20 | 0.40 | 0.80 |
+| `LOW` | 0.10 | 0.20 | 0.40 |
 
 Les valeurs par défaut à la création d'un arc sont `MIGHT_BE` et `LOW`, soit un score de **0.10**.
 

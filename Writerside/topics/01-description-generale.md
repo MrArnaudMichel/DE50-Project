@@ -133,5 +133,4 @@ Lors du développement du plugin, les hypothèses suivantes ont été formulées
 | Des éléments `«stakeholder»`, `«system»` et `«valuearc»` ont été créés dans le modèle | `CalculationService` ne trouve aucun nœud à traiter et renvoie un résultat vide                                     |
 | Un arc `«valuearc»` est créé ou modifié dans un diagramme qui n'est pas un `«SVNDiagram»` | Le `Listener` ne trouve pas le diagramme SVN correspondant — `getSVNDiagrams()` retourne `null` et le recalcul est ignoré |
 
-[//]: # (TODO: vérifier si cela est vrai)
 En cas de modèle sans nœud `«system»`, le plugin bascule automatiquement sur un **calcul simplifié par somme des arcs** (`ArcSumStrategy`), ce qui constitue la principale solution de repli fonctionnelle.

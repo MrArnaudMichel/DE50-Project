@@ -56,17 +56,75 @@ public class RhapsodyElementUpdater {
         }
     }
 
-    public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore) {
+    public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore, List<ValueArc> allArcs) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
-        StringBuilder detail = new StringBuilder();
-        assert loops != null;
-        for (ValueLoop loop : loops) {
-            detail.append(loop.getNodes().values())
-                    .append("=")
-                    .append(String.format("%.4f", loop.getScore()))
-                    .append("; ");
+        
+        // 1. Nettoyer les anciens tags Loop_X
+        int i = 1;
+        while (true) {
+            try {
+                IRPTag oldTag = system.getSystem().getTag("Loop_" + i);
+                if (oldTag != null) {
+                    oldTag.deleteFromProject();
+                    i++;
+                } else {
+                    break;
+                }
+            } catch (Exception e) { break; }
         }
-        setOrCreateTag(system.getSystem(), "loopDetails", detail.toString());
+        
+        // 2. Nettoyer l'ancien tag loopDetails s'il existe encore
+        try {
+            IRPTag loopDetails = system.getSystem().getTag("loopDetails");
+            if (loopDetails != null) loopDetails.deleteFromProject();
+        } catch (Exception ignored) {}
+
+        if (loops == null || loops.isEmpty()) {
+            try {
+                IRPTag mostImportant = system.getSystem().getTag("mostImportantVL");
+                if (mostImportant != null) mostImportant.deleteFromProject();
+            } catch (Exception ignored) {}
+            // Clean up stereotypes on all arcs
+            for (ValueArc arc : allArcs) {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.removeStereotype(arc.getDependency(), "bestValueArc");
+            }
+            return;
+        }
+
+        // 3. Trier les loops par score (décroissant)
+        loops.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
+
+        // 4. Créer les nouveaux tags et chercher la meilleure boucle
+        ValueLoop bestLoop = loops.get(0);
+        
+        for (int j = 0; j < loops.size(); j++) {
+            ValueLoop loop = loops.get(j);
+            String tagName = "Loop_" + (j + 1);
+            String value = String.format("%.4f", loop.getScore()) + " : " + loop.getNodes().values();
+            setOrCreateTag(system.getSystem(), tagName, value);
+            
+            if (j == 0) {
+                setOrCreateTag(system.getSystem(), "mostImportantVL", tagName);
+            }
+        }
+        
+        // 5. Gérer les stéréotypes sur les arcs
+        List<ValueArc> bestArcs = bestLoop.getArcs();
+        for (ValueArc arc : allArcs) {
+            boolean isBest = false;
+            for (ValueArc bestArc : bestArcs) {
+                if (arc.getGUID().equals(bestArc.getGUID())) {
+                    isBest = true;
+                    break;
+                }
+            }
+            
+            if (isBest) {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.addStereotype(arc.getDependency(), "bestValueArc");
+            } else {
+                fr.utbm.svn.rhapsody.RhapsodyWrapper.removeStereotype(arc.getDependency(), "bestValueArc");
+            }
+        }
     }
 
     public static void updateStakeholderImportance(Stakeholder sh, double score) {

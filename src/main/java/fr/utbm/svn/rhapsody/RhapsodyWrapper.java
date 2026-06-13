@@ -24,6 +24,31 @@ public class RhapsodyWrapper {
         return false;
     }
 
+    public static void addStereotype(IRPModelElement el, String stereotypeName) {
+        try {
+            if (!hasStereotype(el, stereotypeName)) {
+                el.addStereotype(stereotypeName, el.getMetaClass());
+            }
+        } catch (Exception e) {
+            Logger.getInstance().error("addStereotype " + stereotypeName + " : " + e.getMessage());
+        }
+    }
+
+    public static void removeStereotype(IRPModelElement el, String stereotypeName) {
+        try {
+            IRPCollection stereotypes = el.getStereotypes();
+            for (int i = 1; i <= stereotypes.getCount(); i++) {
+                IRPModelElement st = (IRPModelElement) stereotypes.getItem(i);
+                if (st.getName().equals(stereotypeName)) {
+                    el.removeStereotype((IRPStereotype) st);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Logger.getInstance().error("removeStereotype " + stereotypeName + " : " + e.getMessage());
+        }
+    }
+
     public static void initTagIfAbsent(IRPModelElement el, String tagName, String defaultValue) {
         try {
             IRPTag tag = el.getTag(tagName);

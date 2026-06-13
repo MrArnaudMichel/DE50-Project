@@ -46,7 +46,7 @@ public class CalculationService implements ICalculationService {
         }
 
         if (system != null)
-            RhapsodyElementUpdater.updateSystemTags(system, system.getLoops(), system.getTotalLoopScore());
+            RhapsodyElementUpdater.updateSystemTags(system, system.getLoops(), system.getTotalLoopScore(), valueArcs);
     }
 
 

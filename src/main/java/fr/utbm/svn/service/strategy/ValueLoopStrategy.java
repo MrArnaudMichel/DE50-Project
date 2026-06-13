@@ -96,6 +96,9 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             
             List<Double> pathScores = new ArrayList<>();
             pathScores.add(startArc.getScore());
+
+            List<ValueArc> pathArcs = new ArrayList<>();
+            pathArcs.add(startArc);
             
             Set<String> visited = new HashSet<>();
             visited.add(systemGUID);
@@ -104,23 +107,25 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             nextActor = nextActor instanceof IRPPort ? nextActor.getOwner() : nextActor;
             
             if (nextActor != null) {
-                dfs(nextActor, system.getSystem(), graph, pathNodes, pathScores, visited, result);
+                dfs(nextActor, system.getSystem(), graph, pathNodes, pathScores, pathArcs, visited, result);
             }
         }
         return result;
     }
 
     private void dfs(IRPModelElement current, IRPModelElement target, Map<String, List<ValueArc>> graph,
-                     Map<String, String> pathNodes, List<Double> pathScores, Set<String> visited,
-                     List<ValueLoop> result) {
+                     Map<String, String> pathNodes, List<Double> pathScores, List<ValueArc> pathArcs, 
+                     Set<String> visited, List<ValueLoop> result) {
         String currentGUID = current.getGUID();
         String currentName = current.getName();
         String targetGUID = target.getGUID();
+        
         if (currentGUID.equals(targetGUID)) {
-            Map<String, String> loopNodes = new HashMap<>(pathNodes);
+            Map<String, String> loopNodes = new LinkedHashMap<>(pathNodes); // LinkedHashMap to preserve order if needed
             loopNodes.put(targetGUID, target.getName());
             List<Double> loopScores = new ArrayList<>(pathScores);
-            result.add(new ValueLoop(loopNodes, loopScores));
+            List<ValueArc> loopArcs = new ArrayList<>(pathArcs);
+            result.add(new ValueLoop(loopNodes, loopScores, loopArcs));
             return;
         }
 
@@ -139,8 +144,12 @@ public class ValueLoopStrategy implements ICalculationStrategy {
             
             if (nextActor != null) {
                 pathScores.add(arc.getScore());
-                dfs(nextActor, target, graph, pathNodes, pathScores, visited, result);
+                pathArcs.add(arc);
+                
+                dfs(nextActor, target, graph, pathNodes, pathScores, pathArcs, visited, result);
+                
                 pathScores.remove(pathScores.size() - 1); // Backtrack
+                pathArcs.remove(pathArcs.size() - 1);
             }
         }
 

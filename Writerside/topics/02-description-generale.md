@@ -86,11 +86,40 @@ Ce plugin s'adresse principalement à des **ingénieurs systèmes** (professionn
 | Outil de build         | Maven 3.x                                                                              |
 | Dépendance externe     | `rhapsody.jar` fourni par IBM, à placer dans `lib/`                                    |
 
+### Méthode de travail
+
+Le projet a été mené selon une **méthodologie Agile Scrum**, structurée en **3 sprints de 3 semaines** (du 14 avril au 16 juin 2026).
+
+Cette méthode consiste à découper la période de travail en **sprints** de 2 semaines. Ce découpage en courte période permet d'explorer rapidement des fonctionnalités et de réagir rapidement aux imprévus et changements.
+
+| Rôle | Membre |
+|---|---|
+| Product Owner | Guillaume Retter |
+| Scrum Master | Arnaud Michel |
+| Développeurs | Hugo Charcot, Benjamin Groisne, Antoine Laurant |
+
+Chaque sprint est encadré par un sprint planning et une rétrospective. Le backlog du projet est géré sur **ClickUp**.
+
+
+Les rétrospectives de fin de sprint ont également permis de détecter et de corriger rapidement les dettes techniques accumulées, notamment lors du Sprint 3 où une refactorisation profonde de l'architecture (introduction du `Listener` et du pattern Strategy) a été planifiée et livrée dans les délais.
+
 ### Normes et standards
 
-Le calcul d'importance des parties prenantes est conforme aux **équations SVN définies par [Cameron (2007)](references.md#cameron)**, qui formalisent la notion de *value loop* et le calcul du score d'importance relatif de chaque stakeholder. La pondération des arcs `«valuearc»` repose sur la **matrice de score publiée en Figure 3 de l'[INCOSE 2018](references.md#incose)**, qui associe à chaque combinaison de `benefitRanking` et `supplyImportance` une valeur numérique comprise entre 0.1 et 0.95. 
+Le calcul d'importance des parties prenantes est conforme aux **équations SVN définies par [Cameron (2007)](X-references.md#cameron)**, qui formalisent la notion de *value loop* et le calcul du score d'importance relatif de chaque stakeholder. La pondération des arcs `«valuearc»` repose sur la **matrice de score publiée en Figure 3 de l'[INCOSE 2018](X-references.md#incose)**, qui associe à chaque combinaison de `benefitRanking` et `supplyImportance` une valeur numérique comprise entre 0.1 et 0.95.
 
-Enfin, la modélisation des entités SVN dans Rhapsody s'appuie sur des **stéréotypes SysML** définis dans un profil dédié (`SVNProfile`), conformément aux pratiques de profilage UML/SysML recommandées par l'OMG.
+La modélisation des entités SVN dans Rhapsody s'appuie sur des **stéréotypes SysML** définis dans un profil dédié (`SVNProfile`), conformément aux pratiques de profilage UML/SysML recommandées par l'OMG.
+
+Le code source suit les **conventions de codage Java standard** (nommage en camelCase, constantes en UPPER_SNAKE_CASE, séparation des responsabilités en packages).
+
+### Design patterns utilisés
+
+Trois patterns de conception sont mis en œuvre dans l'architecture du plugin :
+
+| Pattern | Classe principale | Rôle |
+|---|---|---|
+| **Singleton** | `Logger` | Instance unique partagée par tous les composants pour la journalisation |
+| **Strategy** | `ICalculationStrategy` | Interchangeabilité des algorithmes de calcul (`ValueLoopStrategy` / `ArcSumStrategy`) sans modification du code appelant |
+| **Observer** | `Listener` (`RPApplicationListener`) | Souscription aux événements Rhapsody (`afterAddElement`, `onElementsChanged`) pour le recalcul automatique |
 
 ## Hypothèses de travail
 
@@ -101,9 +130,8 @@ Lors du développement du plugin, les hypothèses suivantes ont été formulées
 | IBM Rhapsody 9.0 est ouvert avec un projet actif au moment du lancement               | Le plugin ne peut pas se connecter à l'API — toutes les commandes échouent                                          |
 | Un package `Default` existe dans le projet Rhapsody                                   | Les commandes de création et de nettoyage ne trouvent pas leur cible                                                |
 | La commande `SVN Configure` a été exécutée avant toute autre                          | Les stéréotypes et tags nécessaires (`«stakeholder»`, `«valuearc»`, `importanceScore`, etc.) sont absents du modèle |
-| Des éléments `«stakeholder»`, `«system»` et `«valuearc»` ont été créés dans le modèle | `SVNCalculateCommand` ne trouve aucun nœud à traiter et ne produit aucun résultat                                   |
-| Un arc `«valuearc»` est créé ou modifié dans un diagramme SVN                         | Le `Listener` ne trouve pas le diagramme correspondant et le recalcul est ignoré                                    |
+| Des éléments `«stakeholder»`, `«system»` et `«valuearc»` ont été créés dans le modèle | `CalculationService` ne trouve aucun nœud à traiter et renvoie un résultat vide                                     |
+| Un arc `«valuearc»` est créé ou modifié dans un diagramme qui n'est pas un `«SVNDiagram»` | Le `Listener` ne trouve pas le diagramme SVN correspondant — `getSVNDiagrams()` retourne `null` et le recalcul est ignoré |
 
-[//]: # (TODO: vérifier véracité de la fonctionnalité de fallback)
-En cas de modèle sans nœud `«system»`, le plugin bascule automatiquement sur un **calcul simplifié par somme des arcs** (fallback implémenté dans `CalculationService`), ce qui constitue la principale solution de repli fonctionnelle.
-
+[//]: # (TODO: vérifier si cela est vrai)
+En cas de modèle sans nœud `«system»`, le plugin bascule automatiquement sur un **calcul simplifié par somme des arcs** (`ArcSumStrategy`), ce qui constitue la principale solution de repli fonctionnelle.

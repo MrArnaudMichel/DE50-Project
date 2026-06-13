@@ -122,6 +122,7 @@ public class Listener extends RPApplicationListener {
                 IRPModelElement element = project.findElementByGUID(guid);
 
                 if (element == null) {
+                    elementHasBeenDeleted = true;
                     continue;
                 }
 

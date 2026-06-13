@@ -58,8 +58,7 @@ public class RhapsodyElementUpdater {
 
     public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore, List<ValueArc> allArcs) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
-        
-        // 1. Nettoyer les anciens tags Loop_X
+
         int i = 1;
         while (true) {
             try {
@@ -72,8 +71,7 @@ public class RhapsodyElementUpdater {
                 }
             } catch (Exception e) { break; }
         }
-        
-        // 2. Nettoyer l'ancien tag loopDetails s'il existe encore
+
         try {
             IRPTag loopDetails = system.getSystem().getTag("loopDetails");
             if (loopDetails != null) loopDetails.deleteFromProject();
@@ -84,17 +82,14 @@ public class RhapsodyElementUpdater {
                 IRPTag mostImportant = system.getSystem().getTag("mostImportantVL");
                 if (mostImportant != null) mostImportant.deleteFromProject();
             } catch (Exception ignored) {}
-            // Clean up stereotypes on all arcs
             for (ValueArc arc : allArcs) {
                 fr.utbm.svn.rhapsody.RhapsodyWrapper.removeStereotype(arc.getDependency(), "bestValueArc");
             }
             return;
         }
 
-        // 3. Trier les loops par score (décroissant)
         loops.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
-        // 4. Créer les nouveaux tags et chercher la meilleure boucle
         ValueLoop bestLoop = loops.get(0);
         
         for (int j = 0; j < loops.size(); j++) {
@@ -107,8 +102,7 @@ public class RhapsodyElementUpdater {
                 setOrCreateTag(system.getSystem(), "mostImportantVL", tagName);
             }
         }
-        
-        // 5. Gérer les stéréotypes sur les arcs
+
         List<ValueArc> bestArcs = bestLoop.getArcs();
         for (ValueArc arc : allArcs) {
             boolean isBest = false;

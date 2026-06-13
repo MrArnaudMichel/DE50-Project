@@ -145,7 +145,7 @@ public class ValueLoopStrategy implements ICalculationStrategy {
         }
 
         // Backtrack
-        pathNodes.remove(pathNodes.size() - 1);
+        pathNodes.remove(currentGUID);
         visited.remove(currentGUID);
     }
 }

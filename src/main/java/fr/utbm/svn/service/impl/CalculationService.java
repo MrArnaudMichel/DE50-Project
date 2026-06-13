@@ -16,10 +16,32 @@ import java.util.*;
 
 import static fr.utbm.svn.rhapsody.RhapsodyWrapper.*;
 
+/**
+ * Default implementation of {@link ICalculationService}.
+ *
+ * <p>Orchestrates the importance calculation by:
+ * <ol>
+ *   <li>Extracting the SVN elements (system, stakeholders, arcs) from the diagram.</li>
+ *   <li>Running the {@link ValueLoopStrategy} as the primary strategy.</li>
+ *   <li>Falling back to {@link ArcSumStrategy} when no value loops are found.</li>
+ *   <li>Writing the results back into the Rhapsody model via
+ *       {@link RhapsodyElementUpdater}.</li>
+ * </ol>
+ */
 public class CalculationService implements ICalculationService {
+
     private final Logger logger = Logger.getInstance();
 
-
+    /**
+     * {@inheritDoc}
+     *
+     * <p>If {@code diagram} is {@code null} the method logs an error and returns
+     * immediately. If any mandatory SVN element (system, stakeholders, arcs) is missing,
+     * the method skips the score calculation but still attempts to update the system tags.</p>
+     *
+     * @param project the active Rhapsody project
+     * @param diagram the SVN diagram to analyse
+     */
     @Override
     public void calculateImportance(IRPProject project, IRPDiagram diagram) {
         ICalculationStrategy fallBackStrategy = new ArcSumStrategy();
@@ -48,6 +70,4 @@ public class CalculationService implements ICalculationService {
         if (system != null)
             RhapsodyElementUpdater.updateSystemTags(system, system.getLoops(), system.getTotalLoopScore(), valueArcs);
     }
-
-
 }

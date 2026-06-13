@@ -7,43 +7,78 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for the importance calculation algorithm using Value Loops.
+ * Unit tests for the importance calculation algorithm using value loops.
  *
- * We reproduce the pure logic of ValueLoopStrategy.computeScores here
- * without any Rhapsody dependency, using simple structures.
+ * <p>Reproduces the pure logic of {@code ValueLoopStrategy.computeScores} without any
+ * Rhapsody dependency, using simple local data structures. The tested algorithm is:
+ * <ol>
+ *   <li>Build a directed graph (dependent → dependsOn) with arc scores keyed by GUID.</li>
+ *   <li>Find all cycles (value loops) passing through the "System" node.</li>
+ *   <li>Score each loop = product of its arc scores.</li>
+ *   <li>Importance of a stakeholder = sum of scores of loops containing it / totalLoopScore.</li>
+ * </ol>
  *
- * Tested algorithm:
- * 1. Build a directed graph (dependent -> dependsOn) with scores keyed by GUID
- * 2. Find all cycles (value loops) passing through the "System" node
- * 3. Score of each loop = product of its arc scores
- * 4. Importance of a stakeholder = sum of scores of loops containing it / totalLoopScore
- *
- * Note: nodes in a loop are stored as Map<String, String> (GUID -> Name),
- * matching the actual ValueLoop class in fr.utbm.svn.model.
+ * <p>Nodes in a loop are stored as {@code Map<String, String>} (GUID → name), matching
+ * the actual {@code ValueLoop} class in {@code fr.utbm.svn.model}.</p>
  */
 public class ImportanceCalculationTest {
 
     private static final double DELTA = 0.001;
 
-    // --- Simplified data structures ---
+    // -------------------------------------------------------------------------
+    // Simplified local data structures
+    // -------------------------------------------------------------------------
 
+    /** Represents a directed arc with a target node and a numeric score. */
     static class ArcEdge {
-        final String targetGuid;  // GUID of the  node
-        final String targetName;  // display name of the node
+        /** GUID of the target node. */
+        final String targetGuid;
+        /** Display name of the target node. */
+        final String targetName;
+        /** Arc score. */
         final double score;
+
+        /**
+         * Constructs an arc edge.
+         *
+         * @param guid  GUID of the target node
+         * @param name  display name of the target node
+         * @param s     arc score
+         */
         ArcEdge(String guid, String name, double s) { targetGuid = guid; targetName = name; score = s; }
     }
 
+    /** Represents a value loop with an ordered set of nodes and accumulated arc scores. */
     static class LocalValueLoop {
-        final Map<String, String> nodes;  // GUID -> Name
+        /** Ordered map of GUID to name for every node in the loop. */
+        final Map<String, String> nodes;
+        /** Arc scores along the loop in traversal order. */
         final List<Double> arcScores;
+        /** Computed loop score (product of arc scores). */
         double score;
+
+        /**
+         * Constructs a local value loop.
+         *
+         * @param n ordered map of GUID to name
+         * @param s arc scores in traversal order
+         */
         LocalValueLoop(Map<String, String> n, List<Double> s) { nodes = n; arcScores = s; }
     }
 
+    // -------------------------------------------------------------------------
+    // Algorithm helpers
+    // -------------------------------------------------------------------------
+
     /**
-     * Finds all loops starting and ending at systemGuid.
-     * The graph maps a node GUID to its outgoing ArcEdge list.
+     * Finds all loops starting and ending at the system node.
+     *
+     * <p>The graph maps a node GUID to its outgoing {@link ArcEdge} list.</p>
+     *
+     * @param systemGuid GUID of the system node (start/end of every loop)
+     * @param systemName display name of the system node
+     * @param graph      directed adjacency map: node GUID to list of outgoing arcs
+     * @return list of all detected value loops; empty if none found
      */
     private static List<LocalValueLoop> findValueLoops(String systemGuid, String systemName,
                                                        Map<String, List<ArcEdge>> graph) {
@@ -64,6 +99,22 @@ public class ImportanceCalculationTest {
         return result;
     }
 
+    /**
+     * Recursive depth-first search used by {@link #findValueLoops}.
+     *
+     * <p>Records a loop when the current node equals the target (system). Uses standard
+     * DFS backtracking to restore path state after each recursive call.</p>
+     *
+     * @param currentGuid GUID of the node currently being visited
+     * @param currentName display name of the current node
+     * @param targetGuid  GUID of the system node (loop closes when current == target)
+     * @param targetName  display name of the system node
+     * @param graph       directed adjacency map
+     * @param pathNodes   mutable map of GUID to name for nodes on the current path
+     * @param pathScores  mutable list of arc scores accumulated along the current path
+     * @param visited     mutable set of GUIDs already on the current DFS branch
+     * @param result      accumulator for completed loops
+     */
     private static void dfs(String currentGuid, String currentName,
                              String targetGuid, String targetName,
                              Map<String, List<ArcEdge>> graph,
@@ -72,7 +123,6 @@ public class ImportanceCalculationTest {
                              Set<String> visited,
                              List<LocalValueLoop> result) {
         if (currentGuid.equals(targetGuid)) {
-            // Loop closed: record it
             Map<String, String> loopNodes = new LinkedHashMap<>(pathNodes);
             loopNodes.put(targetGuid, targetName);
             result.add(new LocalValueLoop(loopNodes, new ArrayList<>(pathScores)));
@@ -95,6 +145,17 @@ public class ImportanceCalculationTest {
         visited.remove(currentGuid);
     }
 
+    /**
+     * Computes normalised importance scores for a list of stakeholders given a set of loops.
+     *
+     * <p>Each loop score is computed as the product of its arc scores. The importance of a
+     * stakeholder is the sum of scores of loops it belongs to, divided by the total loop
+     * score.</p>
+     *
+     * @param stakeholderGuids ordered list of stakeholder GUIDs to score
+     * @param loops            value loops detected by {@link #findValueLoops}
+     * @return map from stakeholder GUID to normalised importance score in [0.0, 1.0]
+     */
     private Map<String, Double> computeImportances(List<String> stakeholderGuids,
                                                     List<LocalValueLoop> loops) {
         double totalLoopScore = 0;
@@ -117,11 +178,14 @@ public class ImportanceCalculationTest {
         return result;
     }
 
+    // -------------------------------------------------------------------------
+    // Tests
+    // -------------------------------------------------------------------------
+
     /**
-     * Simple case: a single loop System -> A -> System
-     * Arcs: System-> A (0.5), A ->System (0.8)
-     * Loop score = 0.5 * 0.8 = 0.4
-     * Importance of A = 0.4/0.4 = 1.0
+     * Single loop: System → A → System with arc scores 0.5 and 0.8.
+     * Loop score = 0.5 * 0.8 = 0.40.
+     * Stakeholder A is in the only loop, so importance = 1.0.
      */
     @Test
     public void singleLoop_oneStakeholder() {
@@ -140,11 +204,9 @@ public class ImportanceCalculationTest {
 
     /**
      * Two loops with two stakeholders:
-     * Loop 1: System -> A -> System (arcs 0.5, 0.8) -> score = 0.40
-     * Loop 2: System -> B -> System (arcs 0.3, 0.4) -> score = 0.12
-     * Total = 0.52
-     * Importance of A = 0.40 / 0.52 ~ 0.7692
-     * Importance of B = 0.12 / 0.52 ~ 0.2308
+     * Loop 1: System → A → System (arcs 0.5, 0.8) → score = 0.40
+     * Loop 2: System → B → System (arcs 0.3, 0.4) → score = 0.12
+     * Total = 0.52; importance A ≈ 0.7692, importance B ≈ 0.2308.
      */
     @Test
     public void twoLoops_twoStakeholders() {
@@ -166,9 +228,8 @@ public class ImportanceCalculationTest {
     }
 
     /**
-     * No loop: the graph does not return to the system.
-     * System -> A (no return)
-     * Importance of A = 0
+     * No loop: the graph does not return to the system (System → A, no back-arc).
+     * All importance scores should be 0.
      */
     @Test
     public void noLoop_zeroImportance() {
@@ -186,10 +247,8 @@ public class ImportanceCalculationTest {
     }
 
     /**
-     * Loop with 3 nodes: System -> A -> B -> System
-     * Arcs: 0.5, 0.8, 0.4
-     * Score = 0.5 * 0.8 * 0.4 = 0.16
-     * Both A and B are in the loop -> importance = 1.0 each
+     * Loop with 3 nodes: System → A → B → System with arc scores 0.5, 0.8, 0.4.
+     * Loop score = 0.16. Both A and B participate → importance = 1.0 each.
      */
     @Test
     public void loopWithThreeNodes() {
@@ -209,7 +268,7 @@ public class ImportanceCalculationTest {
     }
 
     /**
-     * Stakeholder not in any loop -> importance = 0
+     * Stakeholder C is not part of any loop while A is; importance of C should be 0.
      */
     @Test
     public void stakeholderNotInLoop() {
@@ -227,7 +286,7 @@ public class ImportanceCalculationTest {
     }
 
     /**
-     * Empty graph -> no loop -> importance = 0
+     * Empty graph: no arcs at all, so no loops and all importances are 0.
      */
     @Test
     public void emptyGraph() {

@@ -12,8 +12,25 @@ import java.util.List;
 
 import static fr.utbm.svn.rhapsody.RhapsodyWrapper.setOrCreateTag;
 
+/**
+ * Utility class that writes computation results back into the Rhapsody model.
+ *
+ * <p>All methods are stateless and {@code static}; this class is not meant to be
+ * instantiated. It acts as a bridge between the domain model (scores, loops) and the
+ * Rhapsody API (tags, display names, stereotypes).</p>
+ */
 public class RhapsodyElementUpdater {
 
+    /**
+     * Updates the display label of a value arc in the diagram with its computed score.
+     *
+     * <p>First attempts to set the label via {@link IRPDependency#setDisplayName}. If that
+     * call fails (e.g. for read-only dependencies), falls back to setting the label through
+     * the graphical element's text property by scanning all object-model diagrams.</p>
+     *
+     * @param arc     the value arc whose label should be updated
+     * @param project the Rhapsody project used to iterate over diagrams in the fallback path
+     */
     public static void updateArcLabel(ValueArc arc, IRPProject project) {
         final Logger logger = Logger.getInstance();
         double score = arc.getScore();
@@ -56,6 +73,20 @@ public class RhapsodyElementUpdater {
         }
     }
 
+    /**
+     * Writes loop analysis results as tags on the system element and marks the arcs
+     * belonging to the best loop with the {@code bestValueArc} stereotype.
+     *
+     * <p>Existing {@code Loop_N} and {@code loopDetails} tags are deleted first to avoid
+     * stale data. Loops are sorted by descending score before being written so that
+     * {@code Loop_1} always refers to the highest-scoring loop.</p>
+     *
+     * @param system         the SVN system element to update
+     * @param loops          all detected value loops (may be {@code null} or empty)
+     * @param totalLoopScore the sum of all loop scores
+     * @param allArcs        all value arcs in the diagram, used to apply or remove the
+     *                       {@code bestValueArc} stereotype
+     */
     public static void updateSystemTags(SVNSystem system, List<ValueLoop> loops, double totalLoopScore, List<ValueArc> allArcs) {
         setOrCreateTag(system.getSystem(), "totalLoopScore", String.format("%.4f", totalLoopScore));
 
@@ -91,13 +122,13 @@ public class RhapsodyElementUpdater {
         loops.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
         ValueLoop bestLoop = loops.get(0);
-        
+
         for (int j = 0; j < loops.size(); j++) {
             ValueLoop loop = loops.get(j);
             String tagName = "Loop_" + (j + 1);
             String value = String.format("%.4f", loop.getScore()) + " : " + loop.getNodes().values();
             setOrCreateTag(system.getSystem(), tagName, value);
-            
+
             if (j == 0) {
                 setOrCreateTag(system.getSystem(), "mostImportantVL", tagName);
             }
@@ -112,7 +143,7 @@ public class RhapsodyElementUpdater {
                     break;
                 }
             }
-            
+
             if (isBest) {
                 fr.utbm.svn.rhapsody.RhapsodyWrapper.addStereotype(arc.getDependency(), "bestValueArc");
             } else {
@@ -121,6 +152,17 @@ public class RhapsodyElementUpdater {
         }
     }
 
+    /**
+     * Writes the importance score of a stakeholder as a tag and updates its display name
+     * in the Rhapsody diagram.
+     *
+     * <p>The display name is formatted as {@code "<baseName> : <score>"}, where
+     * {@code baseName} is derived by stripping any previously appended score suffix
+     * (separated by {@code " : "} or {@code " _ "}).</p>
+     *
+     * @param sh    the stakeholder to update
+     * @param score the computed importance score to store and display
+     */
     public static void updateStakeholderImportance(Stakeholder sh, double score) {
         final Logger logger = Logger.getInstance();
         try {

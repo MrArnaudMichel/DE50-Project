@@ -10,29 +10,58 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for the ValueLoop model logic.
+ * Unit tests for the {@link ValueLoop} model logic.
  *
- * ValueLoop stores a map of nodes (GUID -> Name) and a list of arc scores.
- * Since the class transitively depends on the Rhapsody API via the package,
- * we reproduce a simplified ValueLoop model here to test the calculation logic
- * of the product of arc scores (as used in ValueLoopStrategy).
+ * <p>{@code ValueLoop} stores a map of nodes (GUID to name) and a list of arc scores.
+ * Because the class transitively depends on the Rhapsody API via the package, a simplified
+ * local reproduction is used here to test the score-product calculation performed by
+ * {@code ValueLoopStrategy}.</p>
  */
 public class ValueLoopTest {
 
     private static final double DELTA = 0.001;
+
+    // -------------------------------------------------------------------------
+    // Simplified local reproduction of ValueLoop
+    // -------------------------------------------------------------------------
 
     static class ValueLoop {
         final Map<String, String> nodes;
         final List<Double> arcScores;
         double score;
 
+        /**
+         * Constructs a local ValueLoop for testing purposes.
+         *
+         * @param n ordered map of GUID to name for nodes in the loop
+         * @param s arc scores along the loop in traversal order
+         */
         ValueLoop(Map<String, String> n, List<Double> s) { nodes = n; arcScores = s; }
+
+        /** @return ordered map of GUID to name */
         Map<String, String> getNodes() { return nodes; }
+
+        /** @return arc scores in traversal order */
         List<Double> getArcScores() { return arcScores; }
+
+        /** @return the computed loop score */
         double getScore() { return score; }
+
+        /**
+         * Sets the computed score for this loop.
+         *
+         * @param score the new loop score
+         */
         void setScore(double score) { this.score = score; }
     }
 
+    // -------------------------------------------------------------------------
+    // Tests
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that nodes and arc scores are stored correctly by the constructor.
+     */
     @Test
     public void constructor_storesNodesAndScores() {
         Map<String, String> nodes = new LinkedHashMap<>();
@@ -47,6 +76,9 @@ public class ValueLoopTest {
         assertEquals(scores, loop.getArcScores());
     }
 
+    /**
+     * Verifies that {@code setScore} and {@code getScore} round-trip correctly.
+     */
     @Test
     public void setScore_getScore() {
         Map<String, String> nodes = new LinkedHashMap<>();
@@ -58,6 +90,9 @@ public class ValueLoopTest {
         assertEquals(0.40, loop.getScore(), DELTA);
     }
 
+    /**
+     * Verifies that the initial score is {@code 0.0} before any setter call.
+     */
     @Test
     public void initialScoreIsZero() {
         Map<String, String> nodes = new LinkedHashMap<>();
@@ -68,10 +103,14 @@ public class ValueLoopTest {
         assertEquals(0.0, loop.getScore(), DELTA);
     }
 
+    /**
+     * Verifies that the product of three arc scores is computed correctly.
+     * Simulates the calculation performed in {@code ValueLoopStrategy}:
+     * {@code loopScore = product of all arcScores}.
+     * Expected: 0.5 * 0.8 * 0.4 = 0.16
+     */
     @Test
     public void calculateArcScoresProduct() {
-        // Simulates the calculation done in ValueLoopStrategy:
-        // loopScore = product of all arcScores
         Map<String, String> nodes = new LinkedHashMap<>();
         nodes.put("guid-S", "System");
         nodes.put("guid-A", "A");
@@ -85,10 +124,13 @@ public class ValueLoopTest {
         }
         loop.setScore(product);
 
-        // 0.5 * 0.8 * 0.4 = 0.16
         assertEquals(0.16, loop.getScore(), DELTA);
     }
 
+    /**
+     * Verifies the product calculation with a single arc.
+     * Expected: 0.95 (no multiplication needed).
+     */
     @Test
     public void calculateProductWithSingleArc() {
         Map<String, String> nodes = new LinkedHashMap<>();

@@ -1,4 +1,4 @@
-# 10. Annexes
+# Annexes
 
 ## Annexe A — Méthode SVN et équations de Cameron (2007)
 

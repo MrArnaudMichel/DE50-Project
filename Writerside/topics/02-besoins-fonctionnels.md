@@ -1,4 +1,4 @@
-# 3. Besoins fonctionnels
+# 2. Besoins fonctionnels
 
 Le plugin expose **sept cas d'utilisation**, tous déclenchés par l'ingénieur système depuis le menu contextuel de
 Rhapsody. Ils sont regroupés en trois grandes fonctionnalités : **initialisation**, **analyse SVN**, et **visualisation

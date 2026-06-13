@@ -1,4 +1,4 @@
-# 5. Spécifications des interfaces externes
+# 4. Spécifications des interfaces externes
 
 ## Interface matériel / logiciel
 

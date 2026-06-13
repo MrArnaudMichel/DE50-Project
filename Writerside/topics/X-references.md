@@ -1,4 +1,4 @@
-# 8. Références
+# Références
 
 ## Références bibliographiques
 

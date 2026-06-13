@@ -1,4 +1,4 @@
-# 2. Description générale
+# 1. Description générale
 
 ## Environnement ou contexte du système
 

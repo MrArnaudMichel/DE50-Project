@@ -1,4 +1,4 @@
-# 9. Index
+# Index
 
 ## Index alphabétique des termes
 

@@ -1,4 +1,4 @@
-# 4. Spécification des structures de données
+# 3. Spécification des structures de données
 
 >Le plugin RhapsodySVN ne possède pas de base de données propre. Toutes les données sont stockées directement dans le **modèle Rhapsody** sous forme de stéréotypes, de tags et de types énumérés. Cette section décrit les entités manipulées, leurs relations et leurs attributs.
 {style=warning}
@@ -34,7 +34,7 @@
 | **But** | Représente une partie prenante du système (acteur humain ou organisation) dont on souhaite évaluer l'importance relative dans le réseau de valeur |
 | **Métaclasse Rhapsody** | `Actor` (`IRPActor`)                                                                                                                              |
 | **Profil** | `SVNProfile`                                                                                                                                      |
-| **Tag** | `importanceScore` (Float, entre 0 et 1) — score d'importance calculé par [UC4](03-besoins-fonctionnels.md#uc4-calculer-l-importance-des-stakeholders)                                          |
+| **Tag** | `importanceScore` (Float, entre 0 et 1) — score d'importance calculé par [UC4](02-besoins-fonctionnels.md#uc4-calculer-l-importance-des-stakeholders)                                          |
 | **Relations** | Peut être relié à d'autres `«stakeholder»` ou à un `«system»` via des arcs `«valuearc»`                                                           |
 
 ---

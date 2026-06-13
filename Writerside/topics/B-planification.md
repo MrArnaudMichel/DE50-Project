@@ -59,7 +59,7 @@ En fin de sprint, après un entretien avec l'enseignant référent, un retour im
 
 Le troisième sprint a été le plus dense. Il a débuté par une **refactorisation majeure** : 
 - suppression de la création programmatique du profil
-- réimplémentation de l'ensemble des UC sur la base du profil défini dans l'interface Rhapsody. 
+- réimplémentation de l'ensemble des UC sur la base du profil défini dans l'interface Rhapsody en récupérant les bases du profil générées par l'API Java.
 
 L'architecture a simultanément évolué vers un modèle **event-driven** avec l'introduction du `Listener` (`RPApplicationListener`), qui déclenche automatiquement le recalcul à chaque modification du modèle. Le **pattern Strategy** a été mis en place pour rendre les algorithmes de calcul interchangeables. Des **tests unitaires** ont été ajoutés pour couvrir la logique algorithmique. 
 

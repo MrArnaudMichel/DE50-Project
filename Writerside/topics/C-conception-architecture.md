@@ -4,7 +4,7 @@
 
 Le plugin RhapsodySVN est structuré en couches avec une séparation claire des responsabilités. Le diagramme de classes ci-dessous illustre les relations entre les composants principaux :
 
-> **[Insérer ici le diagramme de classes]**
+![Diagramme de classes](class-uml.png)
 
 ## Décisions architecturales
 

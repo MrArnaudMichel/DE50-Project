@@ -1,8 +1,8 @@
 # Introduction
 
-Ce projet s'inscrit dans le contexte de l'UV DE50 du semestre P26.
+Ce projet s'inscrit dans le contexte de l'UV DE50 de l'Université de Technologie de Belfort-Montbéliard (UTBM).
 
-Il a été réalisé par **Guillaume RETTER**, **Hugo CHARCOT**, **Arnaud MICHEL**, **Benjamin GROISNE** et **Antoine LAURANT** sour la supervision de **M. V. HILAIRE**
+Il a été réalisé par **Guillaume RETTER**, **Hugo CHARCOT**, **Arnaud MICHEL**, **Benjamin GROISNE** et **Antoine LAURANT** sous la supervision de **Vincent HILAIRE**
 
 ## Objectifs et apport du projet
 

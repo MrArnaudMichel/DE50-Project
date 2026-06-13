@@ -104,14 +104,11 @@ public class Listener extends RPApplicationListener {
 
     @Override
     public boolean onElementsChanged(String GUIDs) {
-        logger.log(String.valueOf(isProcessing));
         if (isProcessing) {
             logger.log("Already processing, skipping re-entrant call.");
             return false;
         }
         isProcessing = true;
-
-        logger.log("\n------------- OnElementsChanged --------------");
         if (GUIDs == null || GUIDs.trim().isEmpty()) return false;
 
         String[] guidArray = GUIDs.split(",");
@@ -125,18 +122,21 @@ public class Listener extends RPApplicationListener {
                 IRPModelElement element = project.findElementByGUID(guid);
 
                 if (element == null) {
-                    elementHasBeenDeleted = true;
                     continue;
                 }
 
                 if (element instanceof IRPTag) {
                     String tagName = element.getName();
-                    IRPDiagram diagram = this.getSVNDiagrams(element.getOwner());
+                    IRPModelElement owner = element.getOwner();
+                    if (owner == null) {
+                        elementHasBeenDeleted = true;
+                        continue;
+                    }
+                    IRPDiagram diagram = this.getSVNDiagrams(owner);
                     if (!SVNConstants.TAG_BENEFIT_RANKING.equals(tagName)
                             && !SVNConstants.TAG_SUPPLY_IMPORTANCE.equals(tagName)) {
                         continue;
                     }
-                    IRPModelElement owner = element.getOwner();
                     if (ValueArc.isValueArc(owner)) {
                         logger.log("Tag '" + tagName + "' modified on arc: " + owner.getName());
                         try {
@@ -162,7 +162,6 @@ public class Listener extends RPApplicationListener {
                 try {
                     project.setNotifyPluginOnElementsChanged(0);
                     this.scheduleRecalculation(diagram);
-
                 } finally {
                     project.setNotifyPluginOnElementsChanged(1);
                 }

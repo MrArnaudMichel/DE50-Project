@@ -169,7 +169,7 @@ public class RhapsodyElementUpdater {
             setOrCreateTag(sh.getActor(), SVNConstants.TAG_IMPORTANCE_SCORE,
                     String.format("%.4f", score));
 
-            String currentName = sh.getName();
+            String currentName = sh.getActor().getDisplayName().split(" :")[0];
             String baseName = currentName;
             if (currentName.contains(" : "))      baseName = currentName.split(" : ")[0].trim();
             else if (currentName.contains(" _ ")) baseName = currentName.split(" _ ")[0].trim();

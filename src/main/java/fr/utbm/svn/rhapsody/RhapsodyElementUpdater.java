@@ -175,6 +175,7 @@ public class RhapsodyElementUpdater {
             else if (currentName.contains(" _ ")) baseName = currentName.split(" _ ")[0].trim();
 
             sh.setDisplayName(baseName + " : " + String.format("%.4f", score));
+            sh.setName(currentName);
         } catch (Exception e) {
             logger.error("updateStakeholderImportance (score="
                     + String.format("%.4f", score) + ") : " + e.getMessage());

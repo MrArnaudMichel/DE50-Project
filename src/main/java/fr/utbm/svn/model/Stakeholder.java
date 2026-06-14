@@ -94,6 +94,8 @@ public class Stakeholder {
     public void setDisplayName(String displayName) {
         actor.setDisplayName(displayName);
     }
+    public void setName(String name) { actor.setName(name); };
+
 
     /**
      * Adds a new aggregate child element to this actor.

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 WEASYPRINT=~/.venv/weasyprint/bin/weasyprint
-HTML=Writerside/exports/pdfSourceRP.html
-PDF=Writerside/exports/rapport_final.pdf
+HTML=Writerside/exports/pdfSourceRP_final.html
+PDF=Writerside/exports/exports.pdf
 
 if [ ! -f "$HTML" ]; then
     echo "Erreur : $HTML introuvable. Génère d'abord le HTML depuis Writerside."

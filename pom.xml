@@ -5,12 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.utbm.RhapsodySVN</groupId>
+    <name>RhapsodySVN</name>
     <artifactId>RhapsodySVN</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <version>1.0.0</version>
 
 
     <dependencies>
-        <!-- Rhapsody API jar - installed locally -->
         <dependency>
             <groupId>com.ibm.rhapsody</groupId>
             <artifactId>rhapsody</artifactId>

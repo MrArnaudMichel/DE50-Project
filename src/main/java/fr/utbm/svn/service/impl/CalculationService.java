@@ -65,6 +65,12 @@ public class CalculationService implements ICalculationService {
                 scores = fallBackStrategy.computeScores(stakeholders, valueArcs);
             }
             scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
+        } else if (!stakeholders.isEmpty() && !valueArcs.isEmpty()) {
+            logger.log("No SVNSystem found in diagram, falling back to ArcSumStrategy for stakeholder importance.");
+            Map<Stakeholder, Double> scores = fallBackStrategy.computeScores(stakeholders, valueArcs);
+            scores.forEach(RhapsodyElementUpdater::updateStakeholderImportance);
+        } else {
+            logger.log("No system, stakeholders, or value arcs found - skipping stakeholder importance calculation.");
         }
 
         if (system != null)

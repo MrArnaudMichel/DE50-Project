@@ -90,7 +90,7 @@ Ce plugin s'adresse principalement à des **ingénieurs systèmes** (professionn
 
 Le projet a été mené selon une **méthodologie Agile Scrum**, structurée en **3 sprints de 3 semaines** (du 14 avril au 16 juin 2026).
 
-Cette méthode consiste à découper la période de travail en **sprints** de 2 semaines. Ce découpage en courte période permet d'explorer rapidement des fonctionnalités et de réagir rapidement aux imprévus et changements.
+Cette méthode consiste à découper la période de travail en **sprints** de 3 semaines. Ce découpage en courte période permet d'explorer rapidement des fonctionnalités et de réagir rapidement aux imprévus et changements.
 
 | Rôle | Membre |
 |---|---|

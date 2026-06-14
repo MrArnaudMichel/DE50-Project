@@ -12,7 +12,6 @@
         <toc-element topic="A-theorie-svn.md"/>
         <toc-element topic="B-planification.md"/>
         <toc-element topic="C-conception-architecture.md"/>
-        <toc-element topic="D-tests-validation.md"/>
     </toc-element>
 
     <toc-element topic="partie-specification.md">
@@ -20,7 +19,7 @@
         <toc-element topic="02-besoins-fonctionnels.md"/>
         <toc-element topic="03-structures-donnees.md"/>
         <toc-element topic="04-interfaces-externes.md"/>
-        <toc-element topic="05-avancement-projet.md"/>
+        <toc-element topic="05-tests-validation.md"/>
     </toc-element>
 
     <toc-element topic="X-references.md"/>

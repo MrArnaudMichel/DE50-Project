@@ -18,9 +18,9 @@
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------|
 | **Nom**               | IBM Rational Rhapsody                                                                                                     |
 | **Version**           | 9.0 (obligatoire — l'API COM utilisée est spécifique à cette version)                                                     |
-| **Provenance**        | Fourni par IBM. *Nécésite une liscence spécifique*                                                                        |
+| **Provenance**        | Fourni par IBM. *Nécessite une licence spécifique*                                                                        |
 | **But d'utilisation** | Application hôte du plugin. Fournit l'API Java via `rhapsody.jar`.                                                        |
-| **Interface**         | `IRPApplication`, `IRPProject`, `IRPProfile`, `IRPFlow`, `IRPActor`, `IRPCollection`, `RPUserPlugin`, `RhapsodyAppServer` |
+| **Interface**         | `IRPApplication`, `IRPProject`, `IRPProfile`, `IRPDependency`, `IRPActor`, `IRPCollection`, `RPUserPlugin`, `RhapsodyAppServer` |
 
 Le JAR `rhapsody.jar` est inclus comme dépendance locale dans `lib/rhapsody.jar` et déclaré dans `pom.xml`.
 

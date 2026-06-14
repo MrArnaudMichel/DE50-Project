@@ -42,7 +42,7 @@ Plus un stakeholder participe à de nombreuses value loops, et plus ces loops on
 
 ### Score d'un arc
 
-Chaque arc `«valuearc»` reçoit un score numérique déterminé par la combinaison de ses deux attributs de pondération. La matrice ci-dessous, issue de la Figure 3 de [Sease et al. (INCOSE 2018)](X-references.md#incose), définit ces scores :
+Chaque arc `«valuearc»` reçoit un score numérique déterminé par la combinaison de ses deux attributs de pondération. La matrice ci-dessous, issue de la Figure 3 de l'[INCOSE Systems Engineering Handbook (2018)](X-references.md#incose), définit ces scores :
 
 | `supplyImportance` ↓ \ `benefitRanking` → | `MIGHT_BE` | `SHOULD_BE` | `MUST_BE` |
 |---|---|---|---|

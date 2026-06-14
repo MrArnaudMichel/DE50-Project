@@ -58,7 +58,7 @@
 |---|---|
 | **Nom** | `valuearc` |
 | **But** | Représente un flux de valeur orienté entre deux entités du réseau SVN (stakeholder ↔ system ou stakeholder ↔ stakeholder). Chaque arc est pondéré par deux critères. |
-| **Métaclasse Rhapsody** | `Flow` (`IRPFlow`) |
+| **Métaclasse Rhapsody** | `Dependency` (`IRPDependency`) |
 | **Profil** | `SVNProfile` |
 | **Tag `benefitRanking`** | Type `BenefitRanking` — importance du bénéfice apporté par cet arc du point de vue du destinataire (`MIGHT_BE`, `SHOULD_BE`, `MUST_BE`) |
 | **Tag `supplyImportance`** | Type `SupplyImportance` — capacité du fournisseur à satisfaire ce flux de valeur (`LOW`, `MEDIUM`, `HIGH`) |
@@ -108,7 +108,7 @@
 | **Nom** | `SVNProfile` |
 | **But** | Profil SysML/UML créé dans le projet Rhapsody actif, qui regroupe tous les stéréotypes et types nécessaires au fonctionnement du plugin |
 | **Contenu** | Stéréotypes `«stakeholder»`, `«system»`, `«valuearc»`, `«SVNDiagram»` ; types `BenefitRanking`, `SupplyImportance` |
-| **Gestion** | Créé ou recréé par UC1. Supprimé par UC8. Stocké dans le modèle Rhapsody (pas de fichier externe). |
+| **Gestion** | Créé ou recréé par UC1. Supprimé par UC7. Stocké dans le modèle Rhapsody (pas de fichier externe). |
 
 ---
 

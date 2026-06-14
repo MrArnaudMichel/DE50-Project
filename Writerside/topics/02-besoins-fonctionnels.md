@@ -1,14 +1,13 @@
 # 2. Besoins fonctionnels
 
 Le plugin expose **sept cas d'utilisation**, tous déclenchés par l'ingénieur système depuis le menu contextuel de
-Rhapsody. Ils sont regroupés en trois grandes fonctionnalités : **initialisation**, **analyse SVN**, et **visualisation
-**.
+Rhapsody. Ils sont regroupés en trois grandes fonctionnalités : **initialisation**, **analyse SVN**, et **visualisation**.
 
 > **Remarque** :
-> Il est également possible de déclancher ses cas d'utilisation en ligne de commande lors du développement, mais l'usage
+> Il est également possible de déclencher ces cas d'utilisation en ligne de commande lors du développement, mais l'usage
 > principal est via le menu de Rhapsody.
 
-Les différents cas d'utilisation sont répartis en quatres groupes :
+Les différents cas d'utilisation sont répartis en quatre groupes :
 
 | Groupe            | Cas d'utilisation                                    |
 |-------------------|------------------------------------------------------|
@@ -39,7 +38,7 @@ Les différents cas d'utilisation sont répartis en quatres groupes :
 | **Nom**                         | SVN Create Arc                                                                                                                                                                                                                                                                                                        |
 | **Description**                 | Crée un arc `«valuearc»` entre deux éléments sélectionnés dans le diagramme Rhapsody.                                                                                                                                                                                                                                 |
 | **Entrées et provenances**      | Deux éléments sélectionnés graphiquement dans Rhapsody (source et cible de l'arc)                                                                                                                                                                                                                                     |
-| **Traitement**                  | `DiagramService.createArcBetweenSelected()` — récupère la sélection courante via `IRPApplication.getSelectedGraphElements()`, vérifie que les deux nœuds portent un stéréotype SVN (`«stakeholder»` ou `«system»`), crée un `IRPFlow` avec le stéréotype `«valuearc»`, puis l'insère graphiquement dans le diagramme. |
+| **Traitement**                  | `DiagramService.createArcBetweenSelected()` — récupère la sélection courante via `IRPApplication.getSelectedGraphElements()`, vérifie que les deux nœuds portent un stéréotype SVN (`«stakeholder»` ou `«system»`), crée un `IRPDependency` avec le stéréotype `«valuearc»`, puis l'insère graphiquement dans le diagramme. |
 | **Sorties**                     | Un arc `«valuearc»` apparaît dans le diagramme entre les deux éléments sélectionnés. Message console confirmant la création.                                                                                                                                                                                          |
 | **Classe ou instance associée** | `Listener.afterAddElement()`, `ValueArc` (initialisation des tags par défaut), `RhapsodyElementUpdater.updateArcLabel()`                                                                                                                                                                                              |
 
@@ -93,29 +92,24 @@ Les différents cas d'utilisation sont répartis en quatres groupes :
 
 ---
 
-## UC5 — Coloriser les stakeholders
+## UC5 — Coloriser les éléments SVN
 
-> **Remarque** :
-> Ce cas d'utilisation est en cours de développement. Il est déjà intégré dans notre conception, mais n'est pas encore
-> disponible dans le plugin.
-> {style="warning"}
-
-| Champ                           | Contenu                                                                                                                                                                                                                                                                       |
-|---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Nom**                         | SVN Colorize Elements                                                                                                                                                                                                                                                         |
-| **Description**                 | Applique une couleur de remplissage à chaque nœud `«stakeholder»` et à chaque arc `«valuearc»` dans les diagrammes SVN, en fonction de leur rang d'importance calculé.                                                                                                        |
-| **Entrées et provenances**      | Modèle Rhapsody avec des `«stakeholder»` dont le tag `importanceScore` est renseigné (nécessite l'exécution préalable de UC4)                                                                                                                                                 |
-| **Traitement**                  | Trie les stakeholders par score décroissant, les divise en trois tiers, applique les couleurs rouge/orange/jaune selon l'importance via `RhapsodyWrapper` (propriété graphique `FillColor`). Applique la même logique de tiers aux arcs `«valuearc»` (propriété `LineColor`). |
-| **Sorties**                     | Les nœuds `«stakeholder»` et les arcs `«valuearc»` sont colorisés dans les diagrammes SVN (rouge = plus importants, orange = importants, jaune = moins importants).                                                                                                           |
-| **Classe ou instance associée** | `RhapsodyElementUpdater.updateStakeholderImportance()`, `Stakeholder`, `ValueArc`, `RhapsodyWrapper`                                                                                                                                                                          |
+| Champ                           | Contenu                                                                                                                                                                                                              |
+|---------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Nom**                         | SVN Colorize Elements                                                                                                                                                                                                |
+| **Description**                 | Applique une couleur à chaque arc `«valuearc»` dans les diagrammes SVN en fonction du score calculé. La coloration des nœuds `«stakeholder»` est prévue mais non encore implémentée.                                |
+| **Entrées et provenances**      | Modèle Rhapsody avec des `«stakeholder»` dont le tag `importanceScore` est renseigné (nécessite l'exécution préalable de UC4)                                                                                        |
+| **Traitement**                  | Trie les arcs `«valuearc»` par score décroissant, les divise en trois tiers, applique les couleurs rouge/orange/jaune via `RhapsodyWrapper` (propriété graphique `LineColor`). La logique de tiers sur les nœuds `«stakeholder»` (propriété `FillColor`) est conçue mais non encore intégrée. |
+| **Sorties**                     | Les arcs `«valuearc»` sont colorisés dans les diagrammes SVN (rouge = arcs critiques, orange = importants, jaune = secondaires).                                                                                     |
+| **Classe ou instance associée** | `RhapsodyElementUpdater.updateArcLabel()`, `ValueArc`, `RhapsodyWrapper`                                                                                                                                             |
 
 **Code couleur appliqué :**
 
-| Tier                                    | Couleur            | Signification                 |
-|-----------------------------------------|--------------------|-------------------------------|
-| Tiers supérieur (1/3 le plus important) | Rouge (`#FF4444`)  | Stakeholders/Arcs critiques   |
-| Tiers médian                            | Orange (`#FFA500`) | Stakeholders/Arcs importants  |
-| Tiers inférieur                         | Jaune (`#FFFF00`)  | Stakeholders/Arcs secondaires |
+| Tier                                    | Couleur            | Signification       |
+|-----------------------------------------|--------------------|---------------------|
+| Tiers supérieur (1/3 le plus important) | Rouge (`#FF4444`)  | Arcs critiques      |
+| Tiers médian                            | Orange (`#FFA500`) | Arcs importants     |
+| Tiers inférieur                         | Jaune (`#FFFF00`)  | Arcs secondaires    |
 
 ---
 

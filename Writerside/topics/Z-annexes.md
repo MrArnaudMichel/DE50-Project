@@ -62,7 +62,7 @@ Ce calcul est moins précis que la méthode principale mais reste fonctionnel po
 
 ## Annexe B — Matrice de score des arcs (INCOSE 2018, Figure 3)
 
-La matrice ci-dessous définit le score numérique associé à chaque combinaison (`benefitRanking`, `supplyImportance`). Elle est implémentée dans `CalculationService.getArcScore()`.
+La matrice ci-dessous définit le score numérique associé à chaque combinaison (`benefitRanking`, `supplyImportance`). Elle est implémentée dans `ValueArc.getArcScore()`.
 
 | `supplyImportance` ↓ \ `benefitRanking` → | `MIGHT_BE` | `SHOULD_BE` | `MUST_BE` |
 |---|---|---|---|
@@ -86,25 +86,39 @@ RhapsodySVN/
 │   ├── rhapsody.jar                 # API IBM Rhapsody 9.0 (dépendance locale)
 │   └── 64Bit/
 │       └── rhapsody.dll             # Bibliothèque native Windows
-└── src/main/java/fr/utbm/RhapsodySVN/
-    ├── SVNPlugin.java               # Point d'entrée plugin (RPUserPlugin)
-    ├── SVNConfigureCommand.java     # UC1 — Configurer le profil
-    ├── SVNCreateArcCommand.java     # UC2 — Créer un arc
-    ├── SVNEditArcCommand.java       # UC3 — Éditer les pondérations
-    ├── SVNCalculateCommand.java     # UC4 — Calculer l'importance
-    ├── SVNColorizeStakeholdersCommand.java  # UC5 — Coloriser les stakeholders
-    ├── SVNArcColorCommand.java      # UC6 — Coloriser un arc
-    ├── SVNLabelArcCommand.java      # UC7 — Mettre à jour les labels
-    ├── SVNCleanCommand.java         # UC8 — Nettoyer le modèle
-    ├── Main.java                    # Point d'entrée ligne de commande
-    ├── constants/
-    │   └── SVNConstants.java        # Centralisation des constantes
-    ├── rhapsody/
-    │   └── RhapsodyWrapper.java     # Wrapper bas niveau API Rhapsody
-    └── service/
-        ├── ProfileService.java      # Gestion du profil SVNProfile
-        ├── CalculationService.java  # Algorithme de calcul SVN
-        └── DiagramService.java      # Opérations graphiques sur les diagrammes
+└── src/
+    ├── main/java/fr/utbm/svn/
+    │   ├── SVNPlugin.java           # Point d'entrée plugin (RPUserPlugin)
+    │   ├── Main.java                # Point d'entrée ligne de commande (hors Rhapsody)
+    │   ├── Logger.java              # Singleton de journalisation
+    │   ├── constants/
+    │   │   └── SVNConstants.java    # Centralisation des noms de stéréotypes et tags
+    │   ├── controller/
+    │   │   └── Listener.java        # Écoute les événements Rhapsody, déclenche le recalcul
+    │   ├── model/
+    │   │   ├── Stakeholder.java     # Wrapper d'un acteur «stakeholder»
+    │   │   ├── SVNSystem.java       # Wrapper du nœud «system»
+    │   │   ├── ValueArc.java        # Wrapper d'une dépendance «valuearc»
+    │   │   ├── ValueLoop.java       # Représente un cycle du graphe SVN
+    │   │   └── SearchState.java     # État intermédiaire du parcours DFS
+    │   ├── rhapsody/
+    │   │   ├── RhapsodyWrapper.java         # Accès bas niveau à l'API Rhapsody (lecture)
+    │   │   └── RhapsodyElementUpdater.java  # Écriture des résultats dans le modèle
+    │   └── service/
+    │       ├── ICalculationService.java     # Interface du service de calcul
+    │       ├── ICalculationStrategy.java    # Interface des stratégies de calcul
+    │       ├── impl/
+    │       │   └── CalculationService.java  # Orchestrateur du calcul d'importance
+    │       └── strategy/
+    │           ├── ValueLoopStrategy.java   # Calcul par DFS (équations Cameron)
+    │           └── ArcSumStrategy.java      # Calcul simplifié (fallback)
+    └── test/java/fr/utbm/svn/
+        ├── model/
+        │   ├── SearchStateTest.java         # Tests du conteneur d'état DFS
+        │   ├── ValueArcScoreTest.java       # Tests de la matrice de score INCOSE
+        │   └── ValueLoopTest.java           # Tests du calcul de score de loop
+        └── service/strategy/
+            └── ImportanceCalculationTest.java  # Tests end-to-end du calcul Cameron
 ```
 
 ---

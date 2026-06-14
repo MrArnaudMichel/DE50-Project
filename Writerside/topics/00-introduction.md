@@ -46,3 +46,8 @@ Ce rapport est organisé en deux parties distinctes :
 | IRPDependency | Interface Rhapsody représentant une dépendance UML (utilisée pour les arcs `«valuearc»`) |
 | Stéréotype | Extension du métamodèle UML/SysML permettant de typer un élément |
 | Tag | Propriété supplémentaire associée à un élément via un stéréotype |
+| POC | Proof of Concept — prototype minimal visant à valider une faisabilité technique |
+| COM | Component Object Model — technologie Microsoft utilisée par l'API Java de Rhapsody pour exposer ses interfaces |
+| IBD | Internal Block Diagram — diagramme SysML représentant la structure interne d'un bloc |
+| BDD | Block Definition Diagram — diagramme SysML représentant la définition et les relations entre blocs |
+| OMG | Object Management Group — consortium définissant les standards UML et SysML |
